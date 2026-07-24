@@ -18,15 +18,16 @@ function finish(code, message) {
     finished = true;
     clearTimeout(timer);
     if (message) console.error(message);
-    socket.close();
+
+    if (socket.readyState === WebSocket.OPEN) socket.close();
+    else socket.terminate();
+
     process.exitCode = code;
 }
 
 const timer = setTimeout(() => {
     finish(1, `No healthy typing bridge responded on port ${port}.`);
 }, timeoutMs);
-
-timer.unref();
 
 socket.once("open", () => {
     socket.send(JSON.stringify({ type: "ping", nonce }));

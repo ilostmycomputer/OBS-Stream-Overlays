@@ -278,5 +278,5 @@ countdown, gradient, or confetti.
 The original overlay, bridge, launcher, and test files use the repository's
 existing MIT License. The Vencord integration is GPL-3.0-or-later, and the
 optional OpenAI Sans font files are separate third-party assets; see
-`NOTICE.md`.
+`docs/NOTICE.md`.
 

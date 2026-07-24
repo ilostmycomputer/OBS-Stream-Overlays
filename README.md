@@ -10,7 +10,7 @@ Downloading the repository ZIP does not install anything. It only copies the fil
 
 | Feature | Files needed from this repository | Install or access separately |
 | --- | --- | --- |
-| **Countdown** | Light style: [`summer-update-countdown.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown.html). Dark style: [`summer-update-countdown-dark.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown-dark.html). | [OBS Studio](https://obsproject.com/download). The five OpenAI Sans font files in `Overlays & Plugins/overlays/countdown/` are optional and only provide the intended clean typography. |
+| **Countdown** | Light style: [`summer-update-countdown.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown.html). Dark style: [`summer-update-countdown-dark.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown-dark.html). | [OBS Studio](https://obsproject.com/download). The three OpenAI Sans font files in `Overlays & Plugins/overlays/countdown/` are optional and only provide the intended clean typography. |
 | **Confetti** | [`confetti.html`](Overlays%20%26%20Plugins/overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
 | **Animated YouTube Studio subscriber count** | [`gradient.html`](Overlays%20%26%20Plugins/overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
 | **Discord typing alert** | The entire `Overlays & Plugins/overlays/typing-notifications/` folder, plus [`Overlays & Plugins/integrations/vencord/TypingNotifications/index.tsx`](Overlays%20%26%20Plugins/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
@@ -28,8 +28,6 @@ For the countdown's intended appearance, the optional font files are:
 - `OpenAI-Sans-Bold.otf`
 - `OpenAI-Sans-Light.otf`
 - `OpenAI-Sans-Medium.otf`
-- `OpenAI-Sans-Regular.otf`
-- `OpenAI-Sans-Semibold.otf`
 
 The countdown still works without them and falls back to a normal system sans-serif font.
 
@@ -75,7 +73,7 @@ This Windows helper detects five rapid left-clicks, checks whether OBS is record
 
 The public configuration uses a placeholder WebSocket password and a `1920 × 1080` primary display. Replace the password and adjust the display values locally before running it. All runtime logic is committed as readable JavaScript; there is no hidden executable, minified bundle, telemetry, or cloud component.
 
-**[Open the complete cursor-zoom setup, configuration, architecture, privacy, and troubleshooting guide](Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom/README.md)**
+**[Open the complete cursor-zoom setup, configuration, architecture, privacy, and troubleshooting guide](Documentation/FULL_GUIDE.md#5-five-click-cursor-zoom)**
 
 ## Complete beginner guide
 

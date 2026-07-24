@@ -38,7 +38,7 @@ bridge runs on your own computer.
 | [Countdown](overlays/countdown/summer-update-countdown.html) | Counting down to an event or update. |
 | [Subscriber border](overlays/gradient-stroke/gradient.html) | Giving a keyed subscriber count an animated coloured border. |
 | [Confetti](overlays/confetti/confetti.html) | Celebrating an announcement, goal, or milestone. |
-| [Discord typing alert](overlays/typing-notifications/overlay.html) | Showing a Discord typing alert on stream. This one needs extra setup. |
+| [Discord typing alert](overlays/typing-notifications/overlay.html) | Track when developers start typing in channels such as **PRC Announcements** and get notified instantly on stream. This one needs extra setup. |
 
 ## Countdown
 

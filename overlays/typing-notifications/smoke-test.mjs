@@ -65,6 +65,32 @@ function nextMessage(socket, label) {
     }), label);
 }
 
+function expectNoMessage(socket, label, durationMs = 200) {
+    return new Promise((resolve, reject) => {
+        const onMessage = raw => {
+            cleanUp();
+            reject(new Error(`${label} unexpectedly received: ${raw.toString()}`));
+        };
+        const onError = error => {
+            cleanUp();
+            reject(error);
+        };
+        const timer = setTimeout(() => {
+            cleanUp();
+            resolve();
+        }, durationMs);
+
+        function cleanUp() {
+            clearTimeout(timer);
+            socket.off("message", onMessage);
+            socket.off("error", onError);
+        }
+
+        socket.on("message", onMessage);
+        socket.on("error", onError);
+    });
+}
+
 function waitForClose(socket, label) {
     return withTimeout(new Promise((resolve, reject) => {
         socket.once("close", (code, reason) => resolve({ code, reason: reason.toString() }));
@@ -85,14 +111,18 @@ try {
 
     const event = {
         type: "typing",
-        username: "test-user",
-        channelName: "test-channel",
+        username: "  test-user  ",
+        channelName: "  test-channel  ",
         avatarUrl: "https://cdn.example.invalid/avatar.png",
         timestamp: Date.now(),
     };
     const forwardedPromise = nextMessage(overlay, "forwarded typing event");
     publisher.send(JSON.stringify(event));
-    assert.deepEqual(await forwardedPromise, event);
+    assert.deepEqual(await forwardedPromise, {
+        ...event,
+        username: "test-user",
+        channelName: "test-channel",
+    });
 
     const rejected = new WebSocket(`ws://127.0.0.1:${port}?role=invalid`);
     sockets.add(rejected);
@@ -100,8 +130,9 @@ try {
     const { code } = await rejectedClose;
     assert.equal(code, 1008);
 
+    const malformedWasBlocked = expectNoMessage(overlay, "malformed-event check");
     publisher.send(JSON.stringify({ type: "typing", username: "", channelName: "test" }));
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await malformedWasBlocked;
 
     console.log("Bridge smoke test passed.");
 } finally {

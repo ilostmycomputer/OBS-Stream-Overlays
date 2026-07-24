@@ -109,6 +109,10 @@ The same channel counter should return after the refresh. This proves that the
 channel selection is stored in the Browser Source URL rather than only in the
 temporary interaction session.
 
+If the embed page already has a transparent background and contains only the
+counter, keep it and skip the cropping and Color Key steps that are unnecessary
+for your source. Continue with the gradient and Stroke sections.
+
 If the site does not offer an OBS/embed URL, copy the selected channel page URL
 in a normal web browser and place that URL in the OBS Browser Source instead.
 Do not rely only on navigation performed inside **Interact**.

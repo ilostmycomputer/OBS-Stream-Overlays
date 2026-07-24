@@ -23,11 +23,11 @@ choose:
 
 | If you use... | Install or use... | Why you need it |
 | --- | --- | --- |
+| Countdown typography | Bundled [OpenAI Sans](https://openai.com/brand/) files (optional) | Makes the countdown look cleaner. No installation or build step is needed; the countdown falls back to a system sans-serif font if the files are removed. |
 | Animated subscriber border | [Stroke Glow Shadow plugin](https://github.com/FiniteSingularity/obs-stroke-glow-shadow) and its [latest release installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases) | Adds the stroke, glow, and shadow around a keyed subscriber-count source. |
 | Discord typing alert bridge | [Node.js 22 or newer](https://nodejs.org/en/download) | Runs the local bridge. Node.js includes `npm`. |
 | Discord typing alert bridge | `ws` | The bridge's WebSocket dependency. `npm install` installs it automatically; you do not need to find it yourself. |
 | Discord typing alert tracking | [pnpm 11](https://pnpm.io/installation) and [Vencord source](https://github.com/Vendicated/Vencord) | Vencord is required to read Discord typing events. It is a separate third-party project that you install and build separately. |
-| Vencord plugin default sound | A sound file you have permission to use, named `fears-to-fathom-notification-sound.mp3` | Place it beside the copied `index.tsx`; the plugin imports it at build time. This repository intentionally does not redistribute the audio. |
 | Downloading Vencord with `git clone` | Git (optional) | Downloading a ZIP works without Git. |
 
 You do not need to install a separate server, database, or cloud service. The
@@ -58,6 +58,15 @@ Recommended Browser Source size: **700 × 180**.
 
 The digits roll smoothly when the time changes. If you change the date while
 OBS is open, right-click the source and choose **Refresh cache of current page**.
+
+### Optional: OpenAI Sans
+
+The repository includes five local OpenAI Sans weights in
+`fonts/openai-sans/`. They are optional and only change the typography—the
+countdown still works with its fallback sans-serif font if you remove the font
+files. Keep the `fonts` folder in the same repository when you unzip the ZIP;
+the HTML loads the files automatically, so you do not need to install a font
+or run a build step.
 
 ## Animated subscriber border
 
@@ -109,6 +118,11 @@ Skip this section if you only want the visual overlays.
 is a separate third-party Discord client modification. This repository does not
 install or redistribute Vencord; it only provides the custom plugin integration,
 local bridge, and OBS overlay that work with it.
+
+**Windows note:** the commands and launcher in this section use Windows
+PowerShell. On macOS or Linux, use the equivalent shell commands, use `npm` and
+`pnpm` without the `.cmd` suffix, and start OBS manually because
+`start-obs.ps1` is Windows-only.
 
 This alert uses three pieces:
 
@@ -178,6 +192,10 @@ npm.cmd install --global pnpm@11
 pnpm.cmd install
 ```
 
+`pnpm@11` matches Vencord's current `packageManager` requirement (currently
+`pnpm@11.9.0`). If Vencord changes that value, follow the version shown in its
+[package.json](https://github.com/Vendicated/Vencord/blob/main/package.json).
+
 `pnpm.cmd install` may take a while because it installs Vencord's full build
 toolchain. Run it from the Vencord folder, not from this overlay folder.
 
@@ -198,24 +216,24 @@ the file in Vencord's `src/plugins` folder.
 
 This follows Vencord's [official custom-plugin guide](https://docs.vencord.dev/installing/custom-plugins/).
 
-Before building, place your permitted default sound file beside the plugin if
-you want to keep the default sound import:
-
-```text
-Vencord/src/userplugins/typingnotifications/index.tsx
-Vencord/src/userplugins/typingnotifications/fears-to-fathom-notification-sound.mp3
-```
-
-The repository does not include that audio file. If you do not want a default
-audio file, remove the `defaultSoundBase64` import and `DEFAULT_SOUND_URL`, then
-change `playDefaultSound()` to call `playFallbackTone()` instead. You can also
-choose a different sound later from the plugin's custom sound setting.
+The plugin uses a short generated tone by default, so no audio file is needed
+to build it. You can choose your own permitted audio file later from the
+plugin's custom sound setting.
 
 Build Vencord, then restart Discord. On Windows, the build command is usually:
 
 ```powershell
 pnpm.cmd build
 ```
+
+### Step 4: Enable the Vencord plugin
+
+After Discord restarts, open **User Settings → Vencord → Plugins**, search for
+**TypingNotifications**, and switch it on. If it is not listed, confirm that
+the file is at `src/userplugins/typingnotifications/index.tsx`, rebuild
+Vencord, and restart Discord again.
+
+### Step 5: Choose channels to track
 
 In Discord, open a server channel's context menu, open its notification
 settings, and turn on **Typing**. The alert will then appear in OBS when
@@ -240,7 +258,8 @@ You should see a test alert in OBS.
   Source.
 - **No confetti:** use **Refresh cache of current page** on the confetti source.
 - **No typing alert:** make sure the bridge terminal is running, then restart
-  Discord after building the Vencord plugin.
+  Discord after building the Vencord plugin, and confirm **TypingNotifications**
+  is enabled under **User Settings → Vencord → Plugins**.
 - **Port already in use:** change `8765` in the bridge, OBS overlay, and
   Vencord plugin to the same unused local port.
 
@@ -253,6 +272,7 @@ countdown, gradient, or confetti.
 ## License
 
 The original overlay, bridge, launcher, and test files use the repository's
-existing MIT License. The Vencord integration is GPL-3.0-or-later; see
+existing MIT License. The Vencord integration is GPL-3.0-or-later, and the
+optional OpenAI Sans font files are separate third-party assets; see
 `NOTICE.md`.
 

@@ -5,6 +5,7 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
+const guideFiles = ["README.md", "FULL_GUIDE.md"];
 
 function walk(directory) {
     return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -24,22 +25,39 @@ function validateInlineScripts(filePath) {
     });
 }
 
-function validateReadmeLinks() {
-    const readmePath = path.join(root, "README.md");
-    const readme = fs.readFileSync(readmePath, "utf8");
-    const links = [...readme.matchAll(/!?\[[^\]]*\]\(([^)]+)\)/g)].map(match => match[1].trim());
+function validateGuideLinks() {
+    for (const relativeGuidePath of guideFiles) {
+        const guidePath = path.join(root, relativeGuidePath);
+        assert.ok(fs.existsSync(guidePath), `${relativeGuidePath} is missing.`);
 
-    for (const rawTarget of links) {
-        const target = rawTarget.replace(/^<|>$/g, "").split(/\s+['\"]/)[0];
-        if (/^(?:https?:|mailto:|#)/i.test(target)) continue;
+        const guide = fs.readFileSync(guidePath, "utf8");
+        const links = [...guide.matchAll(/!?\[[^\]]*\]\(([^)]+)\)/g)].map(match => match[1].trim());
 
-        const localPath = decodeURIComponent(target.split("#")[0]);
-        assert.ok(localPath, `README contains an empty local link: ${rawTarget}`);
-        assert.ok(
-            fs.existsSync(path.resolve(root, localPath)),
-            `README local link does not exist: ${localPath}`,
-        );
+        for (const rawTarget of links) {
+            const target = rawTarget.replace(/^<|>$/g, "").split(/\s+['\"]/)[0];
+            if (/^(?:https?:|mailto:|#)/i.test(target)) continue;
+
+            const localPath = decodeURIComponent(target.split("#")[0]);
+            assert.ok(localPath, `${relativeGuidePath} contains an empty local link: ${rawTarget}`);
+            assert.ok(
+                fs.existsSync(path.resolve(root, localPath)),
+                `${relativeGuidePath} local link does not exist: ${localPath}`,
+            );
+        }
     }
+}
+
+function validateGuideStructure() {
+    const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
+
+    assert.ok(
+        readme.includes("## What to download for each overlay"),
+        "README must explain the files required for each overlay.",
+    );
+    assert.ok(
+        readme.includes("FULL_GUIDE.md"),
+        "README must link to the complete beginner guide.",
+    );
 }
 
 function validatePinnedDependency() {
@@ -67,7 +85,9 @@ function validateBridgePortAgreement() {
 }
 
 function validateYouTubeStudioGuide() {
-    const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
+    const guides = guideFiles
+        .map(relativePath => fs.readFileSync(path.join(root, relativePath), "utf8"))
+        .join("\n");
     const requiredInstructions = [
         "https://studio.youtube.com/",
         "Select **Interact**",
@@ -80,18 +100,19 @@ function validateYouTubeStudioGuide() {
     ];
 
     for (const instruction of requiredInstructions) {
-        assert.ok(readme.includes(instruction), `Main README is missing: ${instruction}`);
+        assert.ok(guides.includes(instruction), `Setup guides are missing: ${instruction}`);
     }
 
-    assert.ok(!/livecounts\.io/i.test(readme), "Main README must not use Livecounts.io.");
+    assert.ok(!/livecounts\.io/i.test(guides), "Setup guides must not use Livecounts.io.");
 }
 
 const htmlFiles = walk(path.join(root, "overlays")).filter(file => file.endsWith(".html"));
 assert.ok(htmlFiles.length >= 4, "Expected at least four overlay HTML files.");
 htmlFiles.forEach(validateInlineScripts);
-validateReadmeLinks();
+validateGuideLinks();
+validateGuideStructure();
 validatePinnedDependency();
 validateBridgePortAgreement();
 validateYouTubeStudioGuide();
 
-console.log(`Repository validation passed for ${htmlFiles.length} HTML overlays.`);
+console.log(`Repository validation passed for ${htmlFiles.length} HTML overlays and ${guideFiles.length} guide files.`);

@@ -2,12 +2,17 @@
   "name": "typing-obs-bridge",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node bridge.mjs",
-    "test-event": "node test-event.mjs"
+    "health": "node health-check.mjs",
+    "test-event": "node test-event.mjs",
+    "test": "node smoke-test.mjs",
+    "check": "node --check bridge.mjs && node --check health-check.mjs && node --check test-event.mjs && node --check smoke-test.mjs && node smoke-test.mjs"
   },
   "dependencies": {
-    "ws": "^8.18.0"
+    "ws": "8.21.1"
   }
 }
-

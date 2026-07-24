@@ -1,282 +1,975 @@
 # OBS Stream Overlays
 
-Free browser-source overlays for OBS Studio. Download the files, add them as
-Browser Sources, and edit the small settings shown below.
+Free, local browser-source overlays for OBS Studio. The standalone overlays need
+only OBS. The optional Discord typing alert also needs Node.js, a local bridge,
+and a custom Vencord source build.
 
-## Quick start
+This guide assumes that you have never configured OBS before. Follow the steps
+in order and complete each test before moving on.
 
-1. Download the repository from GitHub with **Code → Download ZIP**.
-2. Unzip it somewhere you will not move later.
-3. In OBS, click **Sources → + → Browser**.
-4. Tick **Local file**, click **Browse**, and choose an HTML file from the
-   `overlays` folder.
-5. Set the Browser Source size, then click **OK**.
+## What is included?
 
-You do not need Node.js or Vencord for the countdown, gradient, or confetti
-overlays.
+| Overlay | File | Purpose | Recommended Browser Source size |
+| --- | --- | --- | --- |
+| Countdown | [`overlays/countdown/summer-update-countdown.html`](overlays/countdown/summer-update-countdown.html) | Counts down to an event with rolling digits. | `700 × 180` |
+| Animated subscriber stroke | [`overlays/gradient-stroke/gradient.html`](overlays/gradient-stroke/gradient.html) | Supplies animated colours to a Stroke filter around the YouTube Studio live subscriber count. | Match the YouTube Studio Browser Source. |
+| Confetti | [`overlays/confetti/confetti.html`](overlays/confetti/confetti.html) | Plays transparent falling confetti whenever the page loads or refreshes. | Match your OBS canvas. |
+| Discord typing alert | [`overlays/typing-notifications/overlay.html`](overlays/typing-notifications/overlay.html) | Shows a person's avatar and username when they start typing in a watched Discord channel. | `720 × 200` |
 
-## What needs installing?
+## Dependencies
 
-For every overlay, [OBS Studio](https://obsproject.com/download) is the only
-required application. The extra items below are only needed for the feature you
-choose:
+Install only the items required by the feature you intend to use.
 
-| If you use... | Install or use... | Why you need it |
+| Dependency | Required for | Notes |
 | --- | --- | --- |
-| Countdown typography | Bundled [OpenAI Sans](https://openai.com/brand/) files beside the countdown (optional) | Makes the countdown look cleaner if you install them locally. No Node.js or build step is needed; the countdown falls back to a system sans-serif font otherwise. |
-| Animated subscriber border | [Stroke Glow Shadow plugin](https://github.com/FiniteSingularity/obs-stroke-glow-shadow) and its [latest release installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases) | Adds the stroke, glow, and shadow around a keyed subscriber-count source. |
-| Discord typing alert bridge | [Node.js 22 or newer](https://nodejs.org/en/download) | Runs the local bridge. Node.js includes `npm`. |
-| Discord typing alert bridge | `ws` | The bridge's WebSocket dependency. `npm install` installs it automatically; you do not need to find it yourself. |
-| Discord typing alert tracking | [pnpm 11](https://pnpm.io/installation) and [Vencord source](https://github.com/Vendicated/Vencord) | Vencord is required to read Discord typing events. It is a separate third-party project that you install and build separately. |
-| Downloading Vencord with `git clone` | Git (optional) | Downloading a ZIP works without Git. |
+| [OBS Studio](https://obsproject.com/download) | Every overlay | Install the official OBS package. It includes Browser Source. |
+| A text editor such as Windows Notepad | Customisation | Used to change dates, titles, colours, and ports. Do not use Microsoft Word. |
+| Bundled OpenAI Sans `.otf` files | Optional countdown typography | The countdown works without them and falls back to a system sans-serif font. |
+| A Google account with access to your YouTube channel | YouTube subscriber count | The account must be able to open that channel in YouTube Studio. |
+| [Stroke Glow Shadow](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases) | Animated subscriber stroke | Third-party OBS plugin. Confirm that its current release supports your OBS version and operating system. |
+| [Node.js 22 or newer](https://nodejs.org/en/download) | Discord typing bridge and Vencord source build | Node.js includes `npm`. |
+| `ws` version `8.21.1` | Discord typing bridge | Installed locally by `npm ci`. Do not download it manually. |
+| [Git](https://git-scm.com/downloads) | Cloning Vencord source | Optional if you download the Vencord source ZIP instead. |
+| `pnpm` version `11.9.0` | Building Vencord | Installed globally with the command in this guide. |
+| [Vencord source](https://github.com/Vendicated/Vencord) | Reading Discord typing events | Separate third-party project. This repository supplies only the custom plugin source. |
+| Discord Desktop | Documented Vencord injection path | The instructions target the normal desktop Discord client. |
 
-You do not need to install a separate server, database, or cloud service. The
-bridge runs on your own computer.
+No database, cloud server, API key, port forwarding, or paid service is needed.
+The Discord typing bridge listens only on `127.0.0.1`, meaning your own computer.
 
-## Which overlay should I use?
+---
 
-| Overlay | Use it for |
-| --- | --- |
-| [Countdown](overlays/countdown/summer-update-countdown.html) | Counting down to an event or update. |
-| [Subscriber border](overlays/gradient-stroke/gradient.html) | Giving a keyed subscriber count an animated coloured border. |
-| [Confetti](overlays/confetti/confetti.html) | Celebrating an announcement, goal, or milestone. |
-| [Discord typing alert](overlays/typing-notifications/overlay.html) | Track when developers start typing in channels such as **PRC Announcements** and get notified instantly on stream. This one needs extra setup. |
+# Part 1: Download the files
 
-## Countdown
+1. Open this repository on GitHub.
+2. Select **Code**.
+3. Select **Download ZIP**.
+4. Open your Downloads folder.
+5. Right-click the downloaded ZIP and select **Extract All**.
+6. Move the extracted folder somewhere permanent, for example:
 
-File: `overlays/countdown/summer-update-countdown.html`
+   ```text
+   C:\Users\YourName\Documents\OBS-Stream-Overlays
+   ```
 
-Before adding it to OBS, open the file in Notepad and find `TARGET_DATE_TIME`
-near the bottom. Replace the date with your event time. Keep the same format and
-include the timezone:
+7. Do not move or rename this folder after adding its files to OBS. OBS stores
+   the file locations and will show a blank local source if those locations
+   later change.
+
+---
+
+# Part 2: First-time OBS setup
+
+## 1. Install and open OBS
+
+1. Download and install [OBS Studio](https://obsproject.com/download).
+2. Open OBS.
+3. Complete the **Auto-Configuration Wizard** if it appears.
+4. At the bottom of OBS, locate **Scenes**, **Sources**, **Audio Mixer**,
+   **Scene Transitions**, and **Controls**.
+
+If **Browser** is missing when adding a source, reinstall OBS using the official
+installer. Browser Source is included with normal official OBS installations.
+
+## 2. Find your canvas size
+
+Your full-screen overlays must match OBS's **Base (Canvas) Resolution**.
+
+1. Select **Settings** in the Controls panel.
+2. Select **Video**.
+3. Note the two numbers beside **Base (Canvas) Resolution**.
+4. Select **Cancel** if you did not change anything.
+
+Common canvas sizes include:
+
+- `1920 × 1080`
+- `2560 × 1440`
+- `3840 × 2160`
+
+Do not automatically use `1920 × 1080` if your canvas uses another size.
+
+## 3. Create a scene
+
+1. In **Scenes**, select **+**.
+2. Enter a name such as `Main Stream`.
+3. Select **OK**.
+
+A scene is a collection of sources. Sources higher in the Sources list appear
+in front of sources lower in the list.
+
+## 4. Add a local HTML overlay
+
+Use this procedure whenever a later section tells you to add one of this
+repository's `.html` files.
+
+1. Select the required scene.
+2. In **Sources**, select **+ → Browser**.
+3. Select **Create new**.
+4. Give the source a descriptive name.
+5. Select **OK**.
+6. Enable **Local file**.
+7. Select **Browse** and choose the required `.html` file.
+8. Enter the Width and Height stated in this README.
+9. Leave **Shutdown source when not visible** disabled unless a section says
+   otherwise.
+10. Leave **Refresh browser when scene becomes active** disabled unless you
+    specifically want the page to restart whenever the scene opens.
+11. Select **OK**.
+12. Drag the overlay above the game, display capture, or camera source that it
+    should appear over.
+
+To fit a full-screen source exactly to the canvas:
+
+1. Right-click the source.
+2. Select **Transform → Fit to Screen**.
+
+To reload an edited HTML file:
+
+1. Right-click its Browser Source.
+2. Select **Refresh cache of current page**.
+
+The eye icon beside a source shows or hides it without deleting it.
+
+---
+
+# Part 3: Countdown
+
+File: [`overlays/countdown/summer-update-countdown.html`](overlays/countdown/summer-update-countdown.html)
+
+## Configure the target date
+
+1. Right-click `summer-update-countdown.html` in File Explorer.
+2. Select **Open with → Notepad**.
+3. Near the bottom, find:
+
+   ```js
+   const TARGET_DATE_TIME = "2026-07-25T12:00:00Z";
+   ```
+
+4. Replace only the date inside the quotation marks.
+5. Use an ISO 8601 date that includes a timezone.
+
+Examples:
 
 ```js
+// 8:00 PM during UK summer time (BST)
 const TARGET_DATE_TIME = "2026-07-25T20:00:00+01:00";
+
+// 8:00 PM during UK winter time (GMT/UTC)
+const TARGET_DATE_TIME = "2026-12-20T20:00:00+00:00";
 ```
 
-Recommended Browser Source size: **700 × 180**.
+6. Save the file.
+7. Add it to OBS as a Browser Source at `700 × 180`.
+8. If it was already in OBS, select **Refresh cache of current page**.
 
-The digits roll smoothly when the time changes. If you change the date while
-OBS is open, right-click the source and choose **Refresh cache of current page**.
+The countdown reaches zero and stops. If it immediately shows zero, the target
+time is in the past or the timezone is wrong.
 
-### Optional: OpenAI Sans
+## Optional OpenAI Sans installation
 
-The repository includes five local OpenAI Sans weights directly beside the
-countdown in `overlays/countdown/`. They are optional and only change the
-typography—the countdown still works with its fallback sans-serif font if you
-do not install them. The existing countdown already asks for **OpenAI Sans**
-first in its font stack.
+The five `.otf` files beside the countdown are optional.
 
-On Windows, open the folder, select the `.otf` files, right-click, and choose
-**Install**. Then refresh the countdown Browser Source in OBS. No Node.js or
-build step is needed. On macOS or Linux, use the normal font-install option for
-your operating system.
+1. Open `overlays\countdown`.
+2. Select the five `OpenAI-Sans-*.otf` files.
+3. Right-click the selection.
+4. Select **Install** or **Install for all users**.
+5. Restart OBS or refresh the Browser Source.
 
-## Animated subscriber border
+The overlay remains functional without these files.
 
-File: `overlays/gradient-stroke/gradient.html`
+---
 
-This file supplies animated colours. It is meant to be used with the OBS
-**Stroke Glow Shadow** filter around a keyed subscriber-count source; it is not
-the subscriber count itself.
+# Part 4: Confetti
 
-### Install the required OBS plugin
+File: [`overlays/confetti/confetti.html`](overlays/confetti/confetti.html)
 
-1. Close OBS if it is currently open.
-2. Open the [Stroke Glow Shadow Releases page](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases).
-3. Download the latest installer for your operating system and run it.
-4. Open OBS again. The plugin should now be available in the source/filter
-   menus.
+1. Add `confetti.html` as a Browser Source.
+2. Set its Width and Height to your OBS Base Canvas Resolution.
+3. Right-click it and select **Transform → Fit to Screen**.
+4. Move it above the sources it should cover.
+5. Leave **Shutdown source when not visible** disabled.
+6. Leave **Refresh browser when scene becomes active** disabled for manual
+   control.
 
-The plugin is maintained separately from this repository. Check its release
-notes for supported OBS versions before installing. If it does not appear in
-OBS, restart OBS once more and confirm that you downloaded the installer rather
-than the source-code ZIP.
+The confetti plays once whenever the page loads. To play it again:
 
-### Add the animated border
+1. Right-click the `Confetti` source.
+2. Select **Refresh cache of current page**.
 
-1. Add `gradient.html` as a Browser Source.
-2. Set it to the same size as your subscriber-count source, usually **1920 ×
-   1080**.
-3. In the Stroke Glow Shadow filter, choose this Browser Source as the source
-   fill.
+For automatic confetti whenever a dedicated celebration scene opens, edit the
+Browser Source and enable **Refresh browser when scene becomes active**.
 
-To change the colours, edit the colour values inside `conic-gradient` in the
-file.
+---
 
-## Confetti
+# Part 5: Animated YouTube Studio subscriber count
 
-File: `overlays/confetti/confetti.html`
+This section starts from an empty scene and creates the complete effect:
 
-Add it as a full-screen Browser Source, usually **1920 × 1080**. The page is
-transparent, so viewers only see the falling confetti.
-
-To play it again, right-click the source in OBS and choose **Refresh cache of
-current page**. There is no visible button or control on stream.
-
-## Discord typing alert (optional)
-
-Skip this section if you only want the visual overlays.
-
-**Vencord is required for the typing-tracking part of this feature.** Vencord
-is a separate third-party Discord client modification. This repository does not
-install or redistribute Vencord; it only provides the custom plugin integration,
-local bridge, and OBS overlay that work with it.
-
-**Windows note:** the commands and launcher in this section use Windows
-PowerShell. On macOS or Linux, use the equivalent shell commands, use `npm` and
-`pnpm` without the `.cmd` suffix, and start OBS manually because
-`start-obs.ps1` is Windows-only.
-
-This alert uses three pieces:
-
-1. The Node bridge passes messages on your computer.
-2. The Vencord plugin sends typing events to the bridge.
-3. OBS displays the alert in a Browser Source.
-
-### Step 1: Start the bridge
-
-Open PowerShell in the `overlays/typing-notifications` folder:
-
-```powershell
-npm install
-npm start
+```text
+YouTube Studio Live Count
+        ↓
+OBS Browser Source
+        ↓
+Crop the page to the subscriber number
+        ↓
+Color Key removes the page background
+        ↓
+Stroke draws around the visible digits
+        ↓
+gradient.html supplies the animated stroke colours
 ```
 
-The first command installs the bridge's only dependency, `ws`, into the local
-`node_modules` folder. It does not install anything globally.
+This method uses the private live subscriber count available to the channel
+owner in YouTube Studio. It does not use a third-party subscriber-count site.
 
-Leave this window open while you stream. The bridge only listens on your own
-computer at `127.0.0.1:8765`; it is not a public server.
+## 1. Install Stroke Glow Shadow
 
-If PowerShell blocks `npm`, use these commands instead:
+1. Close OBS completely.
+2. Open the plugin's
+   [Releases page](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases).
+3. Confirm that the latest release supports your operating system and OBS
+   version.
+4. Download the compiled installer. Do not download GitHub's automatically
+   generated **Source code (zip)** archive.
+5. Run the installer.
+6. Reopen OBS.
+7. Right-click any source and select **Filters**.
+8. Under **Effect Filters**, select **+** and confirm that **Stroke** appears.
+
+Do not continue until the Stroke filter is available.
+
+## 2. Add YouTube Studio as a Browser Source
+
+1. Select the scene that should contain the subscriber count.
+2. In **Sources**, select **+ → Browser**.
+3. Select **Create new**.
+4. Name it `YouTube Studio Live Subscriber Count`.
+5. Select **OK**.
+6. Leave **Local file** disabled.
+7. Enter this URL:
+
+   ```text
+   https://studio.youtube.com/
+   ```
+
+8. Set Width to `1920` and Height to `1080` initially. The large browser area
+   makes YouTube Studio easier to navigate before cropping.
+9. Leave **Shutdown source when not visible** disabled. This helps preserve the
+   signed-in browser session while OBS remains open.
+10. Leave **Refresh browser when scene becomes active** disabled. Otherwise the
+    page can return to the configured starting URL whenever the scene opens.
+11. Select **OK**.
+
+The YouTube Studio page should now appear in the OBS preview.
+
+## 3. Sign in through OBS Interact
+
+Clicks in the normal OBS preview select and resize the source. They do not click
+buttons inside the webpage. You must use **Interact**.
+
+1. Right-click `YouTube Studio Live Subscriber Count` in **Sources**.
+2. Select **Interact**.
+3. In the Interact window, select **Sign in**.
+4. Sign in with the Google account that owns or manages the channel.
+5. Complete any two-factor authentication prompts.
+6. Confirm that YouTube Studio opens for the correct channel.
+
+The login belongs to OBS's embedded browser session. It is separate from your
+normal Chrome, Edge, or Firefox login.
+
+If Google displays a message saying that the browser is unsupported or not
+secure, the sign-in has been blocked by Google in OBS's embedded browser. This
+exact Browser Source method cannot proceed until sign-in succeeds. Do not enter
+your password into any page other than Google's real sign-in page.
+
+## 4. Open the live subscriber count
+
+Keep the **Interact** window open.
+
+1. In YouTube Studio's left menu, select **Analytics**.
+2. Confirm that **Overview** is selected.
+3. Find the **Realtime** card.
+4. Select **SEE LIVE COUNT**.
+5. Confirm that the large number shown is your channel's subscriber count.
+6. Choose the page theme that gives the strongest contrast between the number
+   and its background:
+   - dark background with light digits; or
+   - light background with dark digits.
+7. Close the Interact window when the live count is visible.
+
+YouTube's documented route is **YouTube Studio → Analytics → Overview →
+Realtime → SEE LIVE COUNT**.
+
+### Before each stream
+
+Navigation performed through Interact can return to the YouTube Studio dashboard
+after OBS or the Browser Source is restarted. Before going live:
+
+1. Right-click the source.
+2. Select **Interact**.
+3. Return to **Analytics → Overview → Realtime → SEE LIVE COUNT** if necessary.
+4. Close Interact only after the live count is visible again.
+
+Do not enable **Refresh browser when scene becomes active** for this source.
+
+## 5. Crop the Browser Source to the number
+
+Remove the YouTube Studio menu, cards, buttons, graph, and account information so
+only the subscriber number remains in the visible source area.
+
+### Fast method
+
+1. Select the source in the OBS preview.
+2. Hold **Alt** on Windows or **Option** on macOS.
+3. While holding the key, drag each red bounding-box edge inward.
+4. Stop when the box contains only the live subscriber number and any label you
+   deliberately want to keep.
+
+Cropped edges appear green.
+
+### Precise method
+
+1. Right-click the source.
+2. Select **Transform → Edit Transform**.
+3. Adjust **Crop Left**, **Crop Top**, **Crop Right**, and **Crop Bottom** until
+   only the required area remains.
+4. Close the window.
+
+Drag a corner handle to resize the cropped counter. Do not stretch only one
+axis, because that distorts the digits.
+
+## 6. Remove the background with Color Key
+
+Use **Color Key** because the YouTube Studio live-count page uses a flat light or
+dark background behind the number.
+
+1. Right-click `YouTube Studio Live Subscriber Count`.
+2. Select **Filters**.
+3. Under **Effect Filters**, select **+ → Color Key**.
+4. Name it `Remove YouTube Studio Background`.
+5. Set **Key Color Type** to **Custom Color**.
+6. Select **Key Color**.
+7. Choose the exact colour behind the subscriber digits:
+   - choose the dark page background when using dark theme; or
+   - choose the light page background when using light theme.
+8. Increase **Similarity** gradually until the background disappears.
+9. Adjust **Smoothness** only enough to clean the digit edges.
+10. Stop increasing Similarity if the digits begin to disappear.
+11. Leave the other colour-correction controls at their defaults unless the
+    digits genuinely need correction.
+
+The gameplay or source behind the count should now be visible through the
+removed background.
+
+## 7. Add the animated gradient Browser Source
+
+1. Return to the main OBS window.
+2. In **Sources**, select **+ → Browser**.
+3. Name the new source `Subscriber Border Gradient`.
+4. Enable **Local file**.
+5. Select **Browse**.
+6. Choose [`overlays/gradient-stroke/gradient.html`](overlays/gradient-stroke/gradient.html).
+7. Set Width to `1920` and Height to `1080`, matching the original YouTube
+   Studio Browser Source dimensions used in this guide.
+8. Select **OK**.
+9. Move `Subscriber Border Gradient` below your visible stream content so its
+   full-screen colour field does not cover the stream.
+
+Keep the gradient source loaded. Some plugin versions may stop using it as a
+fill source when it is disabled with the eye icon, so placing it underneath
+other sources is safer than disabling it.
+
+## 8. Add the animated Stroke filter
+
+1. Right-click `YouTube Studio Live Subscriber Count`.
+2. Select **Filters**.
+3. Confirm that `Remove YouTube Studio Background` is already present.
+4. Under **Effect Filters**, select **+ → Stroke**.
+5. Name it `Animated Subscriber Stroke`.
+6. Move the Stroke filter below the Color Key filter if OBS inserted it above.
+7. Set **Position** to **Outer**.
+8. Start with **Stroke Size** around `4` to `8` pixels.
+9. Set **Offset** to `0`.
+10. Enable **Auto padding** if the plugin exposes that setting, so the outside
+    stroke is not clipped.
+11. Set **Fill Type** to **Source**.
+12. Select `Subscriber Border Gradient` as the fill source.
+13. Adjust Stroke Size while watching the preview.
+14. Close the Filters window.
+
+The required Effect Filter order is:
+
+```text
+Remove YouTube Studio Background (Color Key)
+Animated Subscriber Stroke (Stroke)
+```
+
+The Color Key must be above Stroke. If Stroke runs first, it sees the original
+opaque YouTube Studio page and can outline a rectangle instead of the digits.
+
+## 9. Position and lock the finished counter
+
+1. Select the cropped subscriber count in the preview.
+2. Drag it to the intended position.
+3. Resize it using a corner handle.
+4. In **Sources**, select the padlock beside the source.
+
+Locking it prevents accidental movement or crop changes while arranging other
+stream elements.
+
+## 10. Change the gradient colours
+
+1. In File Explorer, open `overlays\gradient-stroke`.
+2. Right-click `gradient.html`.
+3. Select **Open with → Notepad**.
+4. Find the colours inside `conic-gradient`.
+5. Replace the CSS hex values with your preferred colours.
+6. Save the file.
+7. In OBS, right-click `Subscriber Border Gradient`.
+8. Select **Refresh cache of current page**.
+
+## 11. Test before going live
+
+1. Open **Interact** and confirm that **SEE LIVE COUNT** is still open.
+2. Confirm that only the intended subscriber number is visible.
+3. Confirm that no email address, channel-management menu, or account information
+   is visible inside the crop.
+4. Confirm that the background is transparent.
+5. Confirm that the stroke follows the digits rather than a rectangle.
+6. Confirm that the gradient is moving through the stroke.
+7. Record a short local OBS test before starting the real stream.
+
+Because this source displays a signed-in YouTube Studio page, always inspect it
+before going live. A failed crop, page reload, or changed YouTube layout could
+otherwise expose private Studio information on stream.
+
+---
+
+# Part 6: Discord typing alert
+
+This is the only feature with a multi-program installation. Complete it in this
+order:
+
+1. Install and test the local bridge.
+2. Add and test the OBS overlay without Discord.
+3. Build and inject the Vencord integration.
+4. Enable the plugin and choose channels.
+5. Test using another Discord account or another person.
+
+The plugin intentionally ignores your own typing events.
+
+## How the typing alert works
+
+```text
+Another Discord user starts typing
+        ↓
+Custom Vencord plugin
+        ↓
+Local WebSocket bridge at 127.0.0.1:8765
+        ↓
+OBS Browser Source
+```
+
+## A. Install and test the bridge
+
+### 1. Install Node.js
+
+1. Install [Node.js 22 or newer](https://nodejs.org/en/download).
+2. Close every existing PowerShell window after installation.
+3. Open a new PowerShell window.
+4. Verify Node.js and npm:
+
+   ```powershell
+   node --version
+   npm.cmd --version
+   ```
+
+The Node.js command must show version `22` or newer.
+
+### 2. Open PowerShell in the bridge folder
+
+1. In File Explorer, open:
+
+   ```text
+   OBS-Stream-Overlays\overlays\typing-notifications
+   ```
+
+2. Click the address bar.
+3. Type `powershell`.
+4. Press Enter.
+
+### 3. Install the exact dependency versions
+
+Run:
 
 ```powershell
-npm.cmd install
+npm.cmd ci
+```
+
+This installs the locked `ws` dependency into the local `node_modules` folder.
+
+### 4. Run the automated bridge test
+
+Run:
+
+```powershell
+npm.cmd test
+```
+
+Expected final output:
+
+```text
+Bridge smoke test passed.
+```
+
+Do not continue if this test fails.
+
+### 5. Start the bridge
+
+Run:
+
+```powershell
 npm.cmd start
 ```
 
-You can also use the included Windows launcher after installing the bridge:
+Expected output:
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\start-obs.ps1
+```text
+Typing OBS bridge listening on ws://127.0.0.1:8765
 ```
 
-The launcher finds OBS in its normal Windows install location. If you installed
-OBS somewhere else, set its path before running the launcher:
+Leave this PowerShell window open while streaming.
 
-```powershell
-$env:OBS_PATH = "D:\Apps\obs-studio\bin\64bit\obs64.exe"
-powershell -ExecutionPolicy Bypass -File .\start-obs.ps1
-```
+## B. Add and test the OBS overlay
 
-### Step 2: Add the alert to OBS
+1. Add
+   [`overlays/typing-notifications/overlay.html`](overlays/typing-notifications/overlay.html)
+   as a local Browser Source.
+2. Name it `Discord Typing Alert`.
+3. Set Width to `720` and Height to `200`.
+4. Leave **Shutdown source when not visible** disabled.
+5. Leave **Refresh browser when scene becomes active** disabled.
+6. Select **OK**.
+7. Move it above the gameplay or display source.
 
-Add `overlays/typing-notifications/overlay.html` as a Browser Source.
+Test the bridge-to-OBS path without Discord:
 
-Recommended Browser Source size: **720 × 200**.
+1. Keep the bridge running.
+2. Open a second PowerShell window in the same folder.
+3. Run:
 
-The default heading says **PRC Announcements**. To change it, edit
-`OVERLAY_TITLE` near the bottom of `overlay.html`.
+   ```powershell
+   npm.cmd run test-event
+   ```
 
-### Step 3: Install the Vencord plugin
+4. OBS should show a `@test-user is typing` alert.
 
-If you already have a Vencord source folder, open PowerShell there. Otherwise,
-download or clone the source from [Vencord's GitHub repository](https://github.com/Vendicated/Vencord):
+If this test does not appear, fix the bridge or OBS source before installing
+Vencord.
+
+## C. Install the custom Vencord source build
+
+Vencord is a separate third-party Discord client modification.
+
+### 1. Install Git and pnpm
+
+1. Install [Git](https://git-scm.com/downloads).
+2. Open a new PowerShell window.
+3. Confirm Node.js is version 22 or newer:
+
+   ```powershell
+   node --version
+   ```
+
+4. Install pnpm:
+
+   ```powershell
+   npm.cmd install --global pnpm@11.9.0
+   ```
+
+5. Verify it:
+
+   ```powershell
+   pnpm.cmd --version
+   ```
+
+Expected output begins with `11.9.0`.
+
+### 2. Download Vencord source
 
 ```powershell
 git clone https://github.com/Vendicated/Vencord.git
 cd Vencord
 ```
 
-Install Vencord's dependencies once:
+If the folder already exists, open PowerShell in that folder instead.
+
+### 3. Install Vencord dependencies
 
 ```powershell
-npm.cmd install --global pnpm@11
-pnpm.cmd install
+pnpm.cmd install --frozen-lockfile
 ```
 
-`pnpm@11` matches Vencord's current `packageManager` requirement (currently
-`pnpm@11.9.0`). If Vencord changes that value, follow the version shown in its
-[package.json](https://github.com/Vendicated/Vencord/blob/main/package.json).
+### 4. Copy the custom plugin
 
-`pnpm.cmd install` may take a while because it installs Vencord's full build
-toolchain. Run it from the Vencord folder, not from this overlay folder.
-
-Now copy this file:
+Create this exact folder inside Vencord:
 
 ```text
-integrations/vencord/TypingNotifications/index.tsx
+src\userplugins\typingNotifications
 ```
 
-into your Vencord folder here:
+Copy:
 
 ```text
-src/userplugins/typingnotifications/index.tsx
+integrations\vencord\TypingNotifications\index.tsx
 ```
 
-If `src/userplugins` does not exist yet, create that folder first. Do not put
-the file in Vencord's `src/plugins` folder.
+into it so the final path is:
 
-This follows Vencord's [official custom-plugin guide](https://docs.vencord.dev/installing/custom-plugins/).
+```text
+Vencord\src\userplugins\typingNotifications\index.tsx
+```
 
-The plugin uses a short generated tone by default, so no audio file is needed
-to build it. You can choose your own permitted audio file later from the
-plugin's custom sound setting.
+Do not put it in Vencord's built-in `src\plugins` folder.
 
-Build Vencord, then restart Discord. On Windows, the build command is usually:
+### 5. Build Vencord
 
 ```powershell
 pnpm.cmd build
 ```
 
-### Step 4: Enable the Vencord plugin
+The command must finish without a build error.
 
-After Discord restarts, open **User Settings → Vencord → Plugins**, search for
-**TypingNotifications**, and switch it on. If it is not listed, confirm that
-the file is at `src/userplugins/typingnotifications/index.tsx`, rebuild
-Vencord, and restart Discord again.
+### 6. Inject the build into Discord Desktop
 
-### Step 5: Choose channels to track
+Building does not install the build into Discord. Injection is a separate
+required step.
 
-In Discord, open a server channel's context menu, open its notification
-settings, and turn on **Typing**. The alert will then appear in OBS when
-someone starts typing in a watched channel.
+1. Fully close Discord, including its system-tray icon.
+2. Run:
 
-### Test it without Discord
+   ```powershell
+   pnpm.cmd inject
+   ```
 
-With the bridge running, open another PowerShell window in the same folder and
-run:
+3. Follow the installer prompts and select your Discord installation.
+4. Reopen Discord.
+
+After changing the custom plugin, rebuild, close Discord, inject again, and
+reopen Discord.
+
+## D. Enable and configure TypingNotifications
+
+### 1. Enable the plugin
+
+1. In Discord, open **User Settings**.
+2. Open **Vencord → Plugins**.
+3. Search for `TypingNotifications`.
+4. Enable it.
+5. Open its settings to configure tracked user IDs, display names, notification
+   sound, or a custom audio file.
+
+If the plugin is absent, verify the exact path, rebuild, inject, and restart
+Discord.
+
+### 2. Choose channels to watch
+
+1. Right-click a server text channel.
+2. Open **Notification Settings**.
+3. Enable the added **Typing** option.
+
+The plugin includes a fallback that may place **Typing** beside the normal
+notification item when Discord changes its submenu structure.
+
+### 3. Perform the real test
+
+1. Keep the bridge running.
+2. Keep OBS open with `Discord Typing Alert` visible.
+3. Keep TypingNotifications enabled.
+4. Ask another person to type in the watched channel, or use a separate Discord
+   account.
+5. Do not use your own account. The plugin deliberately ignores your own typing.
+
+You should receive both the Vencord notification and the OBS alert.
+
+## E. Easier Windows startup
+
+After the manual tests succeed, run this from
+`overlays\typing-notifications`:
 
 ```powershell
-npm run test-event
+powershell -ExecutionPolicy Bypass -File .\start-obs.ps1
 ```
 
-You should see a test alert in OBS.
+The launcher:
 
-## If something is not showing
+- verifies Node.js and the local dependency;
+- checks whether port `8765` is free or already running this bridge;
+- starts and health-checks the bridge;
+- starts OBS;
+- stops the bridge it launched when OBS closes.
 
-- **Blank overlay:** make sure the Browser Source has **Local file** enabled
-  and points to the correct HTML file.
-- **Countdown is wrong:** edit `TARGET_DATE_TIME`, then refresh the Browser
-  Source.
-- **No confetti:** use **Refresh cache of current page** on the confetti source.
-- **No typing alert:** make sure the bridge terminal is running, then restart
-  Discord after building the Vencord plugin, and confirm **TypingNotifications**
-  is enabled under **User Settings → Vencord → Plugins**.
-- **Port already in use:** change `8765` in the bridge, OBS overlay, and
-  Vencord plugin to the same unused local port.
+It refuses to launch a second OBS process. Close OBS first.
 
-## Customizing the overlays
+For a non-standard OBS installation:
 
-These are plain source files. You can edit their text, colours, sizes, and
-timings in Notepad or another text editor. No build step is needed for the
-countdown, gradient, or confetti.
+```powershell
+$env:OBS_PATH = "D:\Apps\obs-studio\bin\64bit\obs64.exe"
+powershell -ExecutionPolicy Bypass -File .\start-obs.ps1
+```
 
-## License
+## F. Change the local bridge port
 
-The original overlay, bridge, launcher, and test files use the repository's
-existing MIT License. The Vencord integration is GPL-3.0-or-later, and the
-optional OpenAI Sans font files are separate third-party assets; see
-`docs/NOTICE.md`.
+The default port is `8765`. All three components must use the same replacement
+number.
 
+1. Bridge and launcher:
+
+   ```powershell
+   $env:TYPING_OBS_PORT = "9876"
+   npm.cmd start
+   ```
+
+2. Edit `BRIDGE_URL` in
+   `overlays/typing-notifications/overlay.html`:
+
+   ```js
+   const BRIDGE_URL = "ws://127.0.0.1:9876";
+   ```
+
+3. Edit `OBS_BRIDGE_URL` in
+   `integrations/vencord/TypingNotifications/index.tsx`:
+
+   ```ts
+   const OBS_BRIDGE_URL = "ws://127.0.0.1:9876";
+   ```
+
+4. Copy the changed Vencord plugin into the Vencord checkout again.
+5. Run `pnpm.cmd build`.
+6. Close Discord.
+7. Run `pnpm.cmd inject`.
+8. Reopen Discord.
+9. Refresh the OBS Browser Source.
+
+---
+
+# Troubleshooting
+
+## Browser Source is missing
+
+Reinstall OBS using the official installer. Normal official OBS packages include
+Browser Source.
+
+## A local overlay is blank
+
+1. Edit the Browser Source.
+2. Confirm **Local file** is enabled.
+3. Confirm it points to the correct `.html` file.
+4. Confirm Width and Height are not zero.
+5. Select **Refresh cache of current page**.
+6. Move it above the gameplay source.
+
+## Countdown is already at zero
+
+- Confirm the target date is in the future.
+- Include an explicit timezone such as `+01:00` for UK summer time or `+00:00`
+  for UK winter time.
+- Save and refresh the Browser Source.
+
+## Confetti played only once
+
+That is intentional. Select **Refresh cache of current page** to trigger it
+again, or enable **Refresh browser when scene becomes active** for a dedicated
+celebration scene.
+
+## YouTube Studio opens, but the page cannot be clicked
+
+Right-click the Browser Source and select **Interact**. The normal OBS preview is
+for positioning sources, not interacting with webpages.
+
+## Google will not allow sign-in inside OBS
+
+Google can reject some embedded-browser sign-ins. Confirm that you are using a
+current official OBS release. If Google's real sign-in page still reports that
+the browser is unsupported or insecure, this Browser Source method cannot access
+the private YouTube Studio page on that system.
+
+## The subscriber count returns to the Studio dashboard
+
+1. Right-click the source.
+2. Select **Interact**.
+3. Open **Analytics → Overview → Realtime → SEE LIVE COUNT** again.
+4. Keep **Refresh browser when scene becomes active** disabled.
+
+## The entire YouTube Studio page is visible
+
+Crop the source using **Alt-drag** or **Transform → Edit Transform**. Color Key
+removes a colour, but it does not crop menus, graphs, and controls.
+
+## Color Key removes parts of the subscriber number
+
+- Lower **Similarity**.
+- Reduce **Smoothness**.
+- Confirm that the chosen key colour matches the background rather than the
+  digits.
+- Switch YouTube Studio between light and dark theme to create stronger contrast.
+
+## The stroke outlines a rectangle
+
+The source is still opaque when Stroke processes it. Keep Color Key above Stroke
+and refine the key until the area around the digits is transparent.
+
+## The stroke is a single colour
+
+Confirm that:
+
+- Stroke **Fill Type** is **Source**;
+- the fill source is `Subscriber Border Gradient`;
+- the gradient Browser Source is loaded;
+- `gradient.html` has been refreshed after any edit.
+
+## Stroke is clipped
+
+Enable **Auto padding** in the Stroke filter when available, reduce Stroke Size,
+or leave more uncropped space around the digits.
+
+## Stroke Glow Shadow does not appear
+
+- Restart OBS after installation.
+- Confirm you downloaded the compiled installer rather than GitHub's source ZIP.
+- Confirm the release supports your OBS version and operating system.
+
+## PowerShell says scripts are disabled or `npm` cannot run
+
+Use the `.cmd` forms shown in this guide:
+
+```powershell
+npm.cmd ci
+npm.cmd start
+pnpm.cmd build
+```
+
+The launcher command already uses `-ExecutionPolicy Bypass` for that one script
+process.
+
+## `npm.cmd ci` fails
+
+- Confirm PowerShell is open in `overlays\typing-notifications`.
+- Confirm the folder contains `package.json` and `package-lock.json`.
+- Confirm Node.js is version 22 or newer.
+- Check the internet connection.
+
+## Port 8765 is occupied
+
+Close the other program or complete every port-change step above. Changing only
+one component will not work.
+
+## `npm.cmd run test-event` does not appear in OBS
+
+1. Confirm the bridge is still running.
+2. Confirm it says it is listening on `127.0.0.1:8765`.
+3. Confirm OBS points to the correct `overlay.html` file.
+4. Leave **Shutdown source when not visible** disabled.
+5. Refresh the Browser Source.
+6. Confirm the bridge and overlay use the same port.
+
+## The test event works, but Discord typing does not
+
+1. Confirm TypingNotifications is enabled.
+2. Confirm the channel has **Typing** enabled.
+3. Test with another user's typing.
+4. Confirm Discord was fully closed before injection.
+5. Rebuild, inject, and restart Discord.
+6. Confirm the Vencord plugin and bridge use the same port.
+
+## TypingNotifications is not listed
+
+The final path must be:
+
+```text
+Vencord\src\userplugins\typingNotifications\index.tsx
+```
+
+Then run:
+
+```powershell
+pnpm.cmd build
+pnpm.cmd inject
+```
+
+Restart Discord afterward.
+
+## Avatar images are missing
+
+The username alert can still function. Discord's avatar URL must be reachable by
+the OBS Browser Source, so check the internet connection and firewall software.
+
+---
+
+# Updating later
+
+## Update this repository
+
+Downloading a new ZIP can replace files. Back up custom dates, titles, colours,
+sounds, and port changes first.
+
+## Update Vencord
+
+From the Vencord source folder:
+
+```powershell
+git pull
+pnpm.cmd install --frozen-lockfile
+```
+
+Confirm that Vencord's `package.json` still specifies compatible Node.js and pnpm
+versions. Restore the custom plugin file, build, close Discord, inject, and
+reopen Discord.
+
+Vencord, Discord, YouTube Studio, and OBS are independently maintained. Their
+interfaces can change after this guide is published.
+
+---
+
+# Repository checks
+
+The repository includes automated validation for:
+
+- JavaScript syntax in every HTML overlay;
+- local README links;
+- the required YouTube Studio subscriber-count instructions;
+- locked bridge dependency consistency;
+- bridge health and end-to-end event forwarding;
+- Windows launcher parsing;
+- current-Vencord integration compilation.
+
+To run the local bridge checks:
+
+```powershell
+cd overlays\typing-notifications
+npm.cmd ci
+npm.cmd run check
+```
+
+The Vencord compatibility build runs in GitHub Actions because it needs a full
+Vencord source checkout.
+
+---
+
+# Security and privacy
+
+- The Discord bridge binds to `127.0.0.1`, not your LAN or the public internet.
+- It does not require a Discord token, API key, database, or cloud account.
+- The Vencord plugin sends only the displayed username, channel name, avatar URL,
+  and timestamp to the local bridge.
+- The YouTube Studio Browser Source contains a signed-in private creator session.
+  Crop it carefully, lock it, and inspect it before every stream.
+- Review third-party OBS and Discord modifications before installing them.
+
+# License
+
+The original overlays, bridge, launcher, tests, and documentation use the
+repository's MIT License. The Vencord integration retains its
+GPL-3.0-or-later notice. The optional OpenAI Sans files are separate third-party
+assets. See [`docs/NOTICE.md`](docs/NOTICE.md).

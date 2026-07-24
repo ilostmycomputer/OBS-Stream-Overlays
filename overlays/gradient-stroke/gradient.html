@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: -45deg;
+  inherits: false;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+#gradient {
+  position: fixed;
+  inset: 0;
+  background: conic-gradient(
+    from var(--gradient-angle),
+    #fde047 0deg,
+    #facc15 90deg,
+    #ca8a04 180deg,
+    #facc15 270deg,
+    #fde047 360deg
+  );
+  animation: gradient-angle 6s linear infinite;
+}
+
+@keyframes gradient-angle {
+  to {
+    --gradient-angle: 315deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #gradient {
+    animation: none;
+  }
+}
+</style>
+</head>
+
+<body>
+<div id="gradient"></div>
+
+</body>
+</html>
+

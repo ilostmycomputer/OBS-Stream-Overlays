@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <style>
+        @property --shiny-gradient-angle {
+            syntax: "<angle>";
+            initial-value: 0deg;
+            inherits: true;
+        }
+
+        @property --shiny-gradient-angle-offset {
+            syntax: "<angle>";
+            initial-value: 0deg;
+            inherits: true;
+        }
+
+        @property --shiny-gradient-percent {
+            syntax: "<percentage>";
+            initial-value: 5%;
+            inherits: true;
+        }
+
+        @property --shiny-gradient-shine {
+            syntax: "<color>";
+            initial-value: #f87171;
+            inherits: true;
+        }
+
+        @property --shiny-stroke-alpha {
+            syntax: "<number>";
+            initial-value: 1;
+            inherits: true;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: transparent;
+            font-family: Arial, sans-serif;
+        }
+
+        #stack {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            --shiny-cta-bg: #fff;
+            --shiny-cta-bg-subtle: #dedede;
+            --shiny-stroke-alpha: 1;
+            --shiny-cta-highlight: rgb(220 38 38 / var(--shiny-stroke-alpha));
+            --shiny-cta-highlight-subtle: #fca5a5;
+            --shiny-gradient-shine: rgb(239 68 68 / var(--shiny-stroke-alpha));
+            --shiny-cta-highlight-clear: rgb(220 38 38 / 0%);
+            --shiny-cta-highlight-glow: rgb(220 38 38 / 34%);
+            --shiny-cta-shine-glow: rgb(239 68 68 / 55%);
+            --shiny-duration: 1.2s;
+            --shiny-shadow-size: 2px;
+            --shiny-transition: 800ms cubic-bezier(.25, 1, .5, 1);
+
+            position: relative;
+            isolation: isolate;
+            width: min(500px, calc(100vw - 40px));
+            aspect-ratio: 500 / 118;
+            min-height: 118px;
+            padding: 10px 18px 11px;
+            box-sizing: border-box;
+            overflow: hidden;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            background:
+                linear-gradient(var(--shiny-cta-bg), var(--shiny-cta-bg)) padding-box,
+                conic-gradient(
+                    from calc(
+                        var(--shiny-gradient-angle) -
+                        var(--shiny-gradient-angle-offset)
+                    ),
+                    var(--shiny-cta-highlight-clear),
+                    var(--shiny-cta-highlight) var(--shiny-gradient-percent),
+                    var(--shiny-gradient-shine)
+                        calc(var(--shiny-gradient-percent) * 2),
+                    var(--shiny-cta-highlight)
+                        calc(var(--shiny-gradient-percent) * 3),
+                    var(--shiny-cta-highlight-clear)
+                        calc(var(--shiny-gradient-percent) * 4),
+                    var(--shiny-cta-highlight-clear)
+                )
+                border-box;
+            box-shadow: inset 0 0 0 1px var(--shiny-cta-bg-subtle);
+            transition: var(--shiny-transition);
+            transition-property:
+                --shiny-gradient-angle-offset,
+                --shiny-gradient-percent,
+                --shiny-gradient-shine,
+                filter;
+            animation: shiny-gradient-angle var(--shiny-duration) linear infinite;
+            opacity: 0;
+            transform: translateY(-42px);
+            will-change: opacity, transform;
+        }
+
+        .toast::before,
+        .toast::after,
+        .shiny-cta-glow::before {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: -1;
+            content: "";
+            pointer-events: none;
+            translate: -50% -50%;
+        }
+
+        .toast::before {
+            --size: calc(100% - var(--shiny-shadow-size) * 3);
+            --position: 2px;
+            --space: calc(var(--position) * 2);
+
+            width: var(--size);
+            height: var(--size);
+            border-radius: inherit;
+            background: radial-gradient(
+                circle at var(--position) var(--position),
+                var(--shiny-gradient-shine) calc(var(--position) / 4),
+                transparent 0
+            ) padding-box;
+            background-repeat: space;
+            background-size: var(--space) var(--space);
+            opacity: .4;
+            -webkit-mask-image: conic-gradient(
+                from calc(
+                    var(--shiny-gradient-angle) -
+                    var(--shiny-gradient-angle-offset)
+                ),
+                #000 0 calc(var(--shiny-gradient-percent) * 4),
+                transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
+            );
+            mask-image: conic-gradient(
+                from calc(
+                    var(--shiny-gradient-angle) -
+                    var(--shiny-gradient-angle-offset)
+                ),
+                #000 0 calc(var(--shiny-gradient-percent) * 4),
+                transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
+            );
+        }
+
+        .toast::after {
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                from calc(
+                    var(--shiny-gradient-angle) -
+                    var(--shiny-gradient-angle-offset)
+                ),
+                transparent,
+                var(--shiny-cta-highlight-glow) var(--shiny-gradient-percent),
+                var(--shiny-cta-shine-glow)
+                    calc(var(--shiny-gradient-percent) * 2),
+                var(--shiny-cta-highlight-glow)
+                    calc(var(--shiny-gradient-percent) * 3),
+                transparent calc(var(--shiny-gradient-percent) * 4),
+                transparent
+            );
+            opacity: 1;
+            -webkit-mask-image: radial-gradient(
+                ellipse at center,
+                transparent 0 48%,
+                #000 78% 100%
+            );
+            mask-image: radial-gradient(
+                ellipse at center,
+                transparent 0 48%,
+                #000 78% 100%
+            );
+        }
+
+        .shiny-cta-glow {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .shiny-cta-glow::before {
+            width: calc(100% + 1rem);
+            height: calc(100% + 1rem);
+            box-shadow: inset 0 -1ex 2rem 4px var(--shiny-cta-highlight);
+            opacity: 0;
+            transition: opacity var(--shiny-transition);
+            animation: shiny-breathe calc(var(--shiny-duration) * 1.5) linear infinite paused;
+        }
+
+        .toast:hover {
+            --shiny-gradient-percent: 20%;
+            --shiny-gradient-angle-offset: 95deg;
+            --shiny-gradient-shine: var(--shiny-cta-highlight-subtle);
+        }
+
+        .toast:hover .shiny-cta-glow::before {
+            opacity: 1;
+        }
+
+        @keyframes shiny-gradient-angle {
+            0% {
+                --shiny-gradient-angle: 0deg;
+                --shiny-stroke-alpha: .18;
+            }
+
+            50% {
+                --shiny-gradient-angle: 180deg;
+                --shiny-stroke-alpha: 1;
+            }
+
+            100% {
+                --shiny-gradient-angle: 360deg;
+                --shiny-stroke-alpha: .18;
+            }
+        }
+
+        @keyframes shiny-breathe {
+            0%, 100% { scale: 1; }
+            50% { scale: 1.2; }
+        }
+
+        .header-row {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .title {
+            color: #111;
+            font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -.015em;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .typing-row {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            width: 100%;
+            min-height: 66px;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 4px;
+            box-sizing: border-box;
+            transform: translateY(-2px);
+        }
+
+        .typing-copy {
+            flex: 0 1 auto;
+            width: max-content;
+            min-width: 0;
+            max-width: 100%;
+            text-align: left;
+        }
+
+        .value {
+            display: flex;
+            width: max-content;
+            max-width: 100%;
+            min-width: 0;
+            align-items: baseline;
+            gap: .24em;
+            color: #111;
+            font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(1.5rem, 4.1vw, 2.8rem);
+            font-weight: 700;
+            line-height: 1.12;
+            letter-spacing: -.05em;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .value.is-truncated {
+            gap: .02em;
+        }
+
+        .username {
+            display: block;
+            min-width: 0;
+            flex: 0 1 auto;
+            max-width: 100%;
+            min-height: calc(1.12em + 12px);
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-bottom: 12px;
+        }
+
+        .status {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: baseline;
+            gap: .16em;
+            color: #666a70;
+            font-size: clamp(.62rem, 1.1vw, .78rem);
+            font-weight: 500;
+            letter-spacing: .04em;
+            line-height: 1;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .status-word {
+            display: block;
+        }
+
+        .avatar {
+            width: 52px;
+            height: 52px;
+            flex: 0 0 52px;
+            border: 1px solid #dedede;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #f3f3f3;
+        }
+
+        .toast.show {
+            animation:
+                toast-slide-in .34s cubic-bezier(.22, .61, .36, 1) forwards,
+                shiny-gradient-angle var(--shiny-duration) linear infinite;
+        }
+
+        .toast.hide {
+            animation:
+                toast-slide-out .28s cubic-bezier(.4, 0, 1, 1) forwards,
+                shiny-gradient-angle var(--shiny-duration) linear infinite;
+        }
+
+        @keyframes toast-slide-in {
+            from { opacity: 0; transform: translateY(-42px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes toast-slide-out {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-30px); }
+        }
+
+        @media (max-width: 600px) {
+            .toast {
+                width: min(500px, calc(100vw - 20px));
+                padding: 9px 10px 10px;
+            }
+
+            .typing-row {
+                margin-top: 4px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .toast,
+            .toast.show,
+            .toast.hide,
+            .toast::before,
+            .toast::after,
+            .shiny-cta-glow::before {
+                animation: none;
+            }
+
+            .toast.show {
+                opacity: 1;
+                transform: none;
+            }
+
+            .toast.hide {
+                opacity: 0;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="stack"></div>
+
+    <script>
+        const stack = document.querySelector("#stack");
+        const BRIDGE_URL = "ws://127.0.0.1:8765";
+        const OVERLAY_TITLE = "PRC Announcements";
+
+        function connect() {
+            const socket = new WebSocket(`${BRIDGE_URL}?role=overlay`);
+
+            socket.addEventListener("message", event => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === "typing") showTyping(data);
+                } catch {
+                    // Ignore malformed local events.
+                }
+            });
+
+            socket.addEventListener("close", () => setTimeout(connect, 3000));
+        }
+
+        function showTyping(data) {
+            const toast = document.createElement("div");
+            toast.className = "toast";
+
+            const glow = document.createElement("span");
+            glow.className = "shiny-cta-glow";
+            glow.setAttribute("aria-hidden", "true");
+            toast.append(glow);
+
+            const header = document.createElement("div");
+            header.className = "header-row";
+
+            const title = document.createElement("div");
+            title.className = "title";
+            title.textContent = OVERLAY_TITLE;
+            header.append(title);
+
+            const row = document.createElement("div");
+            row.className = "typing-row";
+
+            if (typeof data.avatarUrl === "string" && data.avatarUrl) {
+                const avatar = document.createElement("img");
+                avatar.className = "avatar";
+                avatar.src = data.avatarUrl;
+                avatar.alt = "";
+                row.append(avatar);
+            }
+
+            const copy = document.createElement("div");
+            copy.className = "typing-copy";
+
+            const value = document.createElement("div");
+            value.className = "value";
+
+            const username = document.createElement("span");
+            username.className = "username";
+            username.textContent = `@${data.username}`;
+
+            const status = document.createElement("span");
+            status.className = "status";
+            const statusIs = document.createElement("span");
+            statusIs.className = "status-word";
+            statusIs.textContent = "is";
+
+            const statusTyping = document.createElement("span");
+            statusTyping.className = "status-word";
+            statusTyping.textContent = "typing";
+
+            status.append(statusIs, statusTyping);
+
+            value.append(username, status);
+
+            copy.append(value);
+            row.append(copy);
+            toast.append(header, row);
+            stack.replaceChildren(toast);
+
+            const updateTruncation = () => {
+                value.classList.toggle(
+                    "is-truncated",
+                    username.scrollWidth > username.clientWidth + 1
+                );
+            };
+
+            requestAnimationFrame(() => {
+                updateTruncation();
+                requestAnimationFrame(updateTruncation);
+                toast.classList.add("show");
+            });
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+                toast.classList.add("hide");
+                setTimeout(() => toast.remove(), 300);
+            }, 60000);
+        }
+
+        connect();
+    </script>
+</body>
+</html>
+

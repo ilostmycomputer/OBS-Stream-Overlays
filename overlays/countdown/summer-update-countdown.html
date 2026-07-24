@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Summer Update Countdown</title>
+    <style>
+      @property --shiny-gradient-angle {
+        syntax: "<angle>";
+        initial-value: 0deg;
+        inherits: true;
+      }
+
+      @property --shiny-gradient-angle-offset {
+        syntax: "<angle>";
+        initial-value: 0deg;
+        inherits: true;
+      }
+
+      @property --shiny-gradient-percent {
+        syntax: "<percentage>";
+        initial-value: 5%;
+        inherits: true;
+      }
+
+      @property --shiny-gradient-shine {
+        syntax: "<color>";
+        initial-value: #facc15;
+        inherits: true;
+      }
+
+      :root {
+        --panel: #fff;
+        --panel-border: #dedede;
+        --text: #111;
+        --muted: #666a70;
+        --separator: #111;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        color: var(--text);
+        font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
+      }
+
+      .countdown-shell {
+        --shiny-cta-bg: #fff;
+        --shiny-cta-bg-subtle: #dedede;
+        --shiny-cta-highlight: #eab308;
+        --shiny-cta-highlight-subtle: #fde047;
+        --shiny-gradient-shine: #facc15;
+        --shiny-cta-highlight-clear: rgb(234 179 8 / 0%);
+        --shiny-cta-highlight-glow: rgb(234 179 8 / 24%);
+        --shiny-cta-shine-glow: rgb(250 204 21 / 42%);
+        --shiny-duration: 3s;
+        --shiny-shadow-size: 2px;
+        --shiny-transition: 800ms cubic-bezier(0.25, 1, 0.5, 1);
+
+        position: relative;
+        isolation: isolate;
+        box-sizing: border-box;
+        width: min(500px, calc(100% - 40px));
+        padding: 10px 18px 11px;
+        overflow: hidden;
+        border: 2px solid transparent;
+        border-radius: 10px;
+        background:
+          linear-gradient(var(--shiny-cta-bg), var(--shiny-cta-bg)) padding-box,
+          conic-gradient(
+              from
+                calc(
+                  var(--shiny-gradient-angle) -
+                    var(--shiny-gradient-angle-offset)
+                ),
+              var(--shiny-cta-highlight-clear),
+              var(--shiny-cta-highlight) var(--shiny-gradient-percent),
+              var(--shiny-gradient-shine)
+                calc(var(--shiny-gradient-percent) * 2),
+              var(--shiny-cta-highlight)
+                calc(var(--shiny-gradient-percent) * 3),
+              var(--shiny-cta-highlight-clear)
+                calc(var(--shiny-gradient-percent) * 4),
+              var(--shiny-cta-highlight-clear)
+            )
+            border-box;
+        box-shadow: inset 0 0 0 1px var(--shiny-cta-bg-subtle);
+        transition: var(--shiny-transition);
+        transition-property:
+          --shiny-gradient-angle-offset,
+          --shiny-gradient-percent,
+          --shiny-gradient-shine,
+          filter;
+        animation: shiny-gradient-angle var(--shiny-duration) linear infinite;
+      }
+
+      .countdown-shell::before,
+      .countdown-shell::after,
+      .shiny-cta-glow::before {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: -1;
+        content: "";
+        pointer-events: none;
+        translate: -50% -50%;
+      }
+
+      .countdown-shell::before {
+        --size: calc(100% - var(--shiny-shadow-size) * 3);
+        --position: 2px;
+        --space: calc(var(--position) * 2);
+
+        width: var(--size);
+        height: var(--size);
+        border-radius: inherit;
+        background: radial-gradient(
+          circle at var(--position) var(--position),
+            var(--shiny-gradient-shine) calc(var(--position) / 4),
+            transparent 0
+          )
+          padding-box;
+        background-repeat: space;
+        background-size: var(--space) var(--space);
+        opacity: 0.4;
+        -webkit-mask-image: conic-gradient(
+          from calc(
+            var(--shiny-gradient-angle) -
+              var(--shiny-gradient-angle-offset)
+          ),
+          black 0 calc(var(--shiny-gradient-percent) * 4),
+          transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
+        );
+        mask-image: conic-gradient(
+          from calc(
+            var(--shiny-gradient-angle) -
+              var(--shiny-gradient-angle-offset)
+          ),
+          black 0 calc(var(--shiny-gradient-percent) * 4),
+          transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
+        );
+      }
+
+      .countdown-shell::after {
+        width: 100%;
+        height: 100%;
+        background: conic-gradient(
+          from
+            calc(
+              var(--shiny-gradient-angle) -
+                var(--shiny-gradient-angle-offset)
+            ),
+          transparent,
+          var(--shiny-cta-highlight-glow) var(--shiny-gradient-percent),
+          var(--shiny-cta-shine-glow)
+            calc(var(--shiny-gradient-percent) * 2),
+          var(--shiny-cta-highlight-glow)
+            calc(var(--shiny-gradient-percent) * 3),
+          transparent calc(var(--shiny-gradient-percent) * 4),
+          transparent
+        );
+        opacity: 1;
+        -webkit-mask-image: radial-gradient(
+          ellipse at center,
+          transparent 0 48%,
+          black 78% 100%
+        );
+        mask-image: radial-gradient(
+          ellipse at center,
+          transparent 0 48%,
+          black 78% 100%
+        );
+      }
+
+      .shiny-cta-glow {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .shiny-cta-glow::before {
+        width: calc(100% + 1rem);
+        height: calc(100% + 1rem);
+        box-shadow: inset 0 -1ex 2rem 4px var(--shiny-cta-highlight);
+        opacity: 0;
+        transition: opacity var(--shiny-transition);
+        animation: shiny-breathe calc(var(--shiny-duration) * 1.5) linear infinite
+          paused;
+      }
+
+      .countdown-shell:hover {
+        --shiny-gradient-percent: 20%;
+        --shiny-gradient-angle-offset: 95deg;
+        --shiny-gradient-shine: var(--shiny-cta-highlight-subtle);
+      }
+
+      .countdown-shell:hover .shiny-cta-glow::before {
+        opacity: 1;
+      }
+
+      @keyframes shiny-gradient-angle {
+        to {
+          --shiny-gradient-angle: 360deg;
+        }
+      }
+
+      @keyframes shiny-breathe {
+        0%,
+        100% {
+          scale: 1;
+        }
+
+        50% {
+          scale: 1.2;
+        }
+      }
+
+      .header-row {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1.2;
+        text-align: center;
+      }
+
+      .title {
+        color: var(--text);
+        font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
+        font-weight: 700;
+        font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+        letter-spacing: -0.015em;
+      }
+
+      .countdown-row {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: repeat(7, auto);
+        align-items: center;
+        justify-content: center;
+        margin-top: 7px;
+      }
+
+      .unit {
+        min-width: 0;
+        width: clamp(4rem, 9vw, 6rem);
+        text-align: center;
+      }
+
+      .value {
+        --digit-height: 1.14em;
+
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        color: var(--text);
+        font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
+        font-size: clamp(2rem, 5vw, 3.25rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -0.05em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .digit-window {
+        display: inline-block;
+        flex: 0 0 0.64em;
+        width: 0.64em;
+        height: var(--digit-height);
+        overflow: hidden;
+        vertical-align: top;
+      }
+
+      .digit-strip {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        transform: translateY(0);
+        transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+        will-change: transform;
+      }
+
+      .digit-strip.is-rolling {
+        transform: translateY(calc(-1 * var(--digit-height)));
+      }
+
+      .digit-face {
+        display: block;
+        flex: 0 0 var(--digit-height);
+        box-sizing: border-box;
+        width: 100%;
+        height: var(--digit-height);
+        padding-top: 0.02em;
+        line-height: 1.08em;
+      }
+
+      .label {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: clamp(0.56rem, 1vw, 0.7rem);
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      .separator {
+        padding: 0 clamp(0.35rem, 0.8vw, 0.6rem);
+        color: var(--separator);
+        font-size: clamp(1.4rem, 3vw, 2.2rem);
+        font-weight: 300;
+        line-height: 1;
+      }
+
+      @media (max-width: 600px) {
+        .countdown-shell {
+          width: min(500px, calc(100% - 20px));
+          padding: 9px 10px 10px;
+        }
+
+        .countdown-row {
+          margin-top: 6px;
+        }
+
+        .separator {
+          padding: 0 0.25rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .countdown-shell,
+        .countdown-shell::before,
+        .countdown-shell::after,
+        .shiny-cta-glow::before {
+          animation: none;
+        }
+
+        .digit-strip {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="countdown-shell" role="timer" aria-label="Summer update countdown">
+      <span class="shiny-cta-glow" aria-hidden="true"></span>
+
+      <div class="header-row">
+        <div class="title">Summer Update Countdown</div>
+      </div>
+
+      <div class="countdown-row" aria-label="Time remaining">
+        <div class="unit">
+          <span class="value" id="days">02</span>
+          <span class="label">days</span>
+        </div>
+        <div class="separator" aria-hidden="true">·</div>
+        <div class="unit">
+          <span class="value" id="hours">00</span>
+          <span class="label">hours</span>
+        </div>
+        <div class="separator" aria-hidden="true">·</div>
+        <div class="unit">
+          <span class="value" id="minutes">00</span>
+          <span class="label">minutes</span>
+        </div>
+        <div class="separator" aria-hidden="true">·</div>
+        <div class="unit">
+          <span class="value" id="seconds">00</span>
+          <span class="label">seconds</span>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // EDIT THIS: use an ISO 8601 date and include its timezone.
+      // "Z" means UTC. Example for 8:00 PM UK summer time: "2026-07-25T20:00:00+01:00"
+      // Change this value before using the countdown for a new event.
+      const TARGET_DATE_TIME = "2026-07-25T12:00:00Z";
+      const endTime = new Date(TARGET_DATE_TIME).getTime();
+
+      if (Number.isNaN(endTime)) {
+        throw new Error("TARGET_DATE_TIME must be a valid ISO 8601 date.");
+      }
+
+      const second = 1000;
+      const secondsPerMinute = 60;
+      const secondsPerHour = 60 * secondsPerMinute;
+      const secondsPerDay = 24 * secondsPerHour;
+
+      const elements = {
+        days: document.getElementById("days"),
+        hours: document.getElementById("hours"),
+        minutes: document.getElementById("minutes"),
+        seconds: document.getElementById("seconds"),
+      };
+
+      const pad = (value) => String(value).padStart(2, "0");
+
+      function createDigitFace(digit) {
+        const face = document.createElement("span");
+        face.className = "digit-face";
+        face.textContent = digit;
+        return face;
+      }
+
+      function createStaticDigit(digit) {
+        const digitWindow = document.createElement("span");
+        digitWindow.className = "digit-window";
+        digitWindow.dataset.digit = digit;
+        digitWindow.append(createDigitFace(digit));
+        return digitWindow;
+      }
+
+      function renderValue(element, nextValue) {
+        const currentDigits = [...element.querySelectorAll(".digit-window")];
+        const nextDigits = [...nextValue];
+
+        element.setAttribute("aria-label", nextValue);
+
+        if (currentDigits.length !== nextDigits.length) {
+          element.replaceChildren(...nextDigits.map(createStaticDigit));
+          return;
+        }
+
+        nextDigits.forEach((nextDigit, index) => {
+          const currentWindow = currentDigits[index];
+          const currentDigit = currentWindow.dataset.digit;
+
+          if (currentDigit === nextDigit) return;
+
+          const rollingWindow = document.createElement("span");
+          rollingWindow.className = "digit-window";
+          rollingWindow.dataset.digit = nextDigit;
+
+          const strip = document.createElement("span");
+          strip.className = "digit-strip";
+          strip.append(createDigitFace(currentDigit), createDigitFace(nextDigit));
+          rollingWindow.append(strip);
+          currentWindow.replaceWith(rollingWindow);
+
+          let settled = false;
+          const settleDigit = () => {
+            if (settled) return;
+            settled = true;
+
+            if (rollingWindow.isConnected) {
+              rollingWindow.replaceChildren(createDigitFace(nextDigit));
+            }
+          };
+
+          strip.addEventListener("transitionend", settleDigit, { once: true });
+
+          // Force the first face to paint before moving to the second one.
+          strip.getBoundingClientRect();
+          window.requestAnimationFrame(() => strip.classList.add("is-rolling"));
+          window.setTimeout(settleDigit, 520);
+        });
+      }
+
+      function updateCountdown() {
+        const remaining = Math.max(0, endTime - Date.now());
+        const totalSeconds = Math.ceil(remaining / second);
+
+        renderValue(elements.days, pad(Math.floor(totalSeconds / secondsPerDay)));
+        renderValue(elements.hours, pad(Math.floor((totalSeconds % secondsPerDay) / secondsPerHour)));
+        renderValue(elements.minutes, pad(Math.floor((totalSeconds % secondsPerHour) / secondsPerMinute)));
+        renderValue(elements.seconds, pad(totalSeconds % secondsPerMinute));
+
+        if (remaining === 0) {
+          clearInterval(timer);
+        }
+      }
+
+      let timer;
+      updateCountdown();
+      timer = setInterval(updateCountdown, 250);
+    </script>
+  </body>
+</html>
+

@@ -161,5 +161,7 @@ dimensions, timing, and text. No build step is required for the HTML overlays.
 
 ## License
 
-This repository is GPL-3.0-or-later. See `LICENSE` and `NOTICE.md`.
+The original overlay, bridge, launcher, and test files use the repository's
+existing MIT License. The Vencord integration is GPL-3.0-or-later as noted in
+`NOTICE.md` and its source header.
 

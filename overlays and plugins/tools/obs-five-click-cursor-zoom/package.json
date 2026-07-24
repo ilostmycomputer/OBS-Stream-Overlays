@@ -17,6 +17,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ilostmycomputer/OBS-Stream-Overlays.git",
-    "directory": "1-OVERLAYS-AND-TYPING-PLUGIN/tools/obs-five-click-cursor-zoom"
+    "directory": "overlays and plugins/tools/obs-five-click-cursor-zoom"
   }
 }

@@ -3,7 +3,7 @@
 The original overlay, bridge, launcher, and test files are covered by the
 repository's existing MIT License in `../LICENSE`.
 
-`1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx` is a Vencord user-plugin
+`overlays and plugins/integrations/vencord/TypingNotifications/index.tsx` is a Vencord user-plugin
 integration and retains its upstream Vencord GPL-3.0-or-later header. Vencord
 is a separate third-party project; this repository only distributes the
 integration source file and does not install or redistribute Vencord itself.
@@ -19,7 +19,7 @@ The plugin is not included in this repository; install it from its own
 [release page](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases)
 and review its upstream license and release notes.
 
-The OpenAI Sans font files beside the countdown in `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/` are
+The OpenAI Sans font files beside the countdown in `overlays and plugins/overlays/countdown/` are
 optional third-party assets. They are not covered by this repository's MIT
 License; use them in accordance with OpenAI's applicable font and brand terms. See the
 [OpenAI design guidelines](https://openai.com/brand/).

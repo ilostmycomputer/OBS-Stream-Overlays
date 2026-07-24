@@ -17,16 +17,18 @@ overlays.
 
 ## What needs installing?
 
-For the normal overlays, **OBS Studio is the only requirement**.
+For every overlay, [OBS Studio](https://obsproject.com/download) is the only
+required application. The extra items below are only needed for the feature you
+choose:
 
-The optional Discord typing alert needs a few extra things:
-
-| Install | Why you need it |
-| --- | --- |
-| [Node.js 22 or newer](https://nodejs.org/en/download) | Runs the local bridge. Node.js includes `npm`. |
-| `ws` | The bridge's WebSocket dependency. `npm install` installs it automatically; you do not need to find it yourself. |
-| [pnpm 11](https://pnpm.io/installation) | Installs Vencord's dependencies. |
-| [Vencord source](https://github.com/Vendicated/Vencord) | Required for adding and building a custom user plugin. |
+| If you use... | Install or use... | Why you need it |
+| --- | --- | --- |
+| Animated subscriber border | [Stroke Glow Shadow plugin](https://github.com/FiniteSingularity/obs-stroke-glow-shadow) and its [latest release installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases) | Adds the stroke, glow, and shadow around a keyed subscriber-count source. |
+| Discord typing alert bridge | [Node.js 22 or newer](https://nodejs.org/en/download) | Runs the local bridge. Node.js includes `npm`. |
+| Discord typing alert bridge | `ws` | The bridge's WebSocket dependency. `npm install` installs it automatically; you do not need to find it yourself. |
+| Discord typing alert Vencord plugin | [pnpm 11](https://pnpm.io/installation) and [Vencord source](https://github.com/Vendicated/Vencord) | Installs Vencord's dependencies and builds the custom user plugin. |
+| Vencord plugin default sound | A sound file you have permission to use, named `fears-to-fathom-notification-sound.mp3` | Place it beside the copied `index.tsx`; the plugin imports it at build time. This repository intentionally does not redistribute the audio. |
+| Downloading Vencord with `git clone` | Git (optional) | Downloading a ZIP works without Git. |
 
 You do not need to install a separate server, database, or cloud service. The
 bridge runs on your own computer.
@@ -64,6 +66,21 @@ File: `overlays/gradient-stroke/gradient.html`
 This file supplies animated colours. It is meant to be used with the OBS
 **Stroke Glow Shadow** filter around a keyed subscriber-count source; it is not
 the subscriber count itself.
+
+### Install the required OBS plugin
+
+1. Close OBS if it is currently open.
+2. Open the [Stroke Glow Shadow Releases page](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases).
+3. Download the latest installer for your operating system and run it.
+4. Open OBS again. The plugin should now be available in the source/filter
+   menus.
+
+The plugin is maintained separately from this repository. Check its release
+notes for supported OBS versions before installing. If it does not appear in
+OBS, restart OBS once more and confirm that you downloaded the installer rather
+than the source-code ZIP.
+
+### Add the animated border
 
 1. Add `gradient.html` as a Browser Source.
 2. Set it to the same size as your subscriber-count source, usually **1920 ×
@@ -122,6 +139,14 @@ You can also use the included Windows launcher after installing the bridge:
 powershell -ExecutionPolicy Bypass -File .\start-obs.ps1
 ```
 
+The launcher finds OBS in its normal Windows install location. If you installed
+OBS somewhere else, set its path before running the launcher:
+
+```powershell
+$env:OBS_PATH = "D:\Apps\obs-studio\bin\64bit\obs64.exe"
+powershell -ExecutionPolicy Bypass -File .\start-obs.ps1
+```
+
 ### Step 2: Add the alert to OBS
 
 Add `overlays/typing-notifications/overlay.html` as a Browser Source.
@@ -167,6 +192,19 @@ If `src/userplugins` does not exist yet, create that folder first. Do not put
 the file in Vencord's `src/plugins` folder.
 
 This follows Vencord's [official custom-plugin guide](https://docs.vencord.dev/installing/custom-plugins/).
+
+Before building, place your permitted default sound file beside the plugin if
+you want to keep the default sound import:
+
+```text
+Vencord/src/userplugins/typingnotifications/index.tsx
+Vencord/src/userplugins/typingnotifications/fears-to-fathom-notification-sound.mp3
+```
+
+The repository does not include that audio file. If you do not want a default
+audio file, remove the `defaultSoundBase64` import and `DEFAULT_SOUND_URL`, then
+change `playDefaultSound()` to call `playFallbackTone()` instead. You can also
+choose a different sound later from the plugin's custom sound setting.
 
 Build Vencord, then restart Discord. On Windows, the build command is usually:
 

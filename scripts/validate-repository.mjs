@@ -66,23 +66,24 @@ function validateBridgePortAgreement() {
     }
 }
 
-function validateGradientSetupGuide() {
-    const guidePath = path.join(root, "overlays", "gradient-stroke", "README.md");
-    assert.ok(fs.existsSync(guidePath), "Missing animated YouTube subscriber-count setup guide.");
-
-    const guide = fs.readFileSync(guidePath, "utf8");
+function validateYouTubeStudioGuide() {
+    const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
     const requiredInstructions = [
+        "https://studio.youtube.com/",
         "Select **Interact**",
-        "Replace the generic URL with the copied OBS/embed URL",
+        "Analytics → Overview → Realtime → SEE LIVE COUNT",
         "**+ → Color Key**",
-        "Remove Counter Background (Color Key)",
+        "Remove YouTube Studio Background",
         "Subscriber Border Gradient",
         "**+ → Stroke**",
+        "Fill Type** to **Source",
     ];
 
     for (const instruction of requiredInstructions) {
-        assert.ok(guide.includes(instruction), `Gradient setup guide is missing: ${instruction}`);
+        assert.ok(readme.includes(instruction), `Main README is missing: ${instruction}`);
     }
+
+    assert.ok(!/livecounts\.io/i.test(readme), "Main README must not use Livecounts.io.");
 }
 
 const htmlFiles = walk(path.join(root, "overlays")).filter(file => file.endsWith(".html"));
@@ -91,6 +92,6 @@ htmlFiles.forEach(validateInlineScripts);
 validateReadmeLinks();
 validatePinnedDependency();
 validateBridgePortAgreement();
-validateGradientSetupGuide();
+validateYouTubeStudioGuide();
 
 console.log(`Repository validation passed for ${htmlFiles.length} HTML overlays.`);

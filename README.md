@@ -10,7 +10,7 @@ Downloading the repository ZIP does not install anything. It only copies the fil
 
 | Feature | Files needed from this repository | Install or access separately |
 | --- | --- | --- |
-| **Countdown** | [`summer-update-countdown.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/summer-update-countdown.html) | [OBS Studio](https://obsproject.com/download). The five OpenAI Sans font files in `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/` are optional and only provide the intended clean typography. |
+| **Countdown** | Light style: [`summer-update-countdown.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/summer-update-countdown.html). Dark style: [`summer-update-countdown-dark.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/summer-update-countdown-dark.html). | [OBS Studio](https://obsproject.com/download). The five OpenAI Sans font files in `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/` are optional and only provide the intended clean typography. |
 | **Confetti** | [`confetti.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
 | **Animated YouTube Studio subscriber count** | [`gradient.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
 | **Discord typing alert** | The entire `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/typing-notifications/` folder, plus [`1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx`](1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
@@ -37,7 +37,7 @@ The countdown still works without them and falls back to a normal system sans-se
 
 ### Countdown
 
-You need only `summer-update-countdown.html`. Edit its target date in Notepad, then add it to OBS as a local Browser Source at `700 × 180`.
+Choose either `summer-update-countdown.html` for the original light style or `summer-update-countdown-dark.html` for the permanently visible dark style with a red-to-blue perimeter sweep. Edit the target date in Notepad, then add the selected file to OBS as a local Browser Source at `700 × 180`.
 
 [Open the complete countdown instructions](2-DOCUMENTATION/FULL_GUIDE.md#1-countdown)
 

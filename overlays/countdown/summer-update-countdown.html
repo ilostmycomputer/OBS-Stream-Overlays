@@ -94,13 +94,25 @@
             )
             border-box;
         box-shadow: inset 0 0 0 1px var(--shiny-cta-bg-subtle);
+        transform: translateY(calc(-100% - 100px));
+        opacity: 0;
+        pointer-events: none;
+        will-change: transform, opacity;
         transition: var(--shiny-transition);
         transition-property:
           --shiny-gradient-angle-offset,
           --shiny-gradient-percent,
           --shiny-gradient-shine,
-          filter;
+          filter,
+          transform,
+          opacity;
         animation: shiny-gradient-angle var(--shiny-duration) linear infinite;
+      }
+
+      .countdown-shell.is-visible {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
       }
 
       .countdown-shell::before,
@@ -348,6 +360,7 @@
           animation: none;
         }
 
+        .countdown-shell,
         .digit-strip {
           transition: none;
         }
@@ -401,6 +414,12 @@
       const secondsPerHour = 60 * secondsPerMinute;
       const secondsPerDay = 24 * secondsPerHour;
 
+      // The panel appears whenever the TOTAL remaining time reaches a multiple
+      // of five minutes, then remains visible for 30 seconds.
+      const appearanceIntervalSeconds = 5 * secondsPerMinute;
+      const appearanceDurationSeconds = 30;
+
+      const countdownShell = document.querySelector(".countdown-shell");
       const elements = {
         days: document.getElementById("days"),
         hours: document.getElementById("hours"),
@@ -471,6 +490,24 @@
         });
       }
 
+      function shouldShowCountdown(totalSeconds) {
+        if (totalSeconds <= 0) return false;
+
+        const secondsAfterFiveMinuteBoundary =
+          (appearanceIntervalSeconds -
+            (totalSeconds % appearanceIntervalSeconds)) %
+          appearanceIntervalSeconds;
+
+        return secondsAfterFiveMinuteBoundary < appearanceDurationSeconds;
+      }
+
+      function updateVisibility(totalSeconds) {
+        countdownShell.classList.toggle(
+          "is-visible",
+          shouldShowCountdown(totalSeconds),
+        );
+      }
+
       let timer = null;
 
       function updateCountdown() {
@@ -481,6 +518,7 @@
         renderValue(elements.hours, pad(Math.floor((totalSeconds % secondsPerDay) / secondsPerHour)));
         renderValue(elements.minutes, pad(Math.floor((totalSeconds % secondsPerHour) / secondsPerMinute)));
         renderValue(elements.seconds, pad(totalSeconds % secondsPerMinute));
+        updateVisibility(totalSeconds);
 
         if (remaining === 0 && timer !== null) {
           clearInterval(timer);

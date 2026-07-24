@@ -13,7 +13,7 @@ Downloading the repository ZIP does not install anything. It only copies the fil
 | **Countdown** | [`summer-update-countdown.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/summer-update-countdown.html) | [OBS Studio](https://obsproject.com/download). The five OpenAI Sans font files in `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/` are optional and only provide the intended clean typography. |
 | **Confetti** | [`confetti.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
 | **Animated YouTube Studio subscriber count** | [`gradient.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
-| **Discord typing alert** | The entire `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/typing-notifications/` folder, plus [`1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx`](1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. |
+| **Discord typing alert** | The entire `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/typing-notifications/` folder, plus [`1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx`](1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
 
 ## Downloading one file
 
@@ -61,6 +61,12 @@ This is the only feature that needs several files and programs. Keep every file 
 For this feature, downloading the repository ZIP is usually easier. You may then delete or ignore the countdown, confetti, gradient, and documentation folders.
 
 [Open the complete Discord typing-alert instructions](2-DOCUMENTATION/FULL_GUIDE.md#4-discord-typing-alert)
+
+### Regular Vencord users (no OBS)
+
+If you only want typing notifications inside Discord, you do **not** need to install, configure, or run the local bridge, OBS, or the OBS Browser Source. The bridge exists only to forward typing events from Vencord into the stream overlay.
+
+Install the custom Vencord plugin using [Section C](2-DOCUMENTATION/FULL_GUIDE.md#c-install-the-custom-vencord-source-build), then enable it and choose watched channels using [Section D](2-DOCUMENTATION/FULL_GUIDE.md#d-enable-and-configure-typingnotifications). The normal desktop notification and typing sound work without the bridge.
 
 ## Complete beginner guide
 

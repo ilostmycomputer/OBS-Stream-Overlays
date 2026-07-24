@@ -526,9 +526,6 @@ function handleTypingStart(event: any) {
             </span>
         ),
         icon: user.getAvatarURL(channel.guild_id, 128),
-        replaceCurrent: true,
-        transition: "slide",
-        useNative: false,
     });
 }
 
@@ -584,4 +581,3 @@ export default definePlugin({
         TYPING_STOP: handleTypingStop,
     },
 });
-

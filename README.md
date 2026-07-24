@@ -833,6 +833,8 @@ number.
 
 # Troubleshooting
 
+> **Need more help?** If you're stuck, I highly recommend using AI to troubleshoot. Give it the exact error message, the step you reached, and the relevant OBS, Node.js, Vencord, or Browser Source settings. Never share passwords, cookies, account tokens, or other private credentials, and verify suggested commands before running them.
+
 ## Browser Source is missing
 
 Reinstall OBS using the official installer. Normal official OBS packages include

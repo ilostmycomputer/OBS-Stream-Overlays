@@ -75,3 +75,5 @@ use one standalone overlay.
           git add README.md .github/workflows/finalize-selective-downloads.yml
           git commit -m "Document per-overlay downloads"
           git push
+
+# This comment intentionally triggers the workflow after its initial registration.

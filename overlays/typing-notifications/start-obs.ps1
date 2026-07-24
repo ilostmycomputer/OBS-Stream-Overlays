@@ -92,10 +92,11 @@ if (-not (Test-TypingBridge)) {
     }
 }
 
-$obsDir = Split-Path -Parent $obs
-$obsProcess = Start-Process -FilePath $obs -WorkingDirectory $obsDir -PassThru
+$obsProcess = $null
 
 try {
+    $obsDir = Split-Path -Parent $obs
+    $obsProcess = Start-Process -FilePath $obs -WorkingDirectory $obsDir -PassThru
     Wait-Process -Id $obsProcess.Id
 }
 finally {

@@ -39,7 +39,9 @@ The Discord typing bridge listens only on `127.0.0.1`, meaning your own computer
 
 ---
 
-# Part 1: Download the files
+# Beginner setup
+
+## Download the files
 
 1. Open this repository on GitHub.
 2. Select **Code**.
@@ -56,11 +58,7 @@ The Discord typing bridge listens only on `127.0.0.1`, meaning your own computer
    the file locations and will show a blank local source if those locations
    later change.
 
----
-
-# Part 2: First-time OBS setup
-
-## 1. Install and open OBS
+## Install and open OBS
 
 1. Download and install [OBS Studio](https://obsproject.com/download).
 2. Open OBS.
@@ -71,7 +69,7 @@ The Discord typing bridge listens only on `127.0.0.1`, meaning your own computer
 If **Browser** is missing when adding a source, reinstall OBS using the official
 installer. Browser Source is included with normal official OBS installations.
 
-## 2. Find your canvas size
+## Find your canvas size
 
 Your full-screen overlays must match OBS's **Base (Canvas) Resolution**.
 
@@ -88,7 +86,7 @@ Common canvas sizes include:
 
 Do not automatically use `1920 × 1080` if your canvas uses another size.
 
-## 3. Create a scene
+## Create a scene
 
 1. In **Scenes**, select **+**.
 2. Enter a name such as `Main Stream`.
@@ -97,7 +95,7 @@ Do not automatically use `1920 × 1080` if your canvas uses another size.
 A scene is a collection of sources. Sources higher in the Sources list appear
 in front of sources lower in the list.
 
-## 4. Add a local HTML overlay
+## Add a local HTML overlay
 
 Use this procedure whenever a later section tells you to add one of this
 repository's `.html` files.
@@ -129,6 +127,69 @@ To reload an edited HTML file:
 2. Select **Refresh cache of current page**.
 
 The eye icon beside a source shows or hides it without deleting it.
+
+## Crop, resize, and sharpen sources
+
+### Crop quickly with Alt-drag
+
+Cropping hides unwanted parts of a source without changing the original webpage,
+image, video, or capture.
+
+1. Select the source in the OBS preview. A red bounding box appears around it.
+2. Hold **Alt** on Windows or Linux. Hold **Option** on macOS.
+3. While holding the key, drag one of the red edge or corner handles inward.
+4. Repeat for the other sides until only the area you want remains.
+
+A cropped edge turns green. Dragging without Alt or Option resizes the source
+instead of cropping it.
+
+### Enter exact crop values with Edit Transform
+
+Use exact crop values when several sources or copies need to line up perfectly.
+
+1. Right-click the source.
+2. Select **Transform → Edit Transform**.
+3. Find **Crop Left**, **Crop Top**, **Crop Right**, and **Crop Bottom**.
+4. Enter the required pixel values.
+5. Note or copy those four values.
+6. Open **Edit Transform** on the other source and enter the same crop values.
+
+This is more accurate than trying to match two crops by eye. On Windows and
+Linux, selecting a source and pressing **Ctrl+E** also opens Edit Transform. On
+macOS, use **Cmd+E**.
+
+Transform cropping belongs to that particular source item in that scene. If you
+need one crop to affect every instance of the same source in every scene, add a
+**Crop/Pad** effect filter instead.
+
+### Render Browser Sources at a higher resolution
+
+A Browser Source has its own internal Width and Height. These values control the
+webpage's render viewport. They are separate from the size of the source on the
+OBS canvas.
+
+If browser text, numbers, logos, or curved edges look soft or pixelated:
+
+1. Right-click the Browser Source.
+2. Select **Properties**.
+3. Increase **Width** and **Height** while keeping the same aspect ratio.
+4. Select **OK**.
+5. Resize the source smaller on the OBS canvas using a corner handle.
+6. Recheck the crop in **Transform → Edit Transform**, because changing the
+   Browser Source dimensions can change the webpage layout and crop positions.
+
+For example, a `1920 × 1080` Browser Source can be rendered at:
+
+- `2560 × 1440` for a moderate quality increase; or
+- `3840 × 2160` for a larger quality increase.
+
+Rendering at a higher resolution and scaling down can make browser text and
+edges appear sharper. It also increases CPU, GPU, and memory use. Use the lowest
+resolution that looks clean during an OBS test recording.
+
+Do not change only one dimension unless you deliberately want a different
+webpage layout. Keep the same aspect ratio, such as `16:9`, when you only want a
+higher-resolution version of the same view.
 
 ---
 
@@ -263,6 +324,11 @@ Do not continue until the Stroke filter is available.
 
 The YouTube Studio page should now appear in the OBS preview.
 
+If the final subscriber digits look soft, return to **Properties** and try
+`2560 × 1440` or `3840 × 2160`. Scale the source down on the canvas afterward.
+Changing the Browser Source resolution may move the webpage elements, so reopen
+**Transform → Edit Transform** and correct the crop values afterward.
+
 ## 3. Sign in through OBS Interact
 
 Clicks in the normal OBS preview select and resize the source. They do not click
@@ -318,23 +384,26 @@ Do not enable **Refresh browser when scene becomes active** for this source.
 Remove the YouTube Studio menu, cards, buttons, graph, and account information so
 only the subscriber number remains in the visible source area.
 
-### Fast method
+### Fast method: Alt-drag
 
 1. Select the source in the OBS preview.
-2. Hold **Alt** on Windows or **Option** on macOS.
+2. Hold **Alt** on Windows or Linux, or **Option** on macOS.
 3. While holding the key, drag each red bounding-box edge inward.
 4. Stop when the box contains only the live subscriber number and any label you
    deliberately want to keep.
 
-Cropped edges appear green.
+Cropped edges appear green. If you accidentally resize instead of crop, undo the
+change and make sure Alt or Option is held before dragging.
 
-### Precise method
+### Precise method: Edit Transform
 
 1. Right-click the source.
 2. Select **Transform → Edit Transform**.
 3. Adjust **Crop Left**, **Crop Top**, **Crop Right**, and **Crop Bottom** until
    only the required area remains.
-4. Close the window.
+4. Write down the values if another source must use the same crop.
+5. Enter those exact values in the other source's Edit Transform window.
+6. Close the window.
 
 Drag a corner handle to resize the cropped counter. Do not stretch only one
 axis, because that distorts the digits.
@@ -370,8 +439,9 @@ removed background.
 4. Enable **Local file**.
 5. Select **Browse**.
 6. Choose [`overlays/gradient-stroke/gradient.html`](overlays/gradient-stroke/gradient.html).
-7. Set Width to `1920` and Height to `1080`, matching the original YouTube
-   Studio Browser Source dimensions used in this guide.
+7. Give it the same Width and Height as the YouTube Studio Browser Source. If you
+   increased the Studio source to `2560 × 1440` or `3840 × 2160`, use the same
+   dimensions here.
 8. Select **OK**.
 9. Move `Subscriber Border Gradient` below your visible stream content so its
    full-screen colour field does not cover the stream.
@@ -438,7 +508,8 @@ stream elements.
 4. Confirm that the background is transparent.
 5. Confirm that the stroke follows the digits rather than a rectangle.
 6. Confirm that the gradient is moving through the stroke.
-7. Record a short local OBS test before starting the real stream.
+7. Confirm that the counter looks sharp at the stream's output resolution.
+8. Record a short local OBS test before starting the real stream.
 
 Because this source displays a signed-in YouTube Studio page, always inspect it
 before going live. A failed crop, page reload, or changed YouTube layout could
@@ -552,6 +623,10 @@ Leave this PowerShell window open while streaming.
 5. Leave **Refresh browser when scene becomes active** disabled.
 6. Select **OK**.
 7. Move it above the gameplay or display source.
+
+If this browser source looks soft after being made much larger than `720 × 200`,
+open its Properties and increase Width and Height proportionally. Scale it down
+on the canvas afterward and recheck any Edit Transform crop values.
 
 Test the bridge-to-OBS path without Discord:
 
@@ -769,6 +844,27 @@ Browser Source.
 4. Confirm Width and Height are not zero.
 5. Select **Refresh cache of current page**.
 6. Move it above the gameplay source.
+
+## A source resized when I tried to crop it
+
+Undo the change. Select the source, hold **Alt** on Windows or Linux or
+**Option** on macOS, and then drag the red edge inward. A successful crop changes
+the edge from red to green.
+
+## Two crops do not line up
+
+Open **Transform → Edit Transform** for both sources and enter identical **Crop
+Left**, **Crop Top**, **Crop Right**, and **Crop Bottom** values. Do not rely on
+matching them by eye.
+
+## A Browser Source looks blurry or pixelated
+
+1. Open the Browser Source's **Properties**.
+2. Increase its Width and Height proportionally.
+3. Scale the source down on the canvas.
+4. Correct the crop in **Edit Transform** if the webpage layout moved.
+5. Stop increasing the render size when it looks clean, because higher values use
+   more system resources.
 
 ## Countdown is already at zero
 

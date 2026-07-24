@@ -10,11 +10,11 @@ Downloading the repository ZIP does not install anything. It only copies the fil
 
 | Feature | Files needed from this repository | Install or access separately |
 | --- | --- | --- |
-| **Countdown** | Light style: [`summer-update-countdown.html`](overlays%20and%20plugins/overlays/countdown/summer-update-countdown.html). Dark style: [`summer-update-countdown-dark.html`](overlays%20and%20plugins/overlays/countdown/summer-update-countdown-dark.html). | [OBS Studio](https://obsproject.com/download). The five OpenAI Sans font files in `overlays and plugins/overlays/countdown/` are optional and only provide the intended clean typography. |
-| **Confetti** | [`confetti.html`](overlays%20and%20plugins/overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
-| **Animated YouTube Studio subscriber count** | [`gradient.html`](overlays%20and%20plugins/overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
-| **Discord typing alert** | The entire `overlays and plugins/overlays/typing-notifications/` folder, plus [`overlays and plugins/integrations/vencord/TypingNotifications/index.tsx`](overlays%20and%20plugins/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
-| **Five-click cursor zoom** | The entire [`overlays and plugins/tools/obs-five-click-cursor-zoom/`](overlays%20and%20plugins/tools/obs-five-click-cursor-zoom/) folder | OBS Studio 28 or newer, OBS WebSocket, [Node.js 22 or newer](https://nodejs.org/en/download), and Windows 10 or 11. |
+| **Countdown** | Light style: [`summer-update-countdown.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown.html). Dark style: [`summer-update-countdown-dark.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown-dark.html). | [OBS Studio](https://obsproject.com/download). The five OpenAI Sans font files in `Overlays & Plugins/overlays/countdown/` are optional and only provide the intended clean typography. |
+| **Confetti** | [`confetti.html`](Overlays%20%26%20Plugins/overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
+| **Animated YouTube Studio subscriber count** | [`gradient.html`](Overlays%20%26%20Plugins/overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
+| **Discord typing alert** | The entire `Overlays & Plugins/overlays/typing-notifications/` folder, plus [`Overlays & Plugins/integrations/vencord/TypingNotifications/index.tsx`](Overlays%20%26%20Plugins/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
+| **Five-click cursor zoom** | The entire [`Overlays & Plugins/tools/obs-five-click-cursor-zoom/`](Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom/) folder | OBS Studio 28 or newer, OBS WebSocket, [Node.js 22 or newer](https://nodejs.org/en/download), and Windows 10 or 11. |
 
 ## Downloading one file
 
@@ -39,13 +39,13 @@ The countdown still works without them and falls back to a normal system sans-se
 
 Choose either `summer-update-countdown.html` for the original light style or `summer-update-countdown-dark.html` for the permanently visible dark style with a red-to-blue perimeter sweep. Edit the target date in Notepad, then add the selected file to OBS as a local Browser Source at `700 × 180`.
 
-[Open the complete countdown instructions](2-DOCUMENTATION/FULL_GUIDE.md#1-countdown)
+[Open the complete countdown instructions](Documentation/FULL_GUIDE.md#1-countdown)
 
 ### Confetti
 
 You need only `confetti.html`. Add it as a local Browser Source using the same resolution as your OBS canvas.
 
-[Open the complete confetti instructions](2-DOCUMENTATION/FULL_GUIDE.md#2-confetti)
+[Open the complete confetti instructions](Documentation/FULL_GUIDE.md#2-confetti)
 
 ### Animated subscriber count
 
@@ -53,21 +53,21 @@ The only file needed from this repository is `gradient.html`. The subscriber num
 
 Stroke Glow Shadow is easy to install when you choose its **compiled installer**: close OBS, run the installer, follow the prompts, and reopen OBS. Do not download GitHub's **Source code (zip)** archive because that is not an installer.
 
-[Open the complete subscriber-count instructions](2-DOCUMENTATION/FULL_GUIDE.md#3-animated-youtube-studio-subscriber-count)
+[Open the complete subscriber-count instructions](Documentation/FULL_GUIDE.md#3-animated-youtube-studio-subscriber-count)
 
 ### Discord typing alert
 
-This is the only overlay that needs several files and programs. Keep every file inside `overlays and plugins/overlays/typing-notifications/` together, and also download the Vencord plugin file at `overlays and plugins/integrations/vencord/TypingNotifications/index.tsx`.
+This is the only overlay that needs several files and programs. Keep every file inside `Overlays & Plugins/overlays/typing-notifications/` together, and also download the Vencord plugin file at `Overlays & Plugins/integrations/vencord/TypingNotifications/index.tsx`.
 
 For this feature, downloading the repository ZIP is usually easier. You may then delete or ignore the countdown, confetti, gradient, cursor-zoom, and documentation folders.
 
-[Open the complete Discord typing-alert instructions](2-DOCUMENTATION/FULL_GUIDE.md#4-discord-typing-alert)
+[Open the complete Discord typing-alert instructions](Documentation/FULL_GUIDE.md#4-discord-typing-alert)
 
 ### Regular Vencord users (no OBS)
 
 If you only want typing notifications inside Discord, you do **not** need to install, configure, or run the local bridge, OBS, or the OBS Browser Source. The bridge exists only to forward typing events from Vencord into the stream overlay.
 
-Install the custom Vencord plugin using [Section C](2-DOCUMENTATION/FULL_GUIDE.md#c-install-the-custom-vencord-source-build), then enable it and choose watched channels using [Section D](2-DOCUMENTATION/FULL_GUIDE.md#d-enable-and-configure-typingnotifications). The normal desktop notification and typing sound work without the bridge.
+Install the custom Vencord plugin using [Section C](Documentation/FULL_GUIDE.md#c-install-the-custom-vencord-source-build), then enable it and choose watched channels using [Section D](Documentation/FULL_GUIDE.md#d-enable-and-configure-typingnotifications). The normal desktop notification and typing sound work without the bridge.
 
 ### Five-click cursor zoom
 
@@ -75,13 +75,13 @@ This Windows helper detects five rapid left-clicks, checks whether OBS is record
 
 The public configuration uses a placeholder WebSocket password and a `1920 × 1080` primary display. Replace the password and adjust the display values locally before running it. All runtime logic is committed as readable JavaScript; there is no hidden executable, minified bundle, telemetry, or cloud component.
 
-**[Open the complete cursor-zoom setup, configuration, architecture, privacy, and troubleshooting guide](overlays%20and%20plugins/tools/obs-five-click-cursor-zoom/README.md)**
+**[Open the complete cursor-zoom setup, configuration, architecture, privacy, and troubleshooting guide](Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom/README.md)**
 
 ## Complete beginner guide
 
 The full beginner-proof guide, including OBS setup, Alt-drag cropping, exact **Edit Transform** crop values, higher-resolution Browser Sources, testing, troubleshooting, security, and privacy guidance, is here:
 
-**[Open the complete setup guide](2-DOCUMENTATION/FULL_GUIDE.md)**
+**[Open the complete setup guide](Documentation/FULL_GUIDE.md)**
 
 > **Stuck?** I highly recommend using AI to troubleshoot. Give it the exact error message, the step you reached, and the relevant OBS, Node.js, Vencord, or Browser Source settings. Never share passwords, cookies, account tokens, or other private credentials, and verify suggested commands before running them.
 
@@ -91,4 +91,4 @@ Want to give feedback or suggest new features? [Check out my Discord!](https://d
 
 ## License
 
-The original overlays, bridge, launcher, cursor-zoom helper, tests, and documentation use the repository's MIT License. The Vencord integration retains its GPL-3.0-or-later notice. The optional OpenAI Sans files are separate third-party assets. See [`2-DOCUMENTATION/docs/NOTICE.md`](2-DOCUMENTATION/docs/NOTICE.md).
+The original overlays, bridge, launcher, cursor-zoom helper, tests, and documentation use the repository's MIT License. The Vencord integration retains its GPL-3.0-or-later notice. The optional OpenAI Sans files are separate third-party assets. See [`Documentation/docs/NOTICE.md`](Documentation/docs/NOTICE.md).

@@ -1,19 +1,23 @@
-name: Apply selective download guidance
+name: Finalise selective download guidance
 
 on:
-  push:
-    paths:
-      - .github/workflows/validate.yml
+  pull_request:
+    types: [opened, synchronize]
 
 permissions:
   contents: write
+  pull-requests: read
 
 jobs:
   finalise:
+    if: github.head_ref == 'agent/selective-downloads'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out the pull-request branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
 
       - name: Add per-overlay download guidance
         shell: python
@@ -167,8 +171,9 @@ use one standalone overlay.
                   run: pnpm build
           EOF
           rm -f .github/workflows/finalize-selective-downloads.yml
+          rm -f SELECTIVE_DOWNLOADS_TRIGGER.md
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md .github/workflows/validate.yml .github/workflows/finalize-selective-downloads.yml
+          git add README.md .github/workflows/validate.yml .github/workflows/finalize-selective-downloads.yml SELECTIVE_DOWNLOADS_TRIGGER.md
           git commit -m "Document per-overlay downloads"
-          git push
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}

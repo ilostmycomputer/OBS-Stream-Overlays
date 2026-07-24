@@ -9,15 +9,18 @@ is a separate third-party project; this repository only distributes the
 integration source file and does not install or redistribute Vencord itself.
 The full GPL text is kept at `LICENSES/GPL-3.0-or-later.txt`.
 
-The Vencord integration imports a notification sound named
-`fears-to-fathom-notification-sound.mp3` from the Vencord user-plugin folder at
-build time. This repository does not redistribute that audio asset; users must
-supply a sound they have permission to use or edit the plugin to use its
-generated fallback tone.
+The Vencord integration uses a short generated tone by default and does not
+redistribute audio. Any custom notification sound is selected and stored by
+the user through the plugin settings.
 
 The animated subscriber border also uses the separately maintained
 [Stroke Glow Shadow plugin](https://github.com/FiniteSingularity/obs-stroke-glow-shadow).
 The plugin is not included in this repository; install it from its own
 [release page](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases)
 and review its upstream license and release notes.
+
+The files in `fonts/openai-sans/` are optional third-party OpenAI Sans font
+assets. They are not covered by this repository's MIT License; use them in
+accordance with OpenAI's applicable font and brand terms. See the
+[OpenAI design guidelines](https://openai.com/brand/).
 

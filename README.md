@@ -24,7 +24,7 @@ Install only the items required by the feature you intend to use.
 | --- | --- | --- |
 | [OBS Studio](https://obsproject.com/download) | Every overlay | Install the official OBS package. It includes Browser Source. |
 | A text editor such as Windows Notepad | Customisation | Used to change dates, titles, colours, and ports. Do not use Microsoft Word. |
-| Bundled OpenAI Sans `.otf` files | Optional countdown typography | The countdown works without them and falls back to a system sans-serif font. |
+| Bundled OpenAI Sans `.otf` files | Intended countdown typography (optional) | OpenAI Sans is the intended typeface for the countdown's clean visual design. The countdown still works without it and falls back to a system sans-serif font. |
 | A Google account with access to your YouTube channel | YouTube subscriber count | The account must be able to open that channel in YouTube Studio. |
 | [Stroke Glow Shadow](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases) | Animated subscriber stroke | Third-party OBS plugin. Confirm that its current release supports your OBS version and operating system. |
 | [Node.js 22 or newer](https://nodejs.org/en/download) | Discord typing bridge and Vencord source build | Node.js includes `npm`. |
@@ -227,9 +227,10 @@ const TARGET_DATE_TIME = "2026-12-20T20:00:00+00:00";
 The countdown reaches zero and stops. If it immediately shows zero, the target
 time is in the past or the timezone is wrong.
 
-## Optional OpenAI Sans installation
+## OpenAI Sans (intended, but optional)
 
-The five `.otf` files beside the countdown are optional.
+The countdown is designed to use the five bundled OpenAI Sans `.otf` files for
+its intended clean appearance. They are not required for the countdown to work.
 
 1. Open `overlays\countdown`.
 2. Select the five `OpenAI-Sans-*.otf` files.
@@ -237,7 +238,8 @@ The five `.otf` files beside the countdown are optional.
 4. Select **Install** or **Install for all users**.
 5. Restart OBS or refresh the Browser Source.
 
-The overlay remains functional without these files.
+Without these files, the countdown still functions and uses a fallback system
+sans-serif font. Only the intended typography and clean appearance change.
 
 ---
 

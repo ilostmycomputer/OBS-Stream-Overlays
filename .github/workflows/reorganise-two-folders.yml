@@ -1,0 +1,134 @@
+name: Reorganise repository into two folders
+
+on:
+  push:
+    paths:
+      - .github/workflows/reorganise-two-folders.yml
+
+permissions:
+  contents: write
+
+jobs:
+  reorganise:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Reorganise files and update paths
+        shell: python
+        run: |
+          from pathlib import Path
+          import os
+          import re
+          import shutil
+
+          root = Path.cwd()
+          content_name = "1-OVERLAYS-AND-TYPING-PLUGIN"
+          docs_name = "2-DOCUMENTATION"
+          content = root / content_name
+          documentation = root / docs_name
+
+          if content.exists() or documentation.exists():
+              raise SystemExit("Destination folders already exist.")
+
+          content.mkdir()
+          documentation.mkdir()
+
+          for name in ("overlays", "integrations"):
+              source = root / name
+              if not source.exists():
+                  raise SystemExit(f"Required folder is missing: {name}")
+              shutil.move(str(source), str(content / name))
+
+          excluded = {".git", ".github", content_name, docs_name}
+          for entry in list(root.iterdir()):
+              if entry.name in excluded:
+                  continue
+              shutil.move(str(entry), str(documentation / entry.name))
+
+          for markdown in documentation.rglob("*.md"):
+              text = markdown.read_text(encoding="utf-8")
+
+              # Displayed paths should be clear from the downloaded repository root.
+              text = text.replace("overlays/", f"{content_name}/overlays/")
+              text = text.replace("integrations/", f"{content_name}/integrations/")
+              text = text.replace("overlays\\", f"{content_name}\\overlays\\")
+              text = text.replace("integrations\\", f"{content_name}\\integrations\\")
+
+              # Markdown links must be relative to each documentation file.
+              relative_content = os.path.relpath(content, markdown.parent).replace(os.sep, "/")
+              text = text.replace(
+                  f"]({content_name}/overlays/",
+                  f"]({relative_content}/overlays/",
+              )
+              text = text.replace(
+                  f"]({content_name}/integrations/",
+                  f"]({relative_content}/integrations/",
+              )
+
+              text = text.replace("the root README.md", f"{docs_name}/README.md")
+              text = text.replace("root README", f"README in `{docs_name}`")
+              markdown.write_text(text, encoding="utf-8")
+
+          # Update the one source comment that points readers to the old root README.
+          gradient = content / "overlays" / "gradient-stroke" / "gradient.html"
+          gradient_text = gradient.read_text(encoding="utf-8")
+          gradient_text = gradient_text.replace(
+              "see the root README.md",
+              f"see {docs_name}/README.md",
+          )
+          gradient.write_text(gradient_text, encoding="utf-8")
+
+      - name: Verify typing notification files
+        working-directory: 1-OVERLAYS-AND-TYPING-PLUGIN/overlays/typing-notifications
+        run: |
+          npm ci
+          npm run check
+          rm -rf node_modules
+
+      - name: Validate documentation links and root layout
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          root = Path.cwd()
+          content_name = "1-OVERLAYS-AND-TYPING-PLUGIN"
+          docs_name = "2-DOCUMENTATION"
+
+          for markdown in (root / docs_name).rglob("*.md"):
+              text = markdown.read_text(encoding="utf-8")
+              links = re.findall(r"!?\[[^\]]*\]\(([^)]+)\)", text)
+              for raw_target in links:
+                  target = raw_target.strip().strip("<>").split()[0]
+                  if re.match(r"^(?:https?:|mailto:|#)", target, re.I):
+                      continue
+                  local_target = target.split("#", 1)[0]
+                  if not local_target:
+                      continue
+                  resolved = (markdown.parent / local_target).resolve()
+                  if not resolved.exists():
+                      raise SystemExit(f"Broken local link in {markdown}: {target}")
+
+          workflow = root / ".github" / "workflows" / "reorganise-two-folders.yml"
+          workflow.unlink()
+          workflows = workflow.parent
+          github = workflows.parent
+          if workflows.exists() and not any(workflows.iterdir()):
+              workflows.rmdir()
+          if github.exists() and not any(github.iterdir()):
+              github.rmdir()
+
+          visible = sorted(path.name for path in root.iterdir() if path.name != ".git")
+          expected = [content_name, docs_name]
+          if visible != expected:
+              raise SystemExit(f"Expected only {expected} at root, found {visible}")
+
+      - name: Commit reorganised repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Group repository into two folders"
+          git push

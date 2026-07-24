@@ -26,7 +26,7 @@ choose:
 | Animated subscriber border | [Stroke Glow Shadow plugin](https://github.com/FiniteSingularity/obs-stroke-glow-shadow) and its [latest release installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases) | Adds the stroke, glow, and shadow around a keyed subscriber-count source. |
 | Discord typing alert bridge | [Node.js 22 or newer](https://nodejs.org/en/download) | Runs the local bridge. Node.js includes `npm`. |
 | Discord typing alert bridge | `ws` | The bridge's WebSocket dependency. `npm install` installs it automatically; you do not need to find it yourself. |
-| Discord typing alert Vencord plugin | [pnpm 11](https://pnpm.io/installation) and [Vencord source](https://github.com/Vendicated/Vencord) | Installs Vencord's dependencies and builds the custom user plugin. |
+| Discord typing alert tracking | [pnpm 11](https://pnpm.io/installation) and [Vencord source](https://github.com/Vendicated/Vencord) | Vencord is required to read Discord typing events. It is a separate third-party project that you install and build separately. |
 | Vencord plugin default sound | A sound file you have permission to use, named `fears-to-fathom-notification-sound.mp3` | Place it beside the copied `index.tsx`; the plugin imports it at build time. This repository intentionally does not redistribute the audio. |
 | Downloading Vencord with `git clone` | Git (optional) | Downloading a ZIP works without Git. |
 
@@ -104,6 +104,11 @@ current page**. There is no visible button or control on stream.
 ## Discord typing alert (optional)
 
 Skip this section if you only want the visual overlays.
+
+**Vencord is required for the typing-tracking part of this feature.** Vencord
+is a separate third-party Discord client modification. This repository does not
+install or redistribute Vencord; it only provides the custom plugin integration,
+local bridge, and OBS overlay that work with it.
 
 This alert uses three pieces:
 

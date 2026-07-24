@@ -471,6 +471,8 @@
         });
       }
 
+      let timer = null;
+
       function updateCountdown() {
         const remaining = Math.max(0, endTime - Date.now());
         const totalSeconds = Math.ceil(remaining / second);
@@ -480,15 +482,17 @@
         renderValue(elements.minutes, pad(Math.floor((totalSeconds % secondsPerHour) / secondsPerMinute)));
         renderValue(elements.seconds, pad(totalSeconds % secondsPerMinute));
 
-        if (remaining === 0) {
+        if (remaining === 0 && timer !== null) {
           clearInterval(timer);
+          timer = null;
         }
+
+        return remaining;
       }
 
-      let timer;
-      updateCountdown();
-      timer = setInterval(updateCountdown, 250);
+      if (updateCountdown() > 0) {
+        timer = setInterval(updateCountdown, 250);
+      }
     </script>
   </body>
 </html>
-

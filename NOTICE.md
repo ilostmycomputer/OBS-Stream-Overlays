@@ -12,3 +12,9 @@ The Vencord integration references a notification sound supplied by the
 Vencord checkout at build time. This repository does not redistribute that
 audio asset.
 
+The animated subscriber border also uses the separately maintained
+[Stroke Glow Shadow plugin](https://github.com/FiniteSingularity/obs-stroke-glow-shadow).
+The plugin is not included in this repository; install it from its own
+[release page](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases)
+and review its upstream license and release notes.
+

@@ -5,8 +5,9 @@ repository's existing MIT License in `LICENSE`.
 
 `integrations/vencord/TypingNotifications/index.tsx` is a Vencord user-plugin
 integration and retains its upstream Vencord GPL-3.0-or-later header. Vencord
-itself is a separate project; this repository only distributes the integration
-source file. The full GPL text is kept at `LICENSES/GPL-3.0-or-later.txt`.
+is a separate third-party project; this repository only distributes the
+integration source file and does not install or redistribute Vencord itself.
+The full GPL text is kept at `LICENSES/GPL-3.0-or-later.txt`.
 
 The Vencord integration imports a notification sound named
 `fears-to-fathom-notification-sound.mp3` from the Vencord user-plugin folder at

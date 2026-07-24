@@ -11,13 +11,11 @@ import { definePluginSettings } from "@api/Settings";
 import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
 import { Button, ChannelRouter, ChannelStore, Forms, GuildMemberStore, Menu, React, UserStore } from "@webpack/common";
-import defaultSoundBase64 from "file://fears-to-fathom-notification-sound.mp3?base64";
 import type { ReactElement } from "react";
 
 const logger = new Logger("TypingNotifications");
 const DATA_KEY = "TypingNotifications.watchedChannels";
 const CUSTOM_SOUND_KEY = "TypingNotifications.customSound";
-const DEFAULT_SOUND_URL = `data:audio/mpeg;base64,${defaultSoundBase64}`;
 const MAX_CUSTOM_SOUND_BYTES = 10 * 1024 * 1024;
 const AUDIO_FILE_PATTERN = /\.(?:aac|flac|m4a|mp3|ogg|opus|wav|webm)$/i;
 const TYPING_MENU_ITEM_ID = "vc-typing-notifications";
@@ -71,7 +69,6 @@ let soundContext: AudioContext | null = null;
 let customSoundName: string | null = null;
 let customSoundUrl: string | null = null;
 let customSoundAudio: HTMLAudioElement | null = null;
-let defaultSoundAudio: HTMLAudioElement | null = null;
 let obsSocket: WebSocket | null = null;
 let obsReconnectTimer: number | null = null;
 let obsStopping = false;
@@ -372,14 +369,7 @@ function playFallbackTone() {
 }
 
 function playDefaultSound() {
-    const audio = defaultSoundAudio ??= new Audio(DEFAULT_SOUND_URL);
-    audio.preload = "auto";
-    audio.pause();
-    audio.currentTime = 0;
-    void audio.play().catch(error => {
-        logger.error("Failed to play the default typing sound; using the fallback tone", error);
-        playFallbackTone();
-    });
+    playFallbackTone();
 }
 
 function playCustomSound() {
@@ -406,8 +396,6 @@ function stopTypingSound() {
     if (context && context.state !== "closed") {
         void context.close().catch(error => logger.error("Failed to close typing sound", error));
     }
-    defaultSoundAudio?.pause();
-    defaultSoundAudio = null;
     releaseCustomSound();
 }
 

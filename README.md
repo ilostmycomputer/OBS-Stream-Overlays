@@ -132,7 +132,7 @@ The eye icon beside a source shows or hides it without deleting it.
 
 ---
 
-# Part 3: Countdown
+# 1. Countdown
 
 File: [`overlays/countdown/summer-update-countdown.html`](overlays/countdown/summer-update-countdown.html)
 
@@ -180,7 +180,7 @@ The overlay remains functional without these files.
 
 ---
 
-# Part 4: Confetti
+# 2. Confetti
 
 File: [`overlays/confetti/confetti.html`](overlays/confetti/confetti.html)
 
@@ -202,7 +202,7 @@ Browser Source and enable **Refresh browser when scene becomes active**.
 
 ---
 
-# Part 5: Animated YouTube Studio subscriber count
+# 3. Animated YouTube Studio subscriber count
 
 This section starts from an empty scene and creates the complete effect:
 
@@ -446,7 +446,7 @@ otherwise expose private Studio information on stream.
 
 ---
 
-# Part 6: Discord typing alert
+# 4. Discord typing alert
 
 This is the only feature with a multi-program installation. Complete it in this
 order:

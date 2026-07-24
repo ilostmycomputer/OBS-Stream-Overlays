@@ -295,6 +295,8 @@ owner in YouTube Studio. It does not use a third-party subscriber-count site.
    version.
 4. Download the compiled installer. Do not download GitHub's automatically
    generated **Source code (zip)** archive.
+
+Using the compiled installer is the easy way to install Stroke Glow Shadow: run it, follow the prompts, and reopen OBS. The **Source code (zip)** archive is not an installer.
 5. Run the installer.
 6. Reopen OBS.
 7. Right-click any source and select **Filters**.

@@ -56,7 +56,7 @@ Stroke Glow Shadow is easy to install when you choose its **compiled installer**
 
 This is the only feature that needs several files and programs. Keep every file inside `overlays/typing-notifications/` together, and also download the Vencord plugin file at `integrations/vencord/TypingNotifications/index.tsx`.
 
-For this feature, downloading the repository ZIP is usually easier. You may then delete or ignore the countdown, confetti, gradient, `.github`, `docs`, and `scripts` folders.
+For this feature, downloading the repository ZIP is usually easier. You may then delete or ignore the countdown, confetti, gradient, and `docs` folders.
 
 [Open the complete Discord typing-alert instructions](FULL_GUIDE.md#4-discord-typing-alert)
 

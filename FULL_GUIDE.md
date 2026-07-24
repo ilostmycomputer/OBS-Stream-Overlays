@@ -1034,31 +1034,6 @@ interfaces can change after this guide is published.
 
 ---
 
-# Repository checks
-
-The repository includes automated validation for:
-
-- JavaScript syntax in every HTML overlay;
-- local README links;
-- the required YouTube Studio subscriber-count instructions;
-- locked bridge dependency consistency;
-- bridge health and end-to-end event forwarding;
-- Windows launcher parsing;
-- current-Vencord integration compilation.
-
-To run the local bridge checks:
-
-```powershell
-cd overlays\typing-notifications
-npm.cmd ci
-npm.cmd run check
-```
-
-The Vencord compatibility build runs in GitHub Actions because it needs a full
-Vencord source checkout.
-
----
-
 # Security and privacy
 
 - The Discord bridge binds to `127.0.0.1`, not your LAN or the public internet.

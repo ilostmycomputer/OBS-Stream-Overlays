@@ -66,11 +66,31 @@ function validateBridgePortAgreement() {
     }
 }
 
+function validateGradientSetupGuide() {
+    const guidePath = path.join(root, "overlays", "gradient-stroke", "README.md");
+    assert.ok(fs.existsSync(guidePath), "Missing animated YouTube subscriber-count setup guide.");
+
+    const guide = fs.readFileSync(guidePath, "utf8");
+    const requiredInstructions = [
+        "Select **Interact**",
+        "Replace the generic URL with the copied OBS/embed URL",
+        "**+ → Color Key**",
+        "Remove Counter Background (Color Key)",
+        "Subscriber Border Gradient",
+        "**+ → Stroke**",
+    ];
+
+    for (const instruction of requiredInstructions) {
+        assert.ok(guide.includes(instruction), `Gradient setup guide is missing: ${instruction}`);
+    }
+}
+
 const htmlFiles = walk(path.join(root, "overlays")).filter(file => file.endsWith(".html"));
 assert.ok(htmlFiles.length >= 4, "Expected at least four overlay HTML files.");
 htmlFiles.forEach(validateInlineScripts);
 validateReadmeLinks();
 validatePinnedDependency();
 validateBridgePortAgreement();
+validateGradientSetupGuide();
 
 console.log(`Repository validation passed for ${htmlFiles.length} HTML overlays.`);

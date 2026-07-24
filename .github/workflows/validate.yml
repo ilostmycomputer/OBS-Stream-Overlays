@@ -26,6 +26,9 @@ jobs:
       - name: Validate repository files
         run: node scripts/validate-repository.mjs
 
+      - name: Test countdown lifecycle
+        run: node scripts/test-countdown-lifecycle.mjs
+
       - name: Install locked bridge dependency
         working-directory: overlays/typing-notifications
         run: npm ci
@@ -49,7 +52,7 @@ jobs:
           Write-Host "PowerShell launcher parsed successfully."
 
   vencord-build:
-    name: Build current Vencord with integration
+    name: Validate current Vencord integration
     runs-on: ubuntu-latest
     steps:
       - name: Check out overlay repository
@@ -80,6 +83,14 @@ jobs:
           mkdir -p vencord/src/userplugins/typingNotifications
           cp overlay-repo/integrations/vencord/TypingNotifications/index.tsx vencord/src/userplugins/typingNotifications/index.tsx
 
-      - name: Build Vencord
+      - name: Lint TypingNotifications integration
+        working-directory: vencord
+        run: pnpm exec eslint src/userplugins/typingNotifications/index.tsx
+
+      - name: Type-check current Vencord with integration
+        working-directory: vencord
+        run: pnpm testTsc
+
+      - name: Build current Vencord with integration
         working-directory: vencord
         run: pnpm build

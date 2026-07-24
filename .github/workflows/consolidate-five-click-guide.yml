@@ -1,0 +1,208 @@
+name: Consolidate five-click guide and clean fonts
+
+on:
+  push:
+    paths:
+      - .github/workflows/consolidate-five-click-guide.yml
+
+permissions:
+  contents: write
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Consolidate guide and remove unused files
+        shell: python
+        run: |
+          from pathlib import Path
+          import subprocess
+
+          root_readme = Path("README.md")
+          full_guide = Path("Documentation/FULL_GUIDE.md")
+          tool_dir = Path("Overlays & Plugins/tools/obs-five-click-cursor-zoom")
+          tool_readme = tool_dir / "README.md"
+          countdown_dir = Path("Overlays & Plugins/overlays/countdown")
+
+          required_paths = [root_readme, full_guide, tool_readme, countdown_dir]
+          for path in required_paths:
+              if not path.exists():
+                  raise SystemExit(f"Required path is missing: {path}")
+
+          # Remove both temporary workflows before scanning or committing.
+          for workflow in [
+              Path(".github/workflows/cleanup-unused-countdown-fonts.yml"),
+              Path(".github/workflows/consolidate-five-click-guide.yml"),
+          ]:
+              if workflow.exists():
+                  subprocess.run(["git", "rm", str(workflow)], check=True)
+
+          # The countdown visibly uses only 300, 500 and 700.
+          unused_fonts = [
+              countdown_dir / "OpenAI-Sans-Regular.otf",
+              countdown_dir / "OpenAI-Sans-Semibold.otf",
+          ]
+          required_fonts = [
+              countdown_dir / "OpenAI-Sans-Light.otf",
+              countdown_dir / "OpenAI-Sans-Medium.otf",
+              countdown_dir / "OpenAI-Sans-Bold.otf",
+          ]
+
+          for path in required_fonts:
+              if not path.is_file():
+                  raise SystemExit(f"Required countdown font is missing: {path}")
+          for path in unused_fonts:
+              if path.exists():
+                  subprocess.run(["git", "rm", str(path)], check=True)
+
+          # Build the full-guide section from the existing standalone guide.
+          standalone = tool_readme.read_text(encoding="utf-8").strip()
+          standalone = standalone.replace(
+              "# OBS Five-Click Cursor Zoom",
+              "# 5. Five-click cursor zoom",
+              1,
+          )
+          standalone = standalone.replace(
+              "An open-source Windows helper for OBS Studio.",
+              "Folder: [`Overlays & Plugins/tools/obs-five-click-cursor-zoom/`](../Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom/)\n\nAn open-source Windows helper for OBS Studio.",
+              1,
+          )
+          standalone = standalone.replace(
+              "2. Download these 11 files while preserving the `src` folder, or download the repository ZIP and keep only this folder.",
+              "2. Download these 10 files while preserving the `src` folder, or download the repository ZIP and keep only this folder.",
+          )
+          standalone = standalone.replace("├── README.md\n", "")
+
+          guide = full_guide.read_text(encoding="utf-8")
+          if "# 5. Five-click cursor zoom" in guide:
+              raise SystemExit("The full guide already contains the five-click section.")
+
+          table_anchor = (
+              "| Discord typing alert | [`Overlays & Plugins/overlays/typing-notifications/overlay.html`](../Overlays%20%26%20Plugins/overlays/typing-notifications/overlay.html) | Shows a person's avatar and username when they start typing in a watched Discord channel. | `720 × 200` |"
+          )
+          table_row = (
+              "| Five-click cursor zoom | [`Overlays & Plugins/tools/obs-five-click-cursor-zoom/`](../Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom/) | Triggers a smooth cursor-following OBS zoom after five rapid clicks. | Not a Browser Source |"
+          )
+          if table_anchor not in guide:
+              raise SystemExit("Could not locate the full-guide feature table anchor.")
+          guide = guide.replace(table_anchor, table_anchor + "\n" + table_row, 1)
+
+          guide = guide.replace(
+              "| [OBS Studio](https://obsproject.com/download) | Every overlay | Install the official OBS package. It includes Browser Source. |",
+              "| [OBS Studio](https://obsproject.com/download) | Every overlay and the five-click cursor zoom | Install the official OBS package. It includes Browser Source and OBS WebSocket. |",
+              1,
+          )
+          guide = guide.replace(
+              "| [Node.js 22 or newer](https://nodejs.org/en/download) | Discord typing bridge and Vencord source build | Node.js includes `npm`. |",
+              "| [Node.js 22 or newer](https://nodejs.org/en/download) | Discord typing bridge, Vencord source build, and five-click cursor zoom | Node.js includes `npm`. |",
+              1,
+          )
+
+          troubleshooting_anchor = "\n---\n\n# Troubleshooting\n"
+          if troubleshooting_anchor not in guide:
+              raise SystemExit("Could not locate the troubleshooting section.")
+          guide = guide.replace(
+              troubleshooting_anchor,
+              "\n---\n\n" + standalone + "\n\n---\n\n# Troubleshooting\n",
+              1,
+          )
+
+          # Narrow all font documentation to the three weights actually used.
+          guide = guide.replace(
+              "five bundled OpenAI Sans `.otf` files",
+              "three bundled OpenAI Sans `.otf` files",
+          )
+          guide = guide.replace(
+              "Select the five `OpenAI-Sans-*.otf` files.",
+              "Select `OpenAI-Sans-Light.otf`, `OpenAI-Sans-Medium.otf`, and `OpenAI-Sans-Bold.otf`.",
+          )
+          full_guide.write_text(guide, encoding="utf-8")
+
+          readme = root_readme.read_text(encoding="utf-8")
+          readme = readme.replace(
+              "The five OpenAI Sans font files",
+              "The three OpenAI Sans font files",
+          )
+          readme = readme.replace("- `OpenAI-Sans-Regular.otf`\n", "")
+          readme = readme.replace("- `OpenAI-Sans-Semibold.otf`\n", "")
+          readme = readme.replace(
+              "**[Open the complete cursor-zoom setup, configuration, architecture, privacy, and troubleshooting guide](Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom/README.md)**",
+              "**[Open the complete cursor-zoom setup, configuration, architecture, privacy, and troubleshooting guide](Documentation/FULL_GUIDE.md#5-five-click-cursor-zoom)**",
+          )
+          root_readme.write_text(readme, encoding="utf-8")
+
+          subprocess.run(["git", "rm", str(tool_readme)], check=True)
+
+          # Remove any filename/count references left elsewhere in tracked text files.
+          replacements = {
+              "five OpenAI Sans font files": "three OpenAI Sans font files",
+              "five bundled OpenAI Sans `.otf` files": "three bundled OpenAI Sans `.otf` files",
+          }
+          tracked = subprocess.check_output(["git", "ls-files", "-z"])
+          for raw_path in tracked.split(b"\0"):
+              if not raw_path:
+                  continue
+              path = Path(raw_path.decode("utf-8"))
+              if not path.exists():
+                  continue
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except (UnicodeDecodeError, IsADirectoryError):
+                  continue
+              updated = text
+              for old, new in replacements.items():
+                  updated = updated.replace(old, new)
+              updated = updated.replace("OpenAI-Sans-Regular.otf", "")
+              updated = updated.replace("OpenAI-Sans-Semibold.otf", "")
+              if updated != text:
+                  path.write_text(updated, encoding="utf-8")
+
+      - name: Validate final repository state
+        shell: bash
+        run: |
+          test -f "Overlays & Plugins/overlays/countdown/OpenAI-Sans-Light.otf"
+          test -f "Overlays & Plugins/overlays/countdown/OpenAI-Sans-Medium.otf"
+          test -f "Overlays & Plugins/overlays/countdown/OpenAI-Sans-Bold.otf"
+          test ! -e "Overlays & Plugins/overlays/countdown/OpenAI-Sans-Regular.otf"
+          test ! -e "Overlays & Plugins/overlays/countdown/OpenAI-Sans-Semibold.otf"
+          test ! -e "Overlays & Plugins/tools/obs-five-click-cursor-zoom/README.md"
+          test ! -e ".github/workflows/cleanup-unused-countdown-fonts.yml"
+          test ! -e ".github/workflows/consolidate-five-click-guide.yml"
+
+          grep -q '^# 5\. Five-click cursor zoom$' Documentation/FULL_GUIDE.md
+          grep -q 'Documentation/FULL_GUIDE.md#5-five-click-cursor-zoom' README.md
+          grep -q 'OpenAI-Sans-Light.otf' README.md
+          grep -q 'OpenAI-Sans-Medium.otf' README.md
+          grep -q 'OpenAI-Sans-Bold.otf' README.md
+
+          if git grep -n -E 'OpenAI-Sans-(Regular|Semibold)\.otf|five (bundled )?OpenAI Sans|obs-five-click-cursor-zoom/README\.md'; then
+            echo "Stale font or standalone-guide references remain."
+            exit 1
+          fi
+
+          grep -q 'font-weight: 300' "Overlays & Plugins/overlays/countdown/summer-update-countdown.html"
+          grep -q 'font-weight: 500' "Overlays & Plugins/overlays/countdown/summer-update-countdown.html"
+          grep -q 'font-weight: 700' "Overlays & Plugins/overlays/countdown/summer-update-countdown.html"
+          grep -q 'font-weight: 300' "Overlays & Plugins/overlays/countdown/summer-update-countdown-dark.html"
+          grep -q 'font-weight: 500' "Overlays & Plugins/overlays/countdown/summer-update-countdown-dark.html"
+          grep -q 'font-weight: 700' "Overlays & Plugins/overlays/countdown/summer-update-countdown-dark.html"
+
+          while IFS= read -r -d '' test_file; do
+            node "$test_file"
+          done < <(find . -name 'validate-repository.mjs' -print0)
+
+          while IFS= read -r -d '' test_file; do
+            node "$test_file"
+          done < <(find . -name 'test-countdown-lifecycle.mjs' -print0)
+
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Consolidate five-click guide and remove unused fonts"
+          git push

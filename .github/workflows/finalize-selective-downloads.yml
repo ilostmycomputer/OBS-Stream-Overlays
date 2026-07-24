@@ -1,0 +1,77 @@
+name: Finalise selective download guidance
+
+on:
+  push:
+    paths:
+      - .github/workflows/finalize-selective-downloads.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalise:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Add per-overlay download guidance
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path("README.md")
+          text = path.read_text(encoding="utf-8")
+          marker = "# Beginner setup\n\n## Download the files\n"
+          replacement = """# Beginner setup
+
+## Download only the overlay you want
+
+You do **not** need to install or keep this entire repository when you only want
+one overlay. This repository is a collection of separate files, not one program.
+Download the files listed for your chosen feature and ignore the other folders.
+
+| Feature | Files needed from this repository | Other software or access needed |
+| --- | --- | --- |
+| **Countdown** | [`overlays/countdown/summer-update-countdown.html`](overlays/countdown/summer-update-countdown.html) | OBS Studio. The five `OpenAI-Sans-*.otf` files in the same folder are optional and only provide the intended typography. |
+| **Confetti** | [`overlays/confetti/confetti.html`](overlays/confetti/confetti.html) | OBS Studio only. |
+| **Animated YouTube Studio subscriber count** | [`overlays/gradient-stroke/gradient.html`](overlays/gradient-stroke/gradient.html) | OBS Studio, access to your channel in YouTube Studio, and the compiled Stroke Glow Shadow installer. |
+| **Discord typing alert** | Every file inside `overlays/typing-notifications/`, plus [`integrations/vencord/TypingNotifications/index.tsx`](integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, Node.js 22 or newer, pnpm 11.9.0, and Vencord source. Git is optional. |
+
+For a single linked file:
+
+1. Open the file link in the table.
+2. Select **Download raw file** near the top-right of the GitHub file page.
+3. Save it with the original filename inside a permanent folder.
+4. Do not move it after adding it to OBS, because OBS remembers its file path.
+
+For the Discord typing alert, downloading the repository ZIP is usually easier
+because that feature needs several files from two folders. Downloading the ZIP
+does **not** install every overlay; it only copies the files to your computer.
+You may delete or ignore every folder not listed in the table above.
+
+You do not need `.github/`, `docs/`, `scripts/`, or the other overlay folders to
+use one standalone overlay.
+
+## Download the whole ZIP (optional easiest method)
+"""
+
+          if "## Download only the overlay you want" not in text:
+              if marker not in text:
+                  raise SystemExit("Beginner download heading was not found.")
+              text = text.replace(marker, replacement, 1)
+              path.write_text(text, encoding="utf-8")
+
+      - name: Validate repository
+        run: |
+          node scripts/validate-repository.mjs
+          node scripts/test-countdown-lifecycle.mjs
+
+      - name: Commit final guidance
+        run: |
+          rm .github/workflows/finalize-selective-downloads.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md .github/workflows/finalize-selective-downloads.yml
+          git commit -m "Document per-overlay downloads"
+          git push

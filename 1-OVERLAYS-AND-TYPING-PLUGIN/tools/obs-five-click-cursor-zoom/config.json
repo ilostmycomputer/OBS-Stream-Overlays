@@ -1,0 +1,29 @@
+{
+  "obs": {
+    "url": "ws://127.0.0.1:4455",
+    "password": "replace this",
+    "zoomSourceName": "Click Zoom Layer"
+  },
+  "trigger": {
+    "clicks": 5,
+    "windowMs": 1200,
+    "radiusPx": 180,
+    "cooldownMs": 2000,
+    "leftMouseButtonCode": 1,
+    "activationMode": "recording"
+  },
+  "zoom": {
+    "factor": 2.5,
+    "trackMs": 15000,
+    "zoomInMs": 300,
+    "zoomOutMs": 400,
+    "fps": 60,
+    "followSmoothing": 0.18
+  },
+  "display": {
+    "left": 0,
+    "top": 0,
+    "width": 1920,
+    "height": 1080
+  }
+}

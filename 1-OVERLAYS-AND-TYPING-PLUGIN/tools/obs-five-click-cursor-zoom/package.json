@@ -1,0 +1,22 @@
+{
+  "name": "obs-click-zoom",
+  "version": "1.2.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "obs-websocket-js": "5.0.8",
+    "uiohook-napi": "1.5.5"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Open-source OBS helper that triggers a smooth cursor-following zoom after five rapid clicks.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilostmycomputer/OBS-Stream-Overlays.git",
+    "directory": "1-OVERLAYS-AND-TYPING-PLUGIN/tools/obs-five-click-cursor-zoom"
+  }
+}

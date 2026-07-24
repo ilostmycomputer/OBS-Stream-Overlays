@@ -1,12 +1,12 @@
 # OBS Stream Overlays
 
-Free, local browser-source overlays for OBS Studio. **You do not need to install or download the whole repository if you only want one overlay.** Pick the feature you want below and download only its listed files.
+Free, local overlays and helper tools for OBS Studio. **You do not need to install or download the whole repository if you only want one feature.** Pick the feature you want below and download only its listed files.
 
 Downloading the repository ZIP does not install anything. It only copies the files to your computer, so using the ZIP and deleting the folders you do not need is also fine.
 
 > The repository is grouped into two folders. This README remains at the root because GitHub only displays a repository README automatically from the root.
 
-## What to download for each overlay
+## What to download for each feature
 
 | Feature | Files needed from this repository | Install or access separately |
 | --- | --- | --- |
@@ -14,6 +14,7 @@ Downloading the repository ZIP does not install anything. It only copies the fil
 | **Confetti** | [`confetti.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
 | **Animated YouTube Studio subscriber count** | [`gradient.html`](1-OVERLAYS-AND-TYPING-PLUGIN/overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
 | **Discord typing alert** | The entire `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/typing-notifications/` folder, plus [`1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx`](1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
+| **Five-click cursor zoom** | The entire [`1-OVERLAYS-AND-TYPING-PLUGIN/tools/obs-five-click-cursor-zoom/`](1-OVERLAYS-AND-TYPING-PLUGIN/tools/obs-five-click-cursor-zoom/) folder | OBS Studio 28 or newer, OBS WebSocket, [Node.js 22 or newer](https://nodejs.org/en/download), and Windows 10 or 11. |
 
 ## Downloading one file
 
@@ -56,9 +57,9 @@ Stroke Glow Shadow is easy to install when you choose its **compiled installer**
 
 ### Discord typing alert
 
-This is the only feature that needs several files and programs. Keep every file inside `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/typing-notifications/` together, and also download the Vencord plugin file at `1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx`.
+This is the only overlay that needs several files and programs. Keep every file inside `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/typing-notifications/` together, and also download the Vencord plugin file at `1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx`.
 
-For this feature, downloading the repository ZIP is usually easier. You may then delete or ignore the countdown, confetti, gradient, and documentation folders.
+For this feature, downloading the repository ZIP is usually easier. You may then delete or ignore the countdown, confetti, gradient, cursor-zoom, and documentation folders.
 
 [Open the complete Discord typing-alert instructions](2-DOCUMENTATION/FULL_GUIDE.md#4-discord-typing-alert)
 
@@ -67,6 +68,14 @@ For this feature, downloading the repository ZIP is usually easier. You may then
 If you only want typing notifications inside Discord, you do **not** need to install, configure, or run the local bridge, OBS, or the OBS Browser Source. The bridge exists only to forward typing events from Vencord into the stream overlay.
 
 Install the custom Vencord plugin using [Section C](2-DOCUMENTATION/FULL_GUIDE.md#c-install-the-custom-vencord-source-build), then enable it and choose watched channels using [Section D](2-DOCUMENTATION/FULL_GUIDE.md#d-enable-and-configure-typingnotifications). The normal desktop notification and typing sound work without the bridge.
+
+### Five-click cursor zoom
+
+This Windows helper detects five rapid left-clicks, checks whether OBS is recording or streaming, enables a cursor-free Display Capture, smoothly zooms towards the cursor, follows it for 15 seconds, then restores the original scene state.
+
+The public configuration uses a placeholder WebSocket password and a `1920 × 1080` primary display. Replace the password and adjust the display values locally before running it. All runtime logic is committed as readable JavaScript; there is no hidden executable, minified bundle, telemetry, or cloud component.
+
+**[Open the complete cursor-zoom setup, configuration, architecture, privacy, and troubleshooting guide](1-OVERLAYS-AND-TYPING-PLUGIN/tools/obs-five-click-cursor-zoom/README.md)**
 
 ## Complete beginner guide
 
@@ -82,4 +91,4 @@ Want to give feedback or suggest new features? [Check out my Discord!](https://d
 
 ## License
 
-The original overlays, bridge, launcher, tests, and documentation use the repository's MIT License. The Vencord integration retains its GPL-3.0-or-later notice. The optional OpenAI Sans files are separate third-party assets. See [`2-DOCUMENTATION/docs/NOTICE.md`](2-DOCUMENTATION/docs/NOTICE.md).
+The original overlays, bridge, launcher, cursor-zoom helper, tests, and documentation use the repository's MIT License. The Vencord integration retains its GPL-3.0-or-later notice. The optional OpenAI Sans files are separate third-party assets. See [`2-DOCUMENTATION/docs/NOTICE.md`](2-DOCUMENTATION/docs/NOTICE.md).

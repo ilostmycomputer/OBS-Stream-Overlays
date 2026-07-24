@@ -23,7 +23,7 @@ choose:
 
 | If you use... | Install or use... | Why you need it |
 | --- | --- | --- |
-| Countdown typography | Bundled [OpenAI Sans](https://openai.com/brand/) files (optional) | Makes the countdown look cleaner if you install them locally. No Node.js or build step is needed; the countdown falls back to a system sans-serif font otherwise. |
+| Countdown typography | Bundled [OpenAI Sans](https://openai.com/brand/) files beside the countdown (optional) | Makes the countdown look cleaner if you install them locally. No Node.js or build step is needed; the countdown falls back to a system sans-serif font otherwise. |
 | Animated subscriber border | [Stroke Glow Shadow plugin](https://github.com/FiniteSingularity/obs-stroke-glow-shadow) and its [latest release installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases) | Adds the stroke, glow, and shadow around a keyed subscriber-count source. |
 | Discord typing alert bridge | [Node.js 22 or newer](https://nodejs.org/en/download) | Runs the local bridge. Node.js includes `npm`. |
 | Discord typing alert bridge | `ws` | The bridge's WebSocket dependency. `npm install` installs it automatically; you do not need to find it yourself. |
@@ -61,11 +61,11 @@ OBS is open, right-click the source and choose **Refresh cache of current page**
 
 ### Optional: OpenAI Sans
 
-The repository includes five local OpenAI Sans weights in
-`fonts/openai-sans/`. They are optional and only change the typography—the
-countdown still works with its fallback sans-serif font if you do not install
-them. The existing countdown already asks for **OpenAI Sans** first in its font
-stack.
+The repository includes five local OpenAI Sans weights directly beside the
+countdown in `overlays/countdown/`. They are optional and only change the
+typography—the countdown still works with its fallback sans-serif font if you
+do not install them. The existing countdown already asks for **OpenAI Sans**
+first in its font stack.
 
 On Windows, open the folder, select the `.otf` files, right-click, and choose
 **Install**. Then refresh the countdown Browser Source in OBS. No Node.js or

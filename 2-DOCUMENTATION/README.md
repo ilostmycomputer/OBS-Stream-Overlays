@@ -8,10 +8,10 @@ Downloading the repository ZIP does not install anything. It only copies the fil
 
 | Feature | Files needed from this repository | Install or access separately |
 | --- | --- | --- |
-| **Countdown** | [`summer-update-countdown.html`](overlays/countdown/summer-update-countdown.html) | [OBS Studio](https://obsproject.com/download). The five OpenAI Sans font files in `overlays/countdown/` are optional and only provide the intended clean typography. |
-| **Confetti** | [`confetti.html`](overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
-| **Animated YouTube Studio subscriber count** | [`gradient.html`](overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
-| **Discord typing alert** | The entire `overlays/typing-notifications/` folder, plus [`integrations/vencord/TypingNotifications/index.tsx`](integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. |
+| **Countdown** | [`summer-update-countdown.html`](../1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/summer-update-countdown.html) | [OBS Studio](https://obsproject.com/download). The five OpenAI Sans font files in `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/countdown/` are optional and only provide the intended clean typography. |
+| **Confetti** | [`confetti.html`](../1-OVERLAYS-AND-TYPING-PLUGIN/overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
+| **Animated YouTube Studio subscriber count** | [`gradient.html`](../1-OVERLAYS-AND-TYPING-PLUGIN/overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
+| **Discord typing alert** | The entire `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/typing-notifications/` folder, plus [`1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx`](../1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. |
 
 ## Downloading one file
 
@@ -54,7 +54,7 @@ Stroke Glow Shadow is easy to install when you choose its **compiled installer**
 
 ### Discord typing alert
 
-This is the only feature that needs several files and programs. Keep every file inside `overlays/typing-notifications/` together, and also download the Vencord plugin file at `integrations/vencord/TypingNotifications/index.tsx`.
+This is the only feature that needs several files and programs. Keep every file inside `1-OVERLAYS-AND-TYPING-PLUGIN/overlays/typing-notifications/` together, and also download the Vencord plugin file at `1-OVERLAYS-AND-TYPING-PLUGIN/integrations/vencord/TypingNotifications/index.tsx`.
 
 For this feature, downloading the repository ZIP is usually easier. You may then delete or ignore the countdown, confetti, gradient, and `docs` folders.
 

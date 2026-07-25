@@ -32,7 +32,7 @@ The existing overlay and tool files remain the source of truth. The showcase mus
 
 ### Start Stream Countdown
 
-Show the real start-stream countdown inside the card. The preview should expose both approved variants without duplicating the production files. A compact Light/Dark control may switch which existing HTML file is displayed.
+Show the real start-stream countdown inside the card. The preview exposes both approved variants without duplicating the production files. A compact Light/Dark control switches between the existing light and dark HTML files.
 
 GitHub link target: `Overlays & Plugins/overlays/countdown/`
 
@@ -50,15 +50,15 @@ GitHub link target: `Overlays & Plugins/overlays/gradient-stroke/gradient.html`
 
 ### Discord Typing Alert
 
-The normal overlay depends on the local bridge and Vencord integration, so the public showcase must not require those dependencies. The card should use a safe visual demo with fake user data that reproduces the appearance of the finished alert without connecting to Discord or a local WebSocket bridge.
+The normal overlay depends on the local bridge and Vencord integration, so the public showcase must not require those dependencies. The card uses a safe visual demo with fake user data that reproduces the appearance of the finished alert without connecting to Discord or a local WebSocket bridge.
 
-The production overlay must remain unchanged.
+The production overlay remains unchanged.
 
 GitHub link target: `Overlays & Plugins/overlays/typing-notifications/`
 
 ### Five-click Cursor Zoom
 
-This is not a Browser Source, so its card should use a simple visual demonstration of the finished behaviour rather than pretending the real tool can execute in GitHub Pages. The demo should communicate that five rapid clicks trigger a smooth cursor-following zoom.
+This is not a Browser Source, so its card uses a simple visual demonstration of the finished behaviour rather than pretending the real tool can execute in GitHub Pages. The demo communicates that five rapid clicks trigger a smooth cursor-following zoom.
 
 GitHub link target: `Overlays & Plugins/tools/obs-five-click-cursor-zoom/`
 
@@ -70,15 +70,16 @@ The root page is a single showcase view:
 2. Short neutral subtitle describing the page as a collection of OBS overlays and tools.
 3. Responsive card grid containing only the finished projects above.
 
-No separate navigation or footer sections are required beyond what is necessary for the gallery to function cleanly.
+There is no site navigation, documentation section, marketing section, or footer content beyond the showcase itself.
 
 ## Architecture
 
 - Root `index.html` is the GitHub Pages entry point.
-- Showcase-specific CSS and JavaScript may live under a small `showcase/` directory to keep the root uncluttered.
+- Showcase-specific styling lives in `showcase/showcase.css`.
+- Showcase-specific interaction and demo logic lives in `showcase/showcase.js`.
 - Existing repository HTML files are referenced directly for previews where they can run safely in a normal browser.
 - Showcase-only demo logic is isolated from production overlay files.
-- Links use repository-relative or canonical GitHub URLs so each card points directly to the relevant file or folder.
+- Links use canonical GitHub URLs so each card points directly to the relevant file or folder.
 
 ## Data flow
 
@@ -94,8 +95,8 @@ No API keys, tokens, OBS WebSocket credentials, Discord credentials, or private 
 ## Failure behaviour
 
 - If an embedded preview fails to load, the card still shows its title, description, and GitHub link.
-- Demo-only controls must fail silently rather than blocking the rest of the page.
-- The layout must remain readable without JavaScript where possible.
+- Demo-only controls fail silently rather than blocking the rest of the page.
+- The layout remains readable without JavaScript where possible.
 
 ## Verification
 

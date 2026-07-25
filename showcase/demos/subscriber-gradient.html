@@ -84,20 +84,10 @@
       margin-right: 0.02em;
     }
 
+    .stroke .digit-face,
     .stroke .comma {
       color: transparent;
-      background: conic-gradient(
-        from var(--gradient-angle),
-        #e8c94c 0deg,
-        #facc15 90deg,
-        #ca8a04 180deg,
-        #facc15 270deg,
-        #e8c94c 360deg
-      );
-      background-clip: text;
-      -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: rotate-gradient 6s linear infinite;
     }
 
     .fill .comma {
@@ -315,7 +305,7 @@
 
     function renderCount(value, animate = true, countDirection = 1) {
       const formatted = formatCount(value);
-      strokeLayer.textContent = formatted;
+      renderLayer(strokeLayer, value, animate, countDirection);
       renderLayer(fillLayer, value, animate, countDirection);
       counter.setAttribute("aria-label", `Subscriber count ${formatted}`);
     }

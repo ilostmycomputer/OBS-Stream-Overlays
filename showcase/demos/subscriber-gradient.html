@@ -45,7 +45,7 @@
       font-size: clamp(88px, 22vw, 132px);
       font-weight: 700;
       line-height: 1;
-      letter-spacing: -0.05em;
+      letter-spacing: 0;
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum" 1;
       white-space: nowrap;
@@ -74,15 +74,18 @@
 
     .comma {
       position: relative;
-      top: 0.15em;
+      top: 3px;
       display: inline-block;
-      width: 0.28em;
+      box-sizing: border-box;
+      width: 0.22em;
+      height: var(--digit-height);
+      padding-top: 0.02em;
       font: inherit;
-      font-size: 0.72em;
-      line-height: 1;
+      line-height: 1.08em;
+      letter-spacing: 0;
       text-align: center;
-      margin-left: -0.02em;
-      margin-right: 0.02em;
+      vertical-align: top;
+      margin-inline: -0.01em;
     }
 
 
@@ -95,8 +98,8 @@
       position: relative;
       top: 3px;
       display: inline-block;
-      flex: 0 0 0.82em;
-      width: 0.82em;
+      flex: 0 0 0.74em;
+      width: 0.74em;
       height: var(--digit-height);
       overflow: hidden;
       vertical-align: top;
@@ -419,7 +422,7 @@
       text.setAttribute("font-weight", "700");
       text.setAttribute("font-variant-numeric", "tabular-nums");
       text.setAttribute("font-feature-settings", '"tnum" 1');
-      text.setAttribute("letter-spacing", character === "," ? "0" : "-0.05em");
+      text.setAttribute("letter-spacing", "0");
       text.setAttribute("text-anchor", "middle");
       text.setAttribute("fill", "none");
       text.setAttribute("stroke", "url(#subscriber-gradient)");
@@ -474,14 +477,19 @@
 
       group.getBoundingClientRect();
 
+      let settled = false;
       const settle = () => {
-        if (!clipGroup.isConnected) return;
+        if (settled || !clipGroup.isConnected) return;
+        settled = true;
+        group.style.setProperty("transition", "none");
         group.classList.remove("is-rolling-up", "is-rolling-down", "is-rolling-active");
         group.style.removeProperty("--stroke-roll-distance");
         group.replaceChildren();
         createStrokeText(nextDigit, geometry, geometry.faceTop, group);
         clipGroup.removeAttribute("clip-path");
       };
+
+      group.addEventListener("transitionend", settle, { once: true });
 
       if (prefersReducedMotion()) {
         settle();

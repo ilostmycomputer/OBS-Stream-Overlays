@@ -51,7 +51,7 @@ body { margin: 0; min-width: 320px; background: #0b0b0d; }
 }
 
 .preview-frame iframe {
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
 .preview-frame img {

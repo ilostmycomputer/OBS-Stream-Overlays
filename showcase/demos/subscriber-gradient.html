@@ -26,7 +26,7 @@
       box-sizing: border-box;
       display: grid;
       place-items: center;
-      padding: 24px 32px;
+      padding: 48px 64px;
     }
 
     .counter {
@@ -35,7 +35,7 @@
       place-items: center;
       max-width: 100%;
       font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
-      font-size: clamp(68px, 15vw, 124px);
+      font-size: clamp(64px, 13vw, 112px);
       font-weight: 700;
       line-height: 1;
       letter-spacing: -0.05em;
@@ -51,6 +51,10 @@
 
     .counter > span {
       grid-area: 1 / 1;
+      box-sizing: border-box;
+      padding: 28px 36px;
+      margin: -28px -36px;
+      overflow: visible;
       font: inherit;
       letter-spacing: inherit;
       font-variant-numeric: inherit;
@@ -61,8 +65,8 @@
 
     .comma {
       display: inline-block;
-      margin-left: -0.06em;
-      margin-right: -0.07em;
+      margin-left: -0.075em;
+      margin-right: -0.085em;
     }
 
     .stroke {
@@ -103,7 +107,7 @@
 </head>
 <body>
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
-    <filter id="outline-filter" x="-100%" y="-100%" width="300%" height="300%" color-interpolation-filters="sRGB">
+    <filter id="outline-filter" x="-200%" y="-200%" width="500%" height="500%" color-interpolation-filters="sRGB">
       <feMorphology in="SourceGraphic" operator="dilate" radius="4.5" result="dilated" />
       <feComposite in="dilated" in2="SourceGraphic" operator="out" result="outline" />
       <feGaussianBlur in="outline" stdDeviation="0.25" result="softOutline" />
@@ -121,7 +125,7 @@
   <script>
     const counter = document.getElementById("counter");
 
-    document.fonts.load('700 124px "OpenAI Sans"', '3,145').then(() => {
+    document.fonts.load('700 112px "OpenAI Sans"', '3,145').then(() => {
       counter.classList.add("is-ready");
     });
   </script>

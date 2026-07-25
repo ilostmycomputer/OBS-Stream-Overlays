@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; overflow: hidden; background: #09090b; color: #fff; font-family: ui-sans-serif, system-ui, sans-serif; }
+.demo { width: min(92%, 560px); }
+.viewport { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid #2a2a30; border-radius: 14px; background: #121216; }
+.scene { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 30% 35%, #34343b, #141418 55%, #0d0d10); transform-origin: 56% 46%; transition: transform 620ms cubic-bezier(.22,1,.36,1); }
+.scene::before { content: "OBS PREVIEW"; font-size: clamp(1rem, 4vw, 2rem); font-weight: 700; letter-spacing: .08em; opacity: .35; }
+.scene.is-zoomed { transform: scale(2.15); }
+.cursor { position: absolute; left: 56%; top: 46%; width: 16px; height: 22px; transform: translate(-2px, -2px) rotate(-22deg); clip-path: polygon(0 0, 100% 68%, 58% 72%, 43% 100%); background: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,.55)); transition: left 760ms cubic-bezier(.22,1,.36,1), top 760ms cubic-bezier(.22,1,.36,1); }
+.cursor.is-following { left: 68%; top: 58%; }
+.clicks { position: absolute; left: 56%; top: 46%; }
+.click-pulse { position: absolute; width: 18px; height: 18px; margin: -9px; border: 2px solid rgba(255,255,255,.8); border-radius: 50%; animation: pulse 500ms ease-out forwards; }
+.label { margin-top: 12px; text-align: center; color: #aaaab2; font-size: .9rem; }
+@keyframes pulse { from { opacity: 1; transform: scale(.3); } to { opacity: 0; transform: scale(2.4); } }
+</style>
+</head>
+<body>
+<div class="demo" aria-label="Five-click cursor zoom demonstration">
+  <div class="viewport">
+    <div class="scene"></div>
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="clicks" aria-hidden="true"></div>
+  </div>
+  <div class="label">5 rapid clicks → smooth cursor-following zoom</div>
+</div>
+<script>
+const scene = document.querySelector(".scene");
+const cursor = document.querySelector(".cursor");
+const clicks = document.querySelector(".clicks");
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function runDemo() {
+  scene.classList.remove("is-zoomed");
+  cursor.classList.remove("is-following");
+  clicks.replaceChildren();
+  await sleep(800);
+
+  for (let i = 0; i < 5; i += 1) {
+    const pulse = document.createElement("span");
+    pulse.className = "click-pulse";
+    clicks.append(pulse);
+    await sleep(120);
+  }
+
+  scene.classList.add("is-zoomed");
+  await sleep(350);
+  cursor.classList.add("is-following");
+  await sleep(2300);
+  cursor.classList.remove("is-following");
+  scene.classList.remove("is-zoomed");
+  await sleep(900);
+  runDemo();
+}
+
+runDemo();
+</script>
+</body>
+</html>

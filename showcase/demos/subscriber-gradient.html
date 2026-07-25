@@ -36,6 +36,7 @@
 
     .counter {
       --digit-height: 1.14em;
+      position: relative;
       display: inline-grid;
       place-items: center;
       text-align: center;
@@ -84,11 +85,6 @@
       margin-right: 0.02em;
     }
 
-    .stroke .digit-face,
-    .stroke .comma {
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-    }
 
     .fill .comma {
       color: #fff;
@@ -139,24 +135,20 @@
     }
 
     .stroke {
-      color: transparent;
-      background: conic-gradient(
-        from var(--gradient-angle),
-        #e8c94c 0deg,
-        #facc15 90deg,
-        #ca8a04 180deg,
-        #facc15 270deg,
-        #e8c94c 360deg
-      );
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: url(#outline-filter);
-      animation: rotate-gradient 6s linear infinite;
+      position: absolute;
+      inset: 0;
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .fill {
       position: relative;
+      z-index: 1;
       color: #fff;
       -webkit-text-fill-color: #fff;
     }
@@ -174,8 +166,8 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .stroke {
-        animation: none;
+      #gradient-motion {
+        display: none;
       }
 
       .digit-strip {
@@ -197,23 +189,46 @@
 
   <div class="stage">
     <div class="counter" id="counter" role="img" aria-label="Subscriber count 3,145">
-      <span class="stroke" aria-hidden="true"></span>
+      <svg class="stroke" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <defs id="stroke-defs">
+          <linearGradient id="subscriber-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#e8c94c" />
+            <stop offset="25%" stop-color="#facc15" />
+            <stop offset="50%" stop-color="#ca8a04" />
+            <stop offset="75%" stop-color="#facc15" />
+            <stop offset="100%" stop-color="#e8c94c" />
+            <animateTransform id="gradient-motion" attributeName="gradientTransform" type="rotate" dur="6s" repeatCount="indefinite" />
+          </linearGradient>
+        </defs>
+        <g id="stroke-content"></g>
+      </svg>
       <span class="fill" aria-hidden="true"></span>
     </div>
   </div>
 
   <script>
+    const SVG_NS = "http://www.w3.org/2000/svg";
     const counter = document.getElementById("counter");
-    const strokeLayer = counter.querySelector(".stroke");
     const fillLayer = counter.querySelector(".fill");
+    const strokeSvg = counter.querySelector(".stroke");
+    const strokeDefs = counter.querySelector("#stroke-defs");
+    const strokeContent = counter.querySelector("#stroke-content");
+    const gradient = counter.querySelector("#subscriber-gradient");
+    const gradientMotion = counter.querySelector("#gradient-motion");
     const START_COUNT = 3145;
     const MIN_COUNT = 3140;
     const MAX_COUNT = 3165;
     const UPWARD_CHANCE = 0.82;
     let currentCount = START_COUNT;
+    let renderedValue = null;
+    let strokeGeneration = 0;
+
+    function svgElement(name) {
+      return document.createElementNS(SVG_NS, name);
+    }
 
     function formatCount(value) {
-      return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return String(value).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");
     }
 
     function createDigitFace(digit) {
@@ -303,26 +318,202 @@
       });
     }
 
-    function renderCount(value, animate = true, countDirection = 1) {
-      const formatted = formatCount(value);
-      renderLayer(strokeLayer, value, animate, countDirection);
-      renderLayer(fillLayer, value, animate, countDirection);
-      counter.setAttribute("aria-label", `Subscriber count ${formatted}`);
+    function prefersReducedMotion() {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
 
-    function advanceCount() {
-      const previousCount = currentCount;
-      const direction = Math.random() < UPWARD_CHANCE ? 1 : -1;
+    function captureStrokeGeometry() {
+      const counterRect = counter.getBoundingClientRect();
+      const digitWindows = [...fillLayer.children].filter(child =>
+        child.classList.contains("digit-window")
+      );
+      const comma = fillLayer.querySelector(".comma");
 
-      if (currentCount >= MAX_COUNT) {
-        currentCount -= 1;
-      } else if (currentCount <= MIN_COUNT) {
-        currentCount += 1;
+      if (digitWindows.length === 0 || !comma) return null;
+
+      const digits = digitWindows.map(windowElement => {
+        const windowRect = windowElement.getBoundingClientRect();
+        const face = windowElement.querySelector(".digit-face");
+        const faceRect = face ? face.getBoundingClientRect() : windowRect;
+
+        return {
+          x: windowRect.left - counterRect.left,
+          y: windowRect.top - counterRect.top,
+          width: windowRect.width,
+          height: windowRect.height,
+          centerX: windowRect.left - counterRect.left + windowRect.width / 2,
+          faceTop: faceRect.top - counterRect.top,
+          fontSize: Number.parseFloat(getComputedStyle(face ?? windowElement).fontSize)
+        };
+      });
+
+      const commaRect = comma.getBoundingClientRect();
+      const commaStyle = getComputedStyle(comma);
+
+      return {
+        width: counterRect.width,
+        height: counterRect.height,
+        digits,
+        comma: {
+          centerX: commaRect.left - counterRect.left + commaRect.width / 2,
+          faceTop: commaRect.top - counterRect.top,
+          fontSize: Number.parseFloat(commaStyle.fontSize)
+        }
+      };
+    }
+
+    function updateStrokeViewport(geometry) {
+      strokeSvg.setAttribute("viewBox", "0 0 " + geometry.width + " " + geometry.height);
+      gradient.setAttribute("x2", String(geometry.width));
+
+      const centerX = geometry.width / 2;
+      const centerY = geometry.height / 2;
+      const rotationStart = "-45 " + centerX + " " + centerY;
+      const rotationEnd = "315 " + centerX + " " + centerY;
+
+      gradient.setAttribute("gradientTransform", "rotate(" + rotationStart + ")");
+      gradientMotion.setAttribute("from", rotationStart);
+      gradientMotion.setAttribute("to", rotationEnd);
+    }
+
+    function createStrokeText(character, geometry, top, parent) {
+      const text = svgElement("text");
+      text.textContent = character;
+      text.setAttribute("x", String(geometry.centerX));
+      text.setAttribute("y", "0");
+      text.setAttribute("font-family", '"OpenAI Sans", ui-sans-serif, system-ui, sans-serif');
+      text.setAttribute("font-size", String(geometry.fontSize));
+      text.setAttribute("font-weight", "700");
+      text.setAttribute("font-variant-numeric", "tabular-nums");
+      text.setAttribute("font-feature-settings", '"tnum" 1');
+      text.setAttribute("letter-spacing", character === "," ? "0" : "-0.05em");
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("fill", "none");
+      text.setAttribute("stroke", "url(#subscriber-gradient)");
+      text.setAttribute("stroke-width", "9");
+      text.setAttribute("stroke-linejoin", "round");
+      text.setAttribute("stroke-linecap", "round");
+      parent.append(text);
+
+      const bounds = text.getBBox();
+      text.setAttribute("y", String(top - bounds.y));
+      return text;
+    }
+
+    function createStrokeClip(geometry, clipId) {
+      const clipPath = svgElement("clipPath");
+      clipPath.id = clipId;
+      clipPath.setAttribute("clipPathUnits", "userSpaceOnUse");
+
+      const clipRect = svgElement("rect");
+      clipRect.setAttribute("x", String(geometry.x));
+      clipRect.setAttribute("y", String(geometry.y));
+      clipRect.setAttribute("width", String(geometry.width));
+      clipRect.setAttribute("height", String(geometry.height));
+      clipPath.append(clipRect);
+      strokeDefs.append(clipPath);
+
+      return clipId;
+    }
+
+    function createRollingStroke(currentDigit, nextDigit, geometry, countDirection, clipId) {
+      const isDecreasing = countDirection < 0;
+      const group = svgElement("g");
+      group.classList.add("stroke-digit-strip");
+      group.setAttribute("clip-path", "url(#" + clipId + ")");
+      strokeContent.append(group);
+
+      if (isDecreasing) {
+        createStrokeText(nextDigit, geometry, geometry.faceTop, group);
+        createStrokeText(currentDigit, geometry, geometry.faceTop + geometry.height, group);
+        group.setAttribute("transform", "translate(0 " + (-geometry.height) + ")");
       } else {
-        currentCount += direction;
+        createStrokeText(currentDigit, geometry, geometry.faceTop, group);
+        createStrokeText(nextDigit, geometry, geometry.faceTop + geometry.height, group);
       }
 
-      renderCount(currentCount, true, Math.sign(currentCount - previousCount));
+      const finishTransform = isDecreasing ? "translate(0 0)" : "translate(0 " + (-geometry.height) + ")";
+      const motion = svgElement("animateTransform");
+      motion.setAttribute("attributeName", "transform");
+      motion.setAttribute("attributeType", "XML");
+      motion.setAttribute("type", "translate");
+      motion.setAttribute("from", isDecreasing ? "0 " + (-geometry.height) : "0 0");
+      motion.setAttribute("to", isDecreasing ? "0 0" : "0 " + (-geometry.height));
+      motion.setAttribute("dur", "420ms");
+      motion.setAttribute("fill", "freeze");
+      group.append(motion);
+
+      const settle = () => {
+        if (!group.isConnected) return;
+        group.removeAttribute("transform");
+        group.replaceChildren();
+        createStrokeText(nextDigit, geometry, geometry.faceTop, group);
+      };
+
+      if (prefersReducedMotion()) {
+        settle();
+      } else {
+        requestAnimationFrame(() => {
+          if (typeof motion.beginElement === "function") {
+            motion.beginElement();
+          } else {
+            group.setAttribute("transform", finishTransform);
+          }
+        });
+        setTimeout(settle, 520);
+      }
+    }
+
+    function renderStroke(formatted, animate, countDirection, geometry) {
+      if (!geometry) return;
+
+      updateStrokeViewport(geometry);
+      strokeGeneration += 1;
+      strokeDefs.querySelectorAll("clipPath").forEach(clipPath => clipPath.remove());
+      strokeContent.replaceChildren();
+
+      const previous = renderedValue ?? formatted;
+      const previousDigits = previous.replace(",", "");
+      const nextDigits = formatted.replace(",", "");
+      let digitIndex = 0;
+
+      [...formatted].forEach(character => {
+        if (character === ",") {
+          createStrokeText(character, geometry.comma, geometry.comma.faceTop, strokeContent);
+          return;
+        }
+
+        const digitGeometry = geometry.digits[digitIndex];
+        const currentDigit = previousDigits[digitIndex] ?? character;
+        const clipId = "stroke-clip-" + strokeGeneration + "-" + digitIndex;
+        const changed = currentDigit !== character;
+
+        if (animate && changed) {
+          createStrokeClip(digitGeometry, clipId);
+          createRollingStroke(currentDigit, character, digitGeometry, countDirection, clipId);
+        } else {
+          createStrokeText(character, digitGeometry, digitGeometry.faceTop, strokeContent);
+        }
+
+        digitIndex += 1;
+      });
+
+      renderedValue = formatted;
+    }
+
+    function renderCount(value, animate = true, countDirection = 1) {
+      const formatted = formatCount(value);
+
+      if (renderedValue === null) {
+        renderLayer(fillLayer, value, false);
+        renderStroke(formatted, false, countDirection, captureStrokeGeometry());
+      } else {
+        const geometry = captureStrokeGeometry();
+        renderLayer(fillLayer, value, animate, countDirection);
+        renderStroke(formatted, animate, countDirection, geometry);
+      }
+
+      counter.setAttribute("aria-label", "Subscriber count " + formatted);
     }
 
     document.fonts.load('700 132px "OpenAI Sans"', '3,145').then(() => {

@@ -26,7 +26,7 @@
       box-sizing: border-box;
       display: grid;
       place-items: center;
-      padding: 48px 64px;
+      padding: 12px;
     }
 
     .counter {
@@ -35,9 +35,9 @@
       place-items: center;
       max-width: 100%;
       font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
-      font-size: clamp(64px, 13vw, 112px);
+      font-size: clamp(88px, 22vw, 132px);
       font-weight: 700;
-      line-height: 1;
+      line-height: 1.12;
       letter-spacing: -0.05em;
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum" 1;
@@ -51,9 +51,9 @@
 
     .counter > span {
       grid-area: 1 / 1;
+      display: inline-block;
       box-sizing: border-box;
-      padding: 28px 36px;
-      margin: -28px -36px;
+      padding: 32px 44px;
       overflow: visible;
       font: inherit;
       letter-spacing: inherit;
@@ -125,7 +125,7 @@
   <script>
     const counter = document.getElementById("counter");
 
-    document.fonts.load('700 112px "OpenAI Sans"', '3,145').then(() => {
+    document.fonts.load('700 132px "OpenAI Sans"', '3,145').then(() => {
       counter.classList.add("is-ready");
     });
   </script>

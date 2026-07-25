@@ -46,9 +46,11 @@ Choose either `summer-update-countdown.html` for the original light style or `su
 
 ### Start stream countdown
 
-The start stream countdown is intended for the beginning of a stream: show it while viewers are arriving, then let it count down to `0:00` before you start. Both variants use the same layout, rolling-digit animation, title position, clipping, spacing, and timing logic.
+The start stream countdown is intended for the beginning of a stream: show it while viewers are arriving, then let it count down to `0:00` before you start. Both variants use the same layout, rolling-digit animation, title position, clipping, spacing, timing logic, and entrance/exit motion.
 
 Choose `stream-countdown.html` for the white card with black text and a yellow perimeter sweep, or `stream-countdown-dark.html` for the black card with white text and a purple perimeter sweep. By default both start at `1:59` and display `Stream Countdown` above the timer.
+
+When the Browser Source loads, the whole card fades in while sliding down from above. The timer starts immediately. After it reaches `0:00`, the card remains visible for 5 seconds, then fades out while sliding back upward. Refreshing the Browser Source restarts the timer and replays the entrance animation.
 
 Edit the title by changing:
 

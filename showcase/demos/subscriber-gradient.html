@@ -25,12 +25,14 @@
     body {
       position: relative;
       isolation: isolate;
-      background: #fff;
+      background-color: #fff;
+      background-image: radial-gradient(circle, rgb(17 17 17 / 8%) 0 1px, transparent 1.2px);
+      background-size: 10px 10px;
     }
 
     body::before {
       position: fixed;
-      inset: -12px;
+      inset: -36%;
       z-index: 0;
       background-image: radial-gradient(
         circle,
@@ -39,11 +41,24 @@
       );
       background-size: 10px 10px;
       content: "";
-      opacity: .18;
+      opacity: .14;
       pointer-events: none;
-      transform: translate3d(0, 0, 0);
+      transform: scale(.76);
+      transform-origin: center;
+      -webkit-mask-image: repeating-radial-gradient(
+        circle at center,
+        transparent 0 8%,
+        #000 10% 14%,
+        transparent 17% 24%
+      );
+      mask-image: repeating-radial-gradient(
+        circle at center,
+        transparent 0 8%,
+        #000 10% 14%,
+        transparent 17% 24%
+      );
       will-change: opacity, transform;
-      animation: showcase-halftone-breathe 6s ease-in-out infinite;
+      animation: showcase-halftone-waves 7s ease-in-out infinite;
     }
 
     .stage {
@@ -210,16 +225,16 @@
       inherits: false;
     }
 
-    @keyframes showcase-halftone-breathe {
+    @keyframes showcase-halftone-waves {
       0%,
       100% {
-        opacity: .18;
-        transform: translate3d(0, 0, 0);
+        opacity: .14;
+        transform: scale(.76);
       }
 
       50% {
         opacity: .38;
-        transform: translate3d(4px, 3px, 0);
+        transform: scale(1.06);
       }
     }
 
@@ -241,8 +256,8 @@
     }
     @media (prefers-reduced-motion: reduce) {
       body::before {
-        opacity: .26;
-        transform: translate3d(0, 0, 0);
+        opacity: .22;
+        transform: scale(.9);
         animation: none;
       }
     }

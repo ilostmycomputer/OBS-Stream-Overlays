@@ -10,7 +10,7 @@
       src: url("../../Overlays%20%26%20Plugins/overlays/countdown/OpenAI-Sans-Bold.otf") format("opentype");
       font-weight: 700;
       font-style: normal;
-      font-display: swap;
+      font-display: block;
     }
 
     html,
@@ -60,13 +60,13 @@
     function draw(now) {
       ctx.clearRect(0, 0, width, height);
 
-      const fontSize = Math.min(112, Math.max(72, width * 0.19));
+      const fontSize = Math.min(132, Math.max(80, width * 0.2));
       const centreX = width / 2;
       const centreY = height / 2;
       const angle = ((now % ROTATION_MS) / ROTATION_MS) * Math.PI * 2 - Math.PI / 4;
 
       ctx.save();
-      ctx.font = `700 ${fontSize}px "OpenAI Sans", ui-sans-serif, system-ui, sans-serif`;
+      ctx.font = `700 ${fontSize}px "OpenAI Sans"`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.lineJoin = "round";
@@ -93,9 +93,15 @@
       requestAnimationFrame(draw);
     }
 
+    async function start() {
+      resize();
+      await document.fonts.load('700 132px "OpenAI Sans"', TEXT);
+      await document.fonts.ready;
+      requestAnimationFrame(draw);
+    }
+
     window.addEventListener("resize", resize);
-    resize();
-    document.fonts.ready.finally(() => requestAnimationFrame(draw));
+    start();
   </script>
 </body>
 </html>

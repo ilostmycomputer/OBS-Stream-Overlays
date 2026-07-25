@@ -105,8 +105,8 @@
       position: relative;
       top: 3px;
       display: inline-block;
-      flex: 0 0 0.60em;
-      width: 0.60em;
+      flex: 0 0 0.62em;
+      width: 0.62em;
       height: var(--digit-height);
       overflow: hidden;
       vertical-align: top;
@@ -228,7 +228,7 @@
             <stop offset="50%" stop-color="#ca8a04" />
             <stop offset="75%" stop-color="#facc15" />
             <stop offset="100%" stop-color="#e8c94c" />
-            <animateTransform id="gradient-motion" attributeName="gradientTransform" type="rotate" dur="6s" repeatCount="indefinite" />
+            <animateTransform id="gradient-motion" attributeName="gradientTransform" type="rotate" dur="6s" begin="indefinite" repeatCount="indefinite" />
           </linearGradient>
         </defs>
         <g id="stroke-content"></g>
@@ -253,6 +253,10 @@
     let currentCount = START_COUNT;
     let renderedValue = null;
     let strokeGeneration = 0;
+    let strokeViewportKey = "";
+    let renderRevision = 0;
+    let finalizeTimer = null;
+    let resizeFrame = null;
 
     function svgElement(name) {
       return document.createElementNS(SVG_NS, name);
@@ -413,6 +417,10 @@
     }
 
     function updateStrokeViewport(geometry) {
+      const viewportKey = geometry.width + "x" + geometry.height;
+      if (viewportKey === strokeViewportKey) return;
+
+      strokeViewportKey = viewportKey;
       strokeSvg.setAttribute("viewBox", "0 0 " + geometry.width + " " + geometry.height);
       gradient.setAttribute("x2", String(geometry.width));
 
@@ -424,6 +432,10 @@
       gradient.setAttribute("gradientTransform", "rotate(" + rotationStart + ")");
       gradientMotion.setAttribute("from", rotationStart);
       gradientMotion.setAttribute("to", rotationEnd);
+
+      if (typeof gradientMotion.beginElement === "function") {
+        gradientMotion.beginElement();
+      }
     }
 
     function createStrokeText(character, geometry, top, parent) {
@@ -467,7 +479,14 @@
       return clipId;
     }
 
-    function createRollingStroke(currentDigit, nextDigit, geometry, countDirection, clipId) {
+    function createRollingStroke(
+      currentDigit,
+      nextDigit,
+      geometry,
+      countDirection,
+      clipId,
+      generation
+    ) {
       const isDecreasing = countDirection < 0;
       const group = svgElement("g");
       group.classList.add(
@@ -493,7 +512,14 @@
 
       let settled = false;
       const settle = () => {
-        if (settled || !clipGroup.isConnected) return;
+        if (
+          settled ||
+          generation !== strokeGeneration ||
+          !clipGroup.isConnected
+        ) {
+          return;
+        }
+
         settled = true;
         group.style.setProperty("transition", "none");
         group.classList.remove("is-rolling-up", "is-rolling-down", "is-rolling-active");
@@ -501,6 +527,7 @@
         group.replaceChildren();
         createStrokeText(nextDigit, geometry, geometry.faceTop, group);
         clipGroup.removeAttribute("clip-path");
+        document.getElementById(clipId)?.remove();
       };
 
       group.addEventListener("transitionend", settle, { once: true });
@@ -520,6 +547,7 @@
 
       updateStrokeViewport(geometry);
       strokeGeneration += 1;
+      const generation = strokeGeneration;
       strokeDefs.querySelectorAll("clipPath").forEach(clipPath => clipPath.remove());
       strokeContent.replaceChildren();
 
@@ -541,7 +569,14 @@
 
         if (animate && changed) {
           createStrokeClip(digitGeometry, clipId);
-          createRollingStroke(currentDigit, character, digitGeometry, countDirection, clipId);
+          createRollingStroke(
+            currentDigit,
+            character,
+            digitGeometry,
+            countDirection,
+            clipId,
+            generation
+          );
         } else {
           createStrokeText(character, digitGeometry, digitGeometry.faceTop, strokeContent);
         }
@@ -554,6 +589,8 @@
 
     function renderCount(value, animate = true, countDirection = 1) {
       const formatted = formatCount(value);
+      const revision = ++renderRevision;
+      clearTimeout(finalizeTimer);
 
       if (renderedValue === null) {
         renderLayer(fillLayer, value, false);
@@ -565,6 +602,20 @@
       }
 
       counter.setAttribute("aria-label", "Subscriber count " + formatted);
+
+      if (animate && !prefersReducedMotion()) {
+        finalizeTimer = setTimeout(() => {
+          if (revision !== renderRevision) return;
+
+          renderLayer(fillLayer, value, false);
+          renderStroke(
+            formatted,
+            false,
+            countDirection,
+            captureStrokeGeometry()
+          );
+        }, 560);
+      }
     }
 
     function advanceCount() {
@@ -582,7 +633,20 @@
       renderCount(currentCount, true, Math.sign(currentCount - previousCount));
     }
 
-    document.fonts.load('700 132px "OpenAI Sans"', '3,145').then(() => {
+    const stage = document.querySelector(".stage");
+    const resizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        if (!counter.classList.contains("is-ready")) return;
+        renderCount(currentCount, false, 0);
+      });
+    });
+    resizeObserver.observe(stage);
+
+    Promise.race([
+      document.fonts.load('700 132px "OpenAI Sans"', '3,145'),
+      new Promise(resolve => setTimeout(resolve, 1500))
+    ]).then(() => {
       renderCount(currentCount, false);
       counter.classList.add("is-ready");
       window.setInterval(advanceCount, 1800);

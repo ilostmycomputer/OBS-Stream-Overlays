@@ -45,7 +45,6 @@ const REQUIRED_LINKS = [
 
 test("real browser overlays reference production files", () => {
   assert.match(html, /stream-countdown\.html/);
-  assert.match(html, /confetti\/confetti\.html/);
   assert.match(html, /gradient-stroke\/gradient\.html/);
 });
 
@@ -54,11 +53,11 @@ test("all five approved GitHub targets are present", () => {
 });
 
 const discordDemo = await read("./demos/discord-typing.html").catch(() => "");
-const zoomDemo = await read("./demos/five-click-zoom.html").catch(() => "");
+const confettiDemo = await read("./demos/confetti-loop.html").catch(() => "");
 
-test("dependency-heavy projects use local showcase demos", () => {
+test("dependency-heavy projects use safe showcase media", () => {
   assert.match(html, /showcase\/demos\/discord-typing\.html/);
-  assert.match(html, /showcase\/demos\/five-click-zoom\.html/);
+  assert.match(html, /showcase\/assets\/five-click-preview\.webp/);
 });
 
 test("Discord demo is fake-data only", () => {
@@ -67,9 +66,15 @@ test("Discord demo is fake-data only", () => {
   assert.match(discordDemo, /is typing/i);
 });
 
-test("five-click demo has no OBS connection", () => {
-  assert.doesNotMatch(zoomDemo, /WebSocket|wss?:\/\/|obs-websocket/i);
-  assert.match(zoomDemo, /5 rapid clicks/i);
+test("five-click preview is a static supplied image", () => {
+  assert.match(html, /showcase\/assets\/five-click-preview\.webp/);
+  assert.doesNotMatch(html, /showcase\/demos\/five-click-zoom\.html/);
+});
+
+test("showcase confetti loops after a two-second cooldown", () => {
+  assert.match(html, /showcase\/demos\/confetti-loop\.html/);
+  assert.match(confettiDemo, /LOOP_COOLDOWN_MS\s*=\s*2000/);
+  assert.match(confettiDemo, /setTimeout\(createConfettiRain, LOOP_COOLDOWN_MS\)/);
 });
 
 const css = await read("./showcase.css").catch(() => "");
@@ -85,4 +90,14 @@ test("gallery loads bundled OpenAI Sans and styles previews and GitHub links", (
   assert.match(css, /OpenAI-Sans-Bold\.otf/);
   assert.match(css, /\.preview-frame\b/);
   assert.match(css, /\.github-link\b/);
+});
+
+test("all previews use one shared 16:9 frame", () => {
+  assert.doesNotMatch(html, /preview-frame--countdown|preview-frame--wide/);
+  assert.match(css, /\.preview-frame\s*\{[^}]*aspect-ratio:\s*16\s*\/\s*9/s);
+});
+
+test("five-click showcase uses the supplied preview image", () => {
+  assert.match(html, /showcase\/assets\/five-click-preview\.webp/);
+  assert.doesNotMatch(html, /five-click-zoom\.html/);
 });

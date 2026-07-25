@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple Timer</title>
+  <style>
+    @font-face {
+      font-family: "OpenAI Sans";
+      src: url("./OpenAI-Sans-Bold.otf") format("opentype");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @property --shiny-gradient-angle {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: true;
+    }
+
+    @property --shiny-gradient-angle-offset {
+      syntax: "<angle>";
+      initial-value: 0deg;
+      inherits: true;
+    }
+
+    @property --shiny-gradient-percent {
+      syntax: "<percentage>";
+      initial-value: 5%;
+      inherits: true;
+    }
+
+    @property --shiny-gradient-shine {
+      syntax: "<color>";
+      initial-value: #facc15;
+      inherits: true;
+    }
+
+    :root {
+      --text: #111;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .timer-shell {
+      --shiny-cta-bg: #fff;
+      --shiny-cta-bg-subtle: #dedede;
+      --shiny-cta-highlight: #eab308;
+      --shiny-cta-highlight-subtle: #fde047;
+      --shiny-gradient-shine: #facc15;
+      --shiny-cta-highlight-clear: rgb(234 179 8 / 0%);
+      --shiny-cta-highlight-glow: rgb(234 179 8 / 24%);
+      --shiny-cta-shine-glow: rgb(250 204 21 / 42%);
+      --shiny-duration: 3s;
+      --shiny-shadow-size: 2px;
+      --shiny-transition: 800ms cubic-bezier(0.25, 1, 0.5, 1);
+
+      position: relative;
+      isolation: isolate;
+      box-sizing: border-box;
+      padding: 10px 18px 11px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      background:
+        linear-gradient(var(--shiny-cta-bg), var(--shiny-cta-bg)) padding-box,
+        conic-gradient(
+          from calc(
+            var(--shiny-gradient-angle) -
+            var(--shiny-gradient-angle-offset)
+          ),
+          var(--shiny-cta-highlight-clear),
+          var(--shiny-cta-highlight) var(--shiny-gradient-percent),
+          var(--shiny-gradient-shine) calc(var(--shiny-gradient-percent) * 2),
+          var(--shiny-cta-highlight) calc(var(--shiny-gradient-percent) * 3),
+          var(--shiny-cta-highlight-clear) calc(var(--shiny-gradient-percent) * 4),
+          var(--shiny-cta-highlight-clear)
+        ) border-box;
+      box-shadow: inset 0 0 0 1px var(--shiny-cta-bg-subtle);
+      animation: shiny-gradient-angle var(--shiny-duration) linear infinite;
+    }
+
+    .timer-shell::before,
+    .timer-shell::after,
+    .shiny-cta-glow::before {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: -1;
+      content: "";
+      pointer-events: none;
+      translate: -50% -50%;
+    }
+
+    .timer-shell::before {
+      --size: calc(100% - var(--shiny-shadow-size) * 3);
+      --position: 2px;
+      --space: calc(var(--position) * 2);
+
+      width: var(--size);
+      height: var(--size);
+      border-radius: inherit;
+      background:
+        radial-gradient(
+          circle at var(--position) var(--position),
+          var(--shiny-gradient-shine) calc(var(--position) / 4),
+          transparent 0
+        ) padding-box;
+      background-repeat: space;
+      background-size: var(--space) var(--space);
+      opacity: 0.4;
+      -webkit-mask-image: conic-gradient(
+        from calc(
+          var(--shiny-gradient-angle) -
+          var(--shiny-gradient-angle-offset)
+        ),
+        black 0 calc(var(--shiny-gradient-percent) * 4),
+        transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
+      );
+      mask-image: conic-gradient(
+        from calc(
+          var(--shiny-gradient-angle) -
+          var(--shiny-gradient-angle-offset)
+        ),
+        black 0 calc(var(--shiny-gradient-percent) * 4),
+        transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
+      );
+    }
+
+    .timer-shell::after {
+      width: 100%;
+      height: 100%;
+      background: conic-gradient(
+        from calc(
+          var(--shiny-gradient-angle) -
+          var(--shiny-gradient-angle-offset)
+        ),
+        transparent,
+        var(--shiny-cta-highlight-glow) var(--shiny-gradient-percent),
+        var(--shiny-cta-shine-glow) calc(var(--shiny-gradient-percent) * 2),
+        var(--shiny-cta-highlight-glow) calc(var(--shiny-gradient-percent) * 3),
+        transparent calc(var(--shiny-gradient-percent) * 4),
+        transparent
+      );
+      opacity: 1;
+      -webkit-mask-image: radial-gradient(
+        ellipse at center,
+        transparent 0 48%,
+        black 78% 100%
+      );
+      mask-image: radial-gradient(
+        ellipse at center,
+        transparent 0 48%,
+        black 78% 100%
+      );
+    }
+
+    .shiny-cta-glow {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .shiny-cta-glow::before {
+      width: calc(100% + 1rem);
+      height: calc(100% + 1rem);
+      box-shadow: inset 0 -1ex 2rem 4px var(--shiny-cta-highlight);
+      opacity: 0;
+      transition: opacity var(--shiny-transition);
+      animation: shiny-breathe calc(var(--shiny-duration) * 1.5) linear infinite paused;
+    }
+
+    .timer-shell:hover {
+      --shiny-gradient-percent: 20%;
+      --shiny-gradient-angle-offset: 95deg;
+      --shiny-gradient-shine: var(--shiny-cta-highlight-subtle);
+    }
+
+    .timer-shell:hover .shiny-cta-glow::before {
+      opacity: 1;
+    }
+
+    @keyframes shiny-gradient-angle {
+      to {
+        --shiny-gradient-angle: 360deg;
+      }
+    }
+
+    @keyframes shiny-breathe {
+      0%,
+      100% {
+        scale: 1;
+      }
+
+      50% {
+        scale: 1.2;
+      }
+    }
+
+
+    .stream-countdown-title {
+      position: relative;
+      z-index: 1;
+      top: 3px;
+      margin: 0 0 8px;
+      color: var(--text);
+      font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .timer {
+      --digit-height: 1.14em;
+
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      color: var(--text);
+      font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .digit-window {
+      position: relative;
+      top: 3px;
+      display: inline-block;
+      flex: 0 0 0.64em;
+      width: 0.64em;
+      height: var(--digit-height);
+      overflow: hidden;
+      vertical-align: top;
+    }
+
+    .digit-strip {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      transform: translateY(0);
+      transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: transform;
+    }
+
+    .digit-strip.is-rolling {
+      transform: translateY(calc(-1 * var(--digit-height)));
+    }
+
+    .digit-face {
+      display: block;
+      flex: 0 0 var(--digit-height);
+      box-sizing: border-box;
+      width: 100%;
+      height: var(--digit-height);
+      padding-top: 0.02em;
+      line-height: 1.08em;
+      text-align: center;
+    }
+
+    .colon {
+      position: relative;
+      top: 3px;
+      display: inline-block;
+      width: 0.42em;
+      text-align: center;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .timer-shell,
+      .timer-shell::before,
+      .timer-shell::after,
+      .shiny-cta-glow::before {
+        animation: none;
+      }
+
+      .digit-strip {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="timer-shell" role="timer" aria-label="1 minute 59 second timer">
+    <span class="shiny-cta-glow" aria-hidden="true"></span>
+    <div class="stream-countdown-title">Stream Countdown</div>
+    <div class="timer" id="timer" aria-label="1:59">
+      <span class="digit-window" data-digit="1"><span class="digit-face">1</span></span>
+      <span class="colon" aria-hidden="true">:</span>
+      <span class="digit-window" data-digit="5"><span class="digit-face">5</span></span>
+      <span class="digit-window" data-digit="9"><span class="digit-face">9</span></span>
+    </div>
+  </main>
+
+  <script>
+    const START_SECONDS = 1 * 60 + 59;
+    const timerElement = document.getElementById("timer");
+    const startTime = performance.now();
+    let interval = null;
+
+    function createDigitFace(digit) {
+      const face = document.createElement("span");
+      face.className = "digit-face";
+      face.textContent = digit;
+      return face;
+    }
+
+    function createStaticDigit(digit) {
+      const digitWindow = document.createElement("span");
+      digitWindow.className = "digit-window";
+      digitWindow.dataset.digit = digit;
+      digitWindow.append(createDigitFace(digit));
+      return digitWindow;
+    }
+
+    function rollDigit(currentWindow, nextDigit) {
+      const currentDigit = currentWindow.dataset.digit;
+      if (currentDigit === nextDigit) return currentWindow;
+
+      const rollingWindow = document.createElement("span");
+      rollingWindow.className = "digit-window";
+      rollingWindow.dataset.digit = nextDigit;
+
+      const strip = document.createElement("span");
+      strip.className = "digit-strip";
+      strip.append(createDigitFace(currentDigit), createDigitFace(nextDigit));
+      rollingWindow.append(strip);
+      currentWindow.replaceWith(rollingWindow);
+
+      let settled = false;
+      const settleDigit = () => {
+        if (settled) return;
+        settled = true;
+
+        if (rollingWindow.isConnected) {
+          rollingWindow.replaceChildren(createDigitFace(nextDigit));
+        }
+      };
+
+      strip.addEventListener("transitionend", settleDigit, { once: true });
+      strip.getBoundingClientRect();
+      requestAnimationFrame(() => strip.classList.add("is-rolling"));
+      setTimeout(settleDigit, 520);
+
+      return rollingWindow;
+    }
+
+    function renderTime(totalSeconds) {
+      const minutes = String(Math.floor(totalSeconds / 60));
+      const seconds = String(totalSeconds % 60).padStart(2, "0");
+      const nextDigits = [minutes, seconds[0], seconds[1]];
+      const currentWindows = [...timerElement.querySelectorAll(".digit-window")];
+
+      if (currentWindows.length !== 3) {
+        timerElement.replaceChildren(
+          createStaticDigit(nextDigits[0]),
+          Object.assign(document.createElement("span"), {
+            className: "colon",
+            textContent: ":",
+          }),
+          createStaticDigit(nextDigits[1]),
+          createStaticDigit(nextDigits[2]),
+        );
+        return;
+      }
+
+      nextDigits.forEach((digit, index) => rollDigit(currentWindows[index], digit));
+      timerElement.setAttribute("aria-label", `${minutes}:${seconds}`);
+    }
+
+    function updateTimer() {
+      const elapsedSeconds = Math.floor((performance.now() - startTime) / 1000);
+      const remainingSeconds = Math.max(0, START_SECONDS - elapsedSeconds);
+
+      renderTime(remainingSeconds);
+
+      if (remainingSeconds === 0 && interval !== null) {
+        clearInterval(interval);
+        interval = null;
+      }
+    }
+
+    updateTimer();
+    interval = setInterval(updateTimer, 100);
+  </script>
+</body>
+</html>

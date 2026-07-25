@@ -47,9 +47,32 @@
       font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
     }
 
+    body {
+      position: relative;
+      isolation: isolate;
+      background: #fff;
+    }
+
+    body::before {
+      position: fixed;
+      inset: -12px;
+      z-index: 0;
+      background-image: radial-gradient(
+        circle,
+        rgb(17 17 17 / 18%) 0 1px,
+        transparent 1.2px
+      );
+      background-size: 10px 10px;
+      content: "";
+      opacity: .14;
+      pointer-events: none;
+      animation: showcase-halftone-breathe 6s ease-in-out infinite;
+    }
+
     #stack {
       position: fixed;
       inset: 0;
+      z-index: 1;
       display: grid;
       place-items: center;
       padding: 20px;
@@ -264,6 +287,17 @@
       white-space: nowrap;
     }
 
+    @keyframes showcase-halftone-breathe {
+      0%,
+      100% {
+        opacity: .14;
+      }
+
+      50% {
+        opacity: .30;
+      }
+    }
+
     @keyframes shiny-gradient-angle {
       0% {
         --shiny-gradient-angle: 0deg;
@@ -327,6 +361,13 @@
         transform: none;
       }
     }
+    @media (prefers-reduced-motion: reduce) {
+      body::before {
+        opacity: .20;
+        animation: none;
+      }
+    }
+
   </style>
 </head>
 <body>

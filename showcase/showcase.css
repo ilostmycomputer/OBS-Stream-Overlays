@@ -61,39 +61,31 @@ body { margin: 0; min-width: 320px; background: #0b0b0d; }
 .empty-showcase-preview {
   isolation: isolate;
   background-color: #08080a;
-  background-image: radial-gradient(circle, rgb(255 255 255 / 8%) 0 1px, transparent 1.2px);
+  background-image: radial-gradient(circle, rgb(255 255 255 / 12%) 0 1px, transparent 1.2px);
   background-size: 10px 10px;
 }
 
 .empty-showcase-preview::before {
   position: absolute;
-  inset: -36%;
+  top: -12px;
+  bottom: -12px;
+  left: -32%;
+  width: 32%;
   z-index: 0;
+  background-color: #08080a;
   background-image: radial-gradient(
     circle,
     rgb(255 255 255 / 22%) 0 1px,
     transparent 1.2px
   );
-  background-size: 10px 10px;
+  background-size: 6px 10px;
   content: "";
-  opacity: .14;
   pointer-events: none;
-  transform: scale(.76);
-  transform-origin: center;
-  -webkit-mask-image: repeating-radial-gradient(
-    circle at center,
-    transparent 0 8%,
-    #000 10% 14%,
-    transparent 17% 24%
-  );
-  mask-image: repeating-radial-gradient(
-    circle at center,
-    transparent 0 8%,
-    #000 10% 14%,
-    transparent 17% 24%
-  );
-  will-change: opacity, transform;
-  animation: showcase-halftone-waves 7s ease-in-out infinite;
+  transform: translate3d(0, 0, 0);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 28% 72%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 28% 72%, transparent);
+  will-change: transform;
+  animation: showcase-halftone-sound-wave 6s linear infinite;
 }
 
 .showcase-card .empty-showcase-message {
@@ -128,16 +120,9 @@ body { margin: 0; min-width: 320px; background: #0b0b0d; }
   animation-delay: calc(var(--word-index) * 90ms);
 }
 
-@keyframes showcase-halftone-waves {
-  0%,
-  100% {
-    opacity: .14;
-    transform: scale(.76);
-  }
-
-  50% {
-    opacity: .38;
-    transform: scale(1.06);
+@keyframes showcase-halftone-sound-wave {
+  to {
+    transform: translate3d(413%, 0, 0);
   }
 }
 
@@ -272,8 +257,8 @@ body { margin: 0; min-width: 320px; background: #0b0b0d; }
 
 @media (prefers-reduced-motion: reduce) {
   .empty-showcase-preview::before {
-    opacity: .22;
-    transform: scale(.9);
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
     animation: none;
   }
 

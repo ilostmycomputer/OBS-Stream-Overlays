@@ -2,8 +2,8 @@ const preview = document.querySelector("#countdown-preview");
 const buttons = [...document.querySelectorAll("[data-countdown-variant]")];
 
 const sources = {
-  light: "./Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html?v=halftone-waves-1",
-  dark: "./Overlays%20%26%20Plugins/overlays/countdown/stream-countdown-dark.html?v=halftone-waves-1",
+  light: "./Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html?v=halftone-sound-wave-1",
+  dark: "./Overlays%20%26%20Plugins/overlays/countdown/stream-countdown-dark.html?v=halftone-sound-wave-1",
 };
 
 // Keep this in sync with the production countdown's 1:59 runtime, five-second

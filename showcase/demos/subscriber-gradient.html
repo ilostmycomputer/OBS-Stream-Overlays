@@ -322,6 +322,16 @@
       return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
 
+    function getTextRangeRect(element, fallback) {
+      const textNode = element?.firstChild;
+      if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return fallback;
+
+      const range = document.createRange();
+      range.selectNodeContents(textNode);
+      const rect = range.getBoundingClientRect();
+      return rect.width || rect.height ? rect : fallback;
+    }
+
     function captureStrokeGeometry() {
       const counterRect = counter.getBoundingClientRect();
       const digitWindows = [...fillLayer.children].filter(child =>
@@ -334,7 +344,9 @@
       const digits = digitWindows.map(windowElement => {
         const windowRect = windowElement.getBoundingClientRect();
         const face = windowElement.querySelector(".digit-face");
-        const faceRect = face ? face.getBoundingClientRect() : windowRect;
+        const faceRect = face
+          ? getTextRangeRect(face, face.getBoundingClientRect())
+          : windowRect;
 
         return {
           x: windowRect.left - counterRect.left,
@@ -347,7 +359,7 @@
         };
       });
 
-      const commaRect = comma.getBoundingClientRect();
+      const commaRect = getTextRangeRect(comma, comma.getBoundingClientRect());
       const commaStyle = getComputedStyle(comma);
 
       return {

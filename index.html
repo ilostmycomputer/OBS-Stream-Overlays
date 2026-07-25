@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OBS Stream Overlays</title>
+  <meta name="description" content="A showcase of finished OBS overlays and streaming tools.">
+  <link rel="stylesheet" href="./showcase/showcase.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="showcase-intro">
+      <h1>OBS Stream Overlays</h1>
+      <p>A showcase of finished OBS overlays and tools. Watch each preview here, then use View on GitHub to open the relevant source file or folder.</p>
+    </header>
+
+    <section class="showcase-grid" aria-label="Finished projects">
+      <article class="showcase-card" data-showcase="countdown">
+        <h2>Start Stream Countdown</h2>
+        <div class="preview-frame preview-frame--countdown">
+          <div class="preview-switch" role="group" aria-label="Countdown style">
+            <button type="button" class="is-active" aria-pressed="true" data-countdown-variant="light">Light</button>
+            <button type="button" aria-pressed="false" data-countdown-variant="dark">Dark</button>
+          </div>
+          <iframe id="countdown-preview" title="Start Stream Countdown preview" src="./Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html"></iframe>
+        </div>
+        <a class="github-link" href="https://github.com/ilostmycomputer/OBS-Stream-Overlays/tree/main/Overlays%20%26%20Plugins/overlays/countdown">View on GitHub</a>
+        <p>A clean start-of-stream timer with rolling digits, perimeter sweep, and matching light and dark variants.</p>
+      </article>
+
+      <article class="showcase-card" data-showcase="confetti">
+        <h2>Confetti</h2>
+        <div class="preview-frame preview-frame--wide">
+          <iframe title="Confetti preview" src="./Overlays%20%26%20Plugins/overlays/confetti/confetti.html" loading="lazy"></iframe>
+        </div>
+        <a class="github-link" href="https://github.com/ilostmycomputer/OBS-Stream-Overlays/blob/main/Overlays%20%26%20Plugins/overlays/confetti/confetti.html">View on GitHub</a>
+        <p>A transparent celebration overlay that fills the scene with falling confetti.</p>
+      </article>
+
+      <article class="showcase-card" data-showcase="subscriber-gradient">
+        <h2>Subscriber Gradient</h2>
+        <div class="preview-frame preview-frame--wide">
+          <iframe title="Subscriber Gradient preview" src="./Overlays%20%26%20Plugins/overlays/gradient-stroke/gradient.html" loading="lazy"></iframe>
+        </div>
+        <a class="github-link" href="https://github.com/ilostmycomputer/OBS-Stream-Overlays/blob/main/Overlays%20%26%20Plugins/overlays/gradient-stroke/gradient.html">View on GitHub</a>
+        <p>An animated colour source designed to drive a moving stroke around a live subscriber count.</p>
+      </article>
+
+      <article class="showcase-card" data-showcase="discord-typing">
+        <h2>Discord Typing Alert</h2>
+        <div class="preview-frame preview-frame--wide">
+          <iframe title="Discord Typing Alert demo" src="./showcase/demos/discord-typing.html" loading="lazy"></iframe>
+        </div>
+        <a class="github-link" href="https://github.com/ilostmycomputer/OBS-Stream-Overlays/tree/main/Overlays%20%26%20Plugins/overlays/typing-notifications">View on GitHub</a>
+        <p>A stream alert that shows who is typing in a watched Discord channel.</p>
+      </article>
+
+      <article class="showcase-card" data-showcase="five-click-zoom">
+        <h2>Five-click Cursor Zoom</h2>
+        <div class="preview-frame preview-frame--wide">
+          <iframe title="Five-click Cursor Zoom demo" src="./showcase/demos/five-click-zoom.html" loading="lazy"></iframe>
+        </div>
+        <a class="github-link" href="https://github.com/ilostmycomputer/OBS-Stream-Overlays/tree/main/Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom">View on GitHub</a>
+        <p>A helper that triggers a smooth cursor-following OBS zoom after five rapid clicks.</p>
+      </article>
+    </section>
+  </main>
+
+  <script src="./showcase/showcase.js" defer></script>
+</body>
+</html>

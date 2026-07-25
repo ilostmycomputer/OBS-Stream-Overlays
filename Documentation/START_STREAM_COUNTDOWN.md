@@ -6,10 +6,10 @@ A local OBS Browser Source countdown intended for the beginning of a stream. It 
 
 Both variants use the same layout, spacing, clipping, rolling-digit motion, timer logic, and entrance/exit animation. Only the colour palette differs.
 
-- Light: [`Overlays & Plugins/overlays/countdown/stream-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html) — white card, black text, yellow perimeter sweep.
-- Dark: [`Overlays & Plugins/overlays/countdown/stream-countdown-dark.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown-dark.html) — black card, white text, purple perimeter sweep.
+- Light: [`Overlays & Plugins/overlays/countdown/stream-countdown/stream-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown/stream-countdown.html) — white card, black text, yellow perimeter sweep.
+- Dark: [`Overlays & Plugins/overlays/countdown/stream-countdown/stream-countdown-dark.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown/stream-countdown-dark.html) — black card, white text, purple perimeter sweep.
 
-`OpenAI-Sans-Bold.otf` in the same folder is optional and provides the intended typography. The timer still works without it and falls back to a system sans-serif font.
+`OpenAI-Sans-Bold.otf` in the sibling `fonts` folder is optional and provides the intended typography. The timer still works without it and falls back to a system sans-serif font.
 
 ## Default behaviour
 

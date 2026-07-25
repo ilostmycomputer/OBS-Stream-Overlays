@@ -19,7 +19,7 @@ The plugin is not included in this repository; install it from its own
 [release page](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases)
 and review its upstream license and release notes.
 
-The OpenAI Sans font files beside the countdown in `Overlays & Plugins/overlays/countdown/` are
+The OpenAI Sans font files in `Overlays & Plugins/overlays/countdown/fonts/` are
 optional third-party assets. They are not covered by this repository's MIT
 License; use them in accordance with OpenAI's applicable font and brand terms. See the
 [OpenAI design guidelines](https://openai.com/brand/).

@@ -11,11 +11,11 @@ in order and complete each test before moving on.
 
 | Overlay | File | Purpose | Recommended Browser Source size |
 | --- | --- | --- | --- |
-| Countdown | [`Overlays & Plugins/overlays/countdown/summer-update-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown.html) | Counts down to an event with rolling digits. | `700 × 180` |
-| Stream countdown | [`Overlays & Plugins/overlays/countdown/stream-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html) | Counts down from an editable duration with rolling digits and an editable title. | `700 × 180` |
-| Animated subscriber stroke | [`Overlays & Plugins/overlays/gradient-stroke/gradient.html`](../Overlays%20%26%20Plugins/overlays/gradient-stroke/gradient.html) | Supplies animated colours to a Stroke filter around the YouTube Studio live subscriber count. | Match the YouTube Studio Browser Source. |
-| Confetti | [`Overlays & Plugins/overlays/confetti/confetti.html`](../Overlays%20%26%20Plugins/overlays/confetti/confetti.html) | Plays transparent falling confetti whenever the page loads or refreshes. | Match your OBS canvas. |
-| Discord typing alert | [`Overlays & Plugins/overlays/typing-notifications/overlay.html`](../Overlays%20%26%20Plugins/overlays/typing-notifications/overlay.html) | Shows a person's avatar and username when they start typing in a watched Discord channel. | `720 × 200` |
+| Countdown | [`Overlays & Plugins/overlays/countdown/summer-update-countdown/summer-update-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown/summer-update-countdown.html) | Counts down to an event with rolling digits. | `700 × 180` |
+| Stream countdown | [`Overlays & Plugins/overlays/countdown/stream-countdown/stream-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown/stream-countdown.html) | Counts down from an editable duration with rolling digits and an editable title. | `700 × 180` |
+| Animated subscriber stroke | [`Overlays & Plugins/overlays/visual-effects/gradient-stroke/gradient.html`](../Overlays%20%26%20Plugins/overlays/visual-effects/gradient-stroke/gradient.html) | Supplies animated colours to a Stroke filter around the YouTube Studio live subscriber count. | Match the YouTube Studio Browser Source. |
+| Confetti | [`Overlays & Plugins/overlays/visual-effects/confetti/confetti.html`](../Overlays%20%26%20Plugins/overlays/visual-effects/confetti/confetti.html) | Plays transparent falling confetti whenever the page loads or refreshes. | Match your OBS canvas. |
+| Discord typing alert | [`Overlays & Plugins/overlays/notifications/typing-notifications/overlay.html`](../Overlays%20%26%20Plugins/overlays/notifications/typing-notifications/overlay.html) | Shows a person's avatar and username when they start typing in a watched Discord channel. | `720 × 200` |
 | Five-click cursor zoom | [`Overlays & Plugins/tools/obs-five-click-cursor-zoom/`](../Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom/) | Triggers a smooth cursor-following OBS zoom after five rapid clicks. | Not a Browser Source |
 
 ## Dependencies
@@ -197,7 +197,7 @@ higher-resolution version of the same view.
 
 # 1. Countdown
 
-File: [`Overlays & Plugins/overlays/countdown/summer-update-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown.html)
+File: [`Overlays & Plugins/overlays/countdown/summer-update-countdown/summer-update-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown/summer-update-countdown.html)
 
 ## Configure the target date
 
@@ -234,7 +234,7 @@ time is in the past or the timezone is wrong.
 The countdown is designed to use the three bundled OpenAI Sans `.otf` files for
 its intended clean appearance. They are not required for the countdown to work.
 
-1. Open `Overlays & Plugins\overlays\countdown`.
+1. Open `Overlays & Plugins\overlays\countdown\fonts`.
 2. Select `OpenAI-Sans-Light.otf`, `OpenAI-Sans-Medium.otf`, and `OpenAI-Sans-Bold.otf`.
 3. Right-click the selection.
 4. Select **Install** or **Install for all users**.
@@ -245,7 +245,7 @@ sans-serif font. Only the intended typography and clean appearance change.
 
 ## Stream countdown
 
-File: [`Overlays & Plugins/overlays/countdown/stream-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html)
+File: [`Overlays & Plugins/overlays/countdown/stream-countdown/stream-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown/stream-countdown.html)
 
 This variant is a simple duration timer rather than a target-date countdown. It
 uses the same rolling-digit motion, with a white card, black text, a yellow
@@ -289,14 +289,14 @@ After editing:
 
 The timer begins when the Browser Source loads and stops at `0:00`. Refresh the
 Browser Source whenever you want to restart it from the configured duration.
-`OpenAI-Sans-Bold.otf` in the same folder is optional and provides the intended
+`OpenAI-Sans-Bold.otf` in the sibling `fonts` folder is optional and provides the intended
 typography; the timer still works without it.
 
 ---
 
 # 2. Confetti
 
-File: [`Overlays & Plugins/overlays/confetti/confetti.html`](../Overlays%20%26%20Plugins/overlays/confetti/confetti.html)
+File: [`Overlays & Plugins/overlays/visual-effects/confetti/confetti.html`](../Overlays%20%26%20Plugins/overlays/visual-effects/confetti/confetti.html)
 
 1. Add `confetti.html` as a Browser Source.
 2. Set its Width and Height to your OBS Base Canvas Resolution.
@@ -493,7 +493,7 @@ removed background.
 3. Name the new source `Subscriber Border Gradient`.
 4. Enable **Local file**.
 5. Select **Browse**.
-6. Choose [`Overlays & Plugins/overlays/gradient-stroke/gradient.html`](../Overlays%20%26%20Plugins/overlays/gradient-stroke/gradient.html).
+6. Choose [`Overlays & Plugins/overlays/visual-effects/gradient-stroke/gradient.html`](../Overlays%20%26%20Plugins/overlays/visual-effects/gradient-stroke/gradient.html).
 7. Give it the same Width and Height as the YouTube Studio Browser Source. If you
    increased the Studio source to `2560 × 1440` or `3840 × 2160`, use the same
    dimensions here.
@@ -545,7 +545,7 @@ stream elements.
 
 ## 10. Change the gradient colours
 
-1. In File Explorer, open `Overlays & Plugins\overlays\gradient-stroke`.
+1. In File Explorer, open `Overlays & Plugins\overlays\visual-effects\gradient-stroke`.
 2. Right-click `gradient.html`.
 3. Select **Open with → Notepad**.
 4. Find the colours inside `conic-gradient`.
@@ -618,7 +618,7 @@ The Node.js command must show version `22` or newer.
 1. In File Explorer, open:
 
    ```text
-   OBS-Stream-Overlays\Overlays & Plugins\overlays\typing-notifications
+   OBS-Stream-Overlays\Overlays & Plugins\overlays\notifications\typing-notifications
    ```
 
 2. Click the address bar.
@@ -670,7 +670,7 @@ Leave this PowerShell window open while streaming.
 ## B. Add and test the OBS overlay
 
 1. Add
-   [`Overlays & Plugins/overlays/typing-notifications/overlay.html`](../Overlays%20%26%20Plugins/overlays/typing-notifications/overlay.html)
+   [`Overlays & Plugins/overlays/notifications/typing-notifications/overlay.html`](../Overlays%20%26%20Plugins/overlays/notifications/typing-notifications/overlay.html)
    as a local Browser Source.
 2. Name it `Discord Typing Alert`.
 3. Set Width to `720` and Height to `200`.
@@ -826,7 +826,7 @@ You should receive both the Vencord notification and the OBS alert.
 ## E. Easier Windows startup
 
 After the manual tests succeed, run this from
-`Overlays & Plugins\overlays\typing-notifications`:
+`Overlays & Plugins\overlays\notifications\typing-notifications`:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\start-obs.ps1
@@ -862,7 +862,7 @@ number.
    ```
 
 2. Edit `BRIDGE_URL` in
-   `Overlays & Plugins/overlays/typing-notifications/overlay.html`:
+   `Overlays & Plugins/overlays/notifications/typing-notifications/overlay.html`:
 
    ```js
    const BRIDGE_URL = "ws://127.0.0.1:9876";
@@ -1198,7 +1198,7 @@ process.
 
 ## `npm.cmd ci` fails
 
-- Confirm PowerShell is open in `Overlays & Plugins\overlays\typing-notifications`.
+- Confirm PowerShell is open in `Overlays & Plugins\overlays\notifications\typing-notifications`.
 - Confirm the folder contains `package.json` and `package-lock.json`.
 - Confirm Node.js is version 22 or newer.
 - Check the internet connection.

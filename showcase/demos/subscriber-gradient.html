@@ -27,81 +27,54 @@
       place-items: center;
     }
 
-    canvas {
-      display: block;
+    svg {
       width: 100%;
       height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    .subscriber-count {
+      font-family: "OpenAI Sans";
+      font-size: 132px;
+      font-weight: 700;
+      letter-spacing: -5px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      paint-order: stroke fill;
+      fill: #ffffff;
+      stroke: url(#subscriber-gradient);
+      stroke-width: 9px;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      filter: url(#soft-glow);
     }
   </style>
 </head>
 <body>
-  <canvas id="demo" aria-label="Subscriber count 3,145"></canvas>
+  <svg viewBox="0 0 700 394" role="img" aria-label="Subscriber count 3,145">
+    <defs>
+      <linearGradient id="subscriber-gradient" gradientUnits="userSpaceOnUse" x1="180" y1="40" x2="520" y2="354">
+        <stop offset="0" stop-color="#fde047" />
+        <stop offset="0.25" stop-color="#facc15" />
+        <stop offset="0.5" stop-color="#ca8a04" />
+        <stop offset="0.75" stop-color="#facc15" />
+        <stop offset="1" stop-color="#fde047" />
+        <animateTransform
+          attributeName="gradientTransform"
+          type="rotate"
+          from="0 350 197"
+          to="360 350 197"
+          dur="6s"
+          repeatCount="indefinite" />
+      </linearGradient>
 
-  <script>
-    const canvas = document.getElementById("demo");
-    const ctx = canvas.getContext("2d");
-    const TEXT = "3,145";
-    const ROTATION_MS = 6000;
+      <filter id="soft-glow" x="-30%" y="-40%" width="160%" height="180%">
+        <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#facc15" flood-opacity="0.22" />
+      </filter>
+    </defs>
 
-    let width = 0;
-    let height = 0;
-
-    function resize() {
-      const scale = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = Math.round(width * scale);
-      canvas.height = Math.round(height * scale);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.setTransform(scale, 0, 0, scale, 0, 0);
-    }
-
-    function draw(now) {
-      ctx.clearRect(0, 0, width, height);
-
-      const fontSize = Math.min(132, Math.max(80, width * 0.2));
-      const centreX = width / 2;
-      const centreY = height / 2;
-      const angle = ((now % ROTATION_MS) / ROTATION_MS) * Math.PI * 2 - Math.PI / 4;
-
-      ctx.save();
-      ctx.font = `700 ${fontSize}px "OpenAI Sans"`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-
-      const gradient = ctx.createConicGradient(angle, centreX, centreY);
-      gradient.addColorStop(0, "#fde047");
-      gradient.addColorStop(0.25, "#facc15");
-      gradient.addColorStop(0.5, "#ca8a04");
-      gradient.addColorStop(0.75, "#facc15");
-      gradient.addColorStop(1, "#fde047");
-
-      ctx.shadowColor = "rgba(250, 204, 21, 0.22)";
-      ctx.shadowBlur = 14;
-      ctx.lineWidth = Math.max(6, fontSize * 0.085);
-      ctx.strokeStyle = gradient;
-      ctx.strokeText(TEXT, centreX, centreY);
-
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText(TEXT, centreX, centreY);
-      ctx.restore();
-
-      requestAnimationFrame(draw);
-    }
-
-    async function start() {
-      resize();
-      await document.fonts.load('700 132px "OpenAI Sans"', TEXT);
-      await document.fonts.ready;
-      requestAnimationFrame(draw);
-    }
-
-    window.addEventListener("resize", resize);
-    start();
-  </script>
+    <text class="subscriber-count" x="350" y="197">3,145</text>
+  </svg>
 </body>
 </html>

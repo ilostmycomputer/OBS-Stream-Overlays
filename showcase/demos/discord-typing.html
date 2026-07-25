@@ -203,17 +203,14 @@
     }
 
     .avatar {
-      display: grid;
+      display: block;
       width: 52px;
       height: 52px;
       flex: 0 0 52px;
-      place-items: center;
       border: 1px solid #dedede;
       border-radius: 50%;
       background: #f3f3f3;
-      color: #555961;
-      font-size: .82rem;
-      font-weight: 700;
+      object-fit: cover;
     }
 
     .typing-copy {
@@ -333,19 +330,19 @@
 </head>
 <body>
   <div id="stack">
-    <div class="toast" role="img" aria-label="#test-channel: Test User is typing">
+    <div class="toast" role="img" aria-label="#announcements: Shawnyg is typing">
       <span class="shiny-cta-glow" aria-hidden="true"></span>
 
       <div class="header-row">
-        <div class="title">#test-channel</div>
+        <div class="title">#announcements</div>
       </div>
 
       <div class="typing-row">
-        <div class="avatar" aria-hidden="true">TU</div>
+        <img class="avatar" src="https://cdn.discordapp.com/avatars/97308958175281152/2ab7759facc1935dfd823ab6a04b1b6c.webp?size=1024" alt="" aria-hidden="true">
 
         <div class="typing-copy">
           <div class="value">
-            <span class="username">@Test User</span>
+            <span class="username">Shawnyg</span>
             <span class="status">
               <span>is</span>
               <span>typing</span>

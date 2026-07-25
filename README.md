@@ -10,9 +10,9 @@ Downloading the repository ZIP does not install anything. It only copies the fil
 | --- | --- | --- |
 | **Countdown** | Light style: [`summer-update-countdown.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown.html). Dark style: [`summer-update-countdown-dark.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown-dark.html). | [OBS Studio](https://obsproject.com/download). The three OpenAI Sans font files in `Overlays & Plugins/overlays/countdown/` are optional and only provide the intended clean typography. |
 | **Start stream countdown** | Light style: [`stream-countdown.html`](Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html). Dark style: [`stream-countdown-dark.html`](Overlays%20%26%20Plugins/overlays/countdown/stream-countdown-dark.html). | [OBS Studio](https://obsproject.com/download). `OpenAI-Sans-Bold.otf` in the same folder is optional and provides the intended typography. |
-| **Confetti** | [`confetti.html`](Overlays%20%26%20Plugins/overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
-| **Animated YouTube Studio subscriber count** | [`gradient.html`](Overlays%20%26%20Plugins/overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
-| **Discord typing alert** | The entire `Overlays & Plugins/overlays/typing-notifications/` folder, plus [`Overlays & Plugins/integrations/vencord/TypingNotifications/index.tsx`](Overlays%20%26%20Plugins/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
+| **Confetti** | [`confetti.html`](Overlays%20%26%20Plugins/overlays/visual-effects/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
+| **Animated YouTube Studio subscriber count** | [`gradient.html`](Overlays%20%26%20Plugins/overlays/visual-effects/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
+| **Discord typing alert** | The entire `Overlays & Plugins/overlays/notifications/typing-notifications/` folder, plus [`Overlays & Plugins/integrations/vencord/TypingNotifications/index.tsx`](Overlays%20%26%20Plugins/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
 | **Five-click cursor zoom** | The entire [`Overlays & Plugins/tools/obs-five-click-cursor-zoom/`](Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom/) folder | OBS Studio 28 or newer, OBS WebSocket, [Node.js 22 or newer](https://nodejs.org/en/download), and Windows 10 or 11. |
 
 ## In development
@@ -84,7 +84,7 @@ Stroke Glow Shadow is easy to install when you choose its **compiled installer**
 
 ### Discord typing alert
 
-This is the only overlay that needs several files and programs. Keep every file inside `Overlays & Plugins/overlays/typing-notifications/` together, and also download the Vencord plugin file at `Overlays & Plugins/integrations/vencord/TypingNotifications/index.tsx`.
+This is the only overlay that needs several files and programs. Keep every file inside `Overlays & Plugins/overlays/notifications/typing-notifications/` together, and also download the Vencord plugin file at `Overlays & Plugins/integrations/vencord/TypingNotifications/index.tsx`.
 
 For this feature, downloading the repository ZIP is usually easier. You may then delete or ignore the countdown, confetti, gradient, cursor-zoom, and documentation folders.
 

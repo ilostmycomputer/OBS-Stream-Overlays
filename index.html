@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OBS Stream Overlays</title>
   <meta name="description" content="A showcase of finished OBS overlays and streaming tools.">
-  <link rel="stylesheet" href="./showcase/showcase.css?v=9a31103">
+  <link rel="stylesheet" href="./showcase/showcase.css?v=five-click-1">
 </head>
 <body>
   <main class="page-shell">
@@ -57,8 +57,23 @@
 
       <article class="showcase-card" data-showcase="five-click-zoom">
         <h2>Five-click Cursor Zoom</h2>
-        <div class="preview-frame">
-          <img class="preview-image" src="./showcase/assets/five-click-preview.webp" alt="Five-click Cursor Zoom shown during an OBS stream">
+        <div
+          class="preview-frame cursor-zoom-demo"
+          data-cursor-zoom-demo
+          tabindex="0"
+          aria-label="Interactive Five-click Cursor Zoom demo. Click five times rapidly near one point to zoom. Move the pointer outside the demo to reset."
+        >
+          <img
+            class="preview-image cursor-zoom-image"
+            data-cursor-zoom-image
+            src="./showcase/assets/five-click-demo.webp?v=1"
+            alt="Emergency Response Liberty County gameplay used for the interactive Five-click Cursor Zoom demo"
+            draggable="false"
+          >
+          <div class="cursor-zoom-hud" aria-live="polite" aria-atomic="true">
+            <span class="cursor-zoom-status" data-cursor-zoom-status>Click 5× near one point</span>
+            <span class="cursor-zoom-count" data-cursor-zoom-count>0 / 5</span>
+          </div>
         </div>
         <a class="github-link" href="https://github.com/ilostmycomputer/OBS-Stream-Overlays/tree/main/Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom">View on GitHub</a>
         <p>A helper that triggers a smooth cursor-following OBS zoom after five rapid clicks.</p>
@@ -66,6 +81,6 @@
     </section>
   </main>
 
-  <script src="./showcase/showcase.js" defer></script>
+  <script src="./showcase/showcase.js?v=five-click-1" defer></script>
 </body>
 </html>

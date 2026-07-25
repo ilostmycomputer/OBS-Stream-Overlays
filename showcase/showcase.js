@@ -158,3 +158,247 @@ for (const button of buttons) {
     loadVariant(button.dataset.countdownVariant, true);
   });
 }
+
+{
+  const demo = document.querySelector("[data-cursor-zoom-demo]");
+
+  if (demo) {
+    const image = demo.querySelector("[data-cursor-zoom-image]");
+    const status = demo.querySelector("[data-cursor-zoom-status]");
+    const count = demo.querySelector("[data-cursor-zoom-count]");
+    const REQUIRED_CLICKS = 5;
+    const CLICK_WINDOW_MS = 1200;
+    const SOURCE_CLICK_RADIUS = 180;
+    const SOURCE_WIDTH = 1920;
+    const TARGET_ZOOM = 2.5;
+    const ZOOM_IN_MS = prefersReducedMotion ? 0 : 300;
+    const ZOOM_OUT_MS = prefersReducedMotion ? 0 : 400;
+    const TRACK_MS = 15000;
+    const FOLLOW_SMOOTHING = 0.18;
+    const REFERENCE_FRAME_MS = 1000 / 60;
+
+    let clicks = [];
+    let countResetTimer = null;
+    let trackTimer = null;
+    let animationFrame = null;
+    let lastFrameAt = performance.now();
+    let zoom = 1;
+    let zoomFrom = 1;
+    let zoomTo = 1;
+    let zoomStartedAt = 0;
+    let zoomDuration = 0;
+    let zoomEase = easeOutCubic;
+    let zoomTransitioning = false;
+    let zoomActive = false;
+    let targetX = demo.clientWidth / 2;
+    let targetY = demo.clientHeight / 2;
+    let smoothedX = targetX;
+    let smoothedY = targetY;
+
+    function clamp(value, minimum, maximum) {
+      return Math.min(maximum, Math.max(minimum, value));
+    }
+
+    function easeOutCubic(value) {
+      const progress = clamp(value, 0, 1);
+      return 1 - Math.pow(1 - progress, 3);
+    }
+
+    function easeInOutCubic(value) {
+      const progress = clamp(value, 0, 1);
+      return progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+    }
+
+    function updateHud() {
+      if (zoomActive) {
+        status.textContent = "2.5Ã— cursor tracking";
+        count.textContent = "Live";
+        demo.classList.add("is-zoomed");
+        return;
+      }
+
+      demo.classList.remove("is-zoomed");
+      status.textContent = clicks.length
+        ? "Keep clicking near that point"
+        : "Click 5Ã— near one point";
+      count.textContent = `${clicks.length} / ${REQUIRED_CLICKS}`;
+    }
+
+    function applyTransform() {
+      const width = demo.clientWidth;
+      const height = demo.clientHeight;
+      const viewportWidth = width / zoom;
+      const viewportHeight = height / zoom;
+      const centreX = clamp(
+        smoothedX,
+        viewportWidth / 2,
+        width - viewportWidth / 2,
+      );
+      const centreY = clamp(
+        smoothedY,
+        viewportHeight / 2,
+        height - viewportHeight / 2,
+      );
+      const translateX = width / 2 - centreX * zoom;
+      const translateY = height / 2 - centreY * zoom;
+
+      image.style.transform =
+        `translate3d(${translateX}px, ${translateY}px, 0) scale(${zoom})`;
+    }
+
+    function runAnimation(frameTime) {
+      const elapsedFrame = Math.max(1, frameTime - lastFrameAt);
+      lastFrameAt = frameTime;
+
+      if (zoomActive) {
+        const smoothingAlpha =
+          1 - Math.pow(1 - FOLLOW_SMOOTHING, elapsedFrame / REFERENCE_FRAME_MS);
+        smoothedX += (targetX - smoothedX) * smoothingAlpha;
+        smoothedY += (targetY - smoothedY) * smoothingAlpha;
+      }
+
+      if (zoomTransitioning) {
+        const progress = zoomDuration === 0
+          ? 1
+          : Math.min(1, (frameTime - zoomStartedAt) / zoomDuration);
+        zoom = zoomFrom + (zoomTo - zoomFrom) * zoomEase(progress);
+        zoomTransitioning = progress < 1;
+      }
+
+      applyTransform();
+
+      const followingPointer =
+        zoomActive
+        && (
+          Math.abs(smoothedX - targetX) > 0.05
+          || Math.abs(smoothedY - targetY) > 0.05
+        );
+
+      if (zoomTransitioning || followingPointer) {
+        animationFrame = requestAnimationFrame(runAnimation);
+      } else {
+        animationFrame = null;
+      }
+    }
+
+    function ensureAnimation() {
+      if (animationFrame !== null) return;
+      lastFrameAt = performance.now();
+      animationFrame = requestAnimationFrame(runAnimation);
+    }
+
+    function transitionZoom(nextZoom, duration, easing) {
+      zoomFrom = zoom;
+      zoomTo = nextZoom;
+      zoomStartedAt = performance.now();
+      zoomDuration = duration;
+      zoomEase = easing;
+      zoomTransitioning = true;
+      ensureAnimation();
+    }
+
+    function clearClickProgress() {
+      clicks = [];
+      window.clearTimeout(countResetTimer);
+      countResetTimer = null;
+    }
+
+    function resetDemo({ animate = true } = {}) {
+      clearClickProgress();
+      window.clearTimeout(trackTimer);
+      trackTimer = null;
+      zoomActive = false;
+      updateHud();
+      transitionZoom(1, animate ? ZOOM_OUT_MS : 0, easeInOutCubic);
+    }
+
+    function startZoom(x, y) {
+      clearClickProgress();
+      targetX = x;
+      targetY = y;
+      smoothedX = x;
+      smoothedY = y;
+      zoomActive = true;
+      updateHud();
+      transitionZoom(TARGET_ZOOM, ZOOM_IN_MS, easeOutCubic);
+
+      window.clearTimeout(trackTimer);
+      trackTimer = window.setTimeout(() => resetDemo(), TRACK_MS);
+    }
+
+    function createClickMarker(x, y) {
+      const marker = document.createElement("span");
+      marker.className = "cursor-zoom-click";
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+      marker.setAttribute("aria-hidden", "true");
+      demo.append(marker);
+      marker.addEventListener("animationend", () => marker.remove(), {
+        once: true,
+      });
+    }
+
+    function relativePoint(event) {
+      const rect = demo.getBoundingClientRect();
+      return {
+        x: clamp(event.clientX - rect.left, 0, rect.width),
+        y: clamp(event.clientY - rect.top, 0, rect.height),
+      };
+    }
+
+    demo.addEventListener("pointermove", event => {
+      const point = relativePoint(event);
+      targetX = point.x;
+      targetY = point.y;
+      if (zoomActive) ensureAnimation();
+    });
+
+    demo.addEventListener("pointerdown", event => {
+      if (zoomActive || (!event.isPrimary && event.pointerType !== "mouse")) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+
+      const point = relativePoint(event);
+      const now = performance.now();
+      const clickRadius = demo.clientWidth * (SOURCE_CLICK_RADIUS / SOURCE_WIDTH);
+      clicks = clicks.filter(click => now - click.time <= CLICK_WINDOW_MS);
+      clicks.push({ ...point, time: now });
+      createClickMarker(point.x, point.y);
+
+      const candidate = clicks.slice(-REQUIRED_CLICKS);
+      const first = candidate[0];
+      const triggered =
+        candidate.length === REQUIRED_CLICKS
+        && candidate.at(-1).time - first.time <= CLICK_WINDOW_MS
+        && candidate.every(click =>
+          Math.hypot(click.x - first.x, click.y - first.y) <= clickRadius
+        );
+
+      if (triggered) {
+        startZoom(point.x, point.y);
+        return;
+      }
+
+      updateHud();
+      window.clearTimeout(countResetTimer);
+      countResetTimer = window.setTimeout(() => {
+        clearClickProgress();
+        updateHud();
+      }, CLICK_WINDOW_MS);
+    });
+
+    demo.addEventListener("pointerleave", event => {
+      if (event.pointerType !== "touch") resetDemo();
+    });
+    demo.addEventListener("pointercancel", () => resetDemo());
+    demo.addEventListener("blur", () => resetDemo());
+    demo.addEventListener("keydown", event => {
+      if (event.key === "Escape") resetDemo();
+    });
+    demo.addEventListener("dragstart", event => event.preventDefault());
+
+    updateHud();
+    applyTransform();
+  }
+}

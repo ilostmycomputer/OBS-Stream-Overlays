@@ -213,7 +213,7 @@ for (const button of buttons) {
 
     function updateHud() {
       if (zoomActive) {
-        status.textContent = "2.5Ã— cursor tracking";
+        status.textContent = "2.5x cursor tracking";
         count.textContent = "Live";
         demo.classList.add("is-zoomed");
         return;
@@ -222,7 +222,7 @@ for (const button of buttons) {
       demo.classList.remove("is-zoomed");
       status.textContent = clicks.length
         ? "Keep clicking near that point"
-        : "Click 5Ã— near one point";
+        : "Click 5x near one point";
       count.textContent = `${clicks.length} / ${REQUIRED_CLICKS}`;
     }
 

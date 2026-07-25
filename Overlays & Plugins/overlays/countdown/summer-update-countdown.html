@@ -137,6 +137,10 @@
         pointer-events: auto;
       }
 
+      body.is-showcase-card .countdown-shell {
+        width: min(380px, calc(100% - 20px));
+      }
+
       .countdown-shell::before,
       .countdown-shell::after,
       .shiny-cta-glow::before {
@@ -448,6 +452,7 @@
       const TARGET_DATE_TIME = "2026-07-25T12:00:00Z";
       const searchParams = new URLSearchParams(window.location.search);
       const isShowcaseCard = searchParams.get("showcaseCard") === "1";
+      document.body.classList.toggle("is-showcase-card", isShowcaseCard);
       const showcaseRemainingSeconds = Number.parseInt(
         searchParams.get("showcaseRemaining") ?? "",
         10,

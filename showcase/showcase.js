@@ -8,7 +8,8 @@ const sources = {
 
 // Keep this in sync with the production countdown's 1:59 runtime, five-second
 // hold at 0:00, and 650ms exit transition.
-const COUNTDOWN_RUNTIME_MS = (1 * 60 + 59) * 1000;
+const COUNTDOWN_START_SECONDS = 1 * 60 + 59;
+const COUNTDOWN_RUNTIME_MS = COUNTDOWN_START_SECONDS * 1000;
 const COUNTDOWN_EXIT_HOLD_MS = 5000;
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const COUNTDOWN_EXIT_MS = prefersReducedMotion ? 0 : 650;
@@ -20,6 +21,7 @@ let activeVariant = "light";
 let cycleTimer = null;
 let cycleToken = 0;
 let sourceNonce = 0;
+let countdownDeadline = 0;
 
 function clearCycleTimer() {
   if (cycleTimer !== null) {
@@ -31,9 +33,21 @@ function clearCycleTimer() {
   return cycleToken;
 }
 
+function startCountdownCycle() {
+  countdownDeadline = Date.now() + COUNTDOWN_RUNTIME_MS;
+}
+
 function sourceFor(variant) {
+  if (countdownDeadline === 0) {
+    startCountdownCycle();
+  }
+
   sourceNonce += 1;
-  return `${sources[variant]}?showcaseCycle=${sourceNonce}`;
+  const params = new URLSearchParams({
+    showcaseCycle: String(sourceNonce),
+    showcaseDeadline: String(countdownDeadline),
+  });
+  return `${sources[variant]}?${params}`;
 }
 
 function prepareCountdownPreviews() {
@@ -72,6 +86,7 @@ function prepareCountdownPreviews() {
   previews.set("light", preview);
   previews.set("dark", darkPreview);
 
+  startCountdownCycle();
   loadVariant("light", false);
 }
 
@@ -97,12 +112,18 @@ function setCountdownVariant(variant) {
 function scheduleNextCycle(variant, token) {
   if (token !== cycleToken) return;
 
+  const delay =
+    Math.max(0, countdownDeadline - Date.now()) +
+    COUNTDOWN_EXIT_HOLD_MS +
+    COUNTDOWN_EXIT_MS;
+
   cycleTimer = window.setTimeout(() => {
     if (token !== cycleToken) return;
 
     const nextVariant = variant === "light" ? "dark" : "light";
+    startCountdownCycle();
     loadVariant(nextVariant, true);
-  }, COUNTDOWN_CYCLE_MS);
+  }, delay);
 }
 
 function loadVariant(variant, activateOnLoad) {

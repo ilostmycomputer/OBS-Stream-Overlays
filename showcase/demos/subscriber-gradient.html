@@ -516,6 +516,21 @@
       counter.setAttribute("aria-label", "Subscriber count " + formatted);
     }
 
+    function advanceCount() {
+      const previousCount = currentCount;
+      const direction = Math.random() < UPWARD_CHANCE ? 1 : -1;
+
+      if (currentCount >= MAX_COUNT) {
+        currentCount -= 1;
+      } else if (currentCount <= MIN_COUNT) {
+        currentCount += 1;
+      } else {
+        currentCount += direction;
+      }
+
+      renderCount(currentCount, true, Math.sign(currentCount - previousCount));
+    }
+
     document.fonts.load('700 132px "OpenAI Sans"', '3,145').then(() => {
       renderCount(currentCount, false);
       counter.classList.add("is-ready");

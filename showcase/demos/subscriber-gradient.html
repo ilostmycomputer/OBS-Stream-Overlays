@@ -76,20 +76,27 @@
       position: relative;
       top: 3px;
       display: inline-block;
-      box-sizing: border-box;
       width: 0.22em;
       height: var(--digit-height);
-      padding-top: 0.02em;
-      font: inherit;
-      line-height: 1.08em;
-      letter-spacing: 0;
-      text-align: center;
       vertical-align: top;
       margin-inline: -0.01em;
     }
 
+    .comma-face {
+      position: absolute;
+      left: 50%;
+      top: 0.40em;
+      transform: translateX(-50%);
+      font-family: inherit;
+      font-size: 0.72em;
+      font-weight: inherit;
+      line-height: 1;
+      letter-spacing: 0;
+      text-align: center;
+      white-space: nowrap;
+    }
 
-    .fill .comma {
+    .fill .comma-face {
       color: #fff;
       -webkit-text-fill-color: #fff;
     }
@@ -273,7 +280,12 @@
     function createComma() {
       const comma = document.createElement("span");
       comma.className = "comma";
-      comma.textContent = ",";
+
+      const face = document.createElement("span");
+      face.className = "comma-face";
+      face.textContent = ",";
+      comma.append(face);
+
       return comma;
     }
 
@@ -362,8 +374,9 @@
         child.classList.contains("digit-window")
       );
       const comma = fillLayer.querySelector(".comma");
+      const commaFace = comma?.querySelector(".comma-face");
 
-      if (digitWindows.length === 0 || !comma) return null;
+      if (digitWindows.length === 0 || !comma || !commaFace) return null;
 
       const digits = digitWindows.map(windowElement => {
         const windowRect = windowElement.getBoundingClientRect();
@@ -383,15 +396,16 @@
         };
       });
 
-      const commaRect = getTextRangeRect(comma, comma.getBoundingClientRect());
-      const commaStyle = getComputedStyle(comma);
+      const commaWindowRect = comma.getBoundingClientRect();
+      const commaRect = getTextRangeRect(commaFace, commaFace.getBoundingClientRect());
+      const commaStyle = getComputedStyle(commaFace);
 
       return {
         width: counterRect.width,
         height: counterRect.height,
         digits,
         comma: {
-          centerX: commaRect.left - counterRect.left + commaRect.width / 2,
+          centerX: commaWindowRect.left - counterRect.left + commaWindowRect.width / 2,
           faceTop: commaRect.top - counterRect.top,
           fontSize: Number.parseFloat(commaStyle.fontSize)
         }

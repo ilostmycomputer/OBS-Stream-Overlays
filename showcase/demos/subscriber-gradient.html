@@ -27,70 +27,93 @@
       place-items: center;
     }
 
-    svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-      overflow: visible;
-      opacity: 0;
-    }
-
-    svg.is-ready {
-      opacity: 1;
-    }
-
-    .subscriber-count {
+    .counter {
+      position: relative;
+      display: inline-grid;
+      place-items: center;
       font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
-      font-size: 132px;
+      font-size: clamp(72px, 17vw, 132px);
       font-weight: 700;
-      font-style: normal;
       line-height: 1;
       letter-spacing: -0.05em;
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum" 1;
-      text-anchor: middle;
-      dominant-baseline: middle;
-      fill: #ffffff;
-      stroke: url(#subscriber-gradient);
-      stroke-width: 9px;
-      stroke-linejoin: round;
-      stroke-linecap: round;
-      paint-order: stroke fill;
-      filter: url(#soft-glow);
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    .counter.is-ready {
+      opacity: 1;
+    }
+
+    .counter > span {
+      grid-area: 1 / 1;
+      font: inherit;
+      letter-spacing: inherit;
+      font-variant-numeric: inherit;
+      font-feature-settings: inherit;
+      line-height: inherit;
+      white-space: inherit;
+    }
+
+    .stroke {
+      color: transparent;
+      background: conic-gradient(
+        from var(--gradient-angle),
+        #fde047 0deg,
+        #facc15 90deg,
+        #ca8a04 180deg,
+        #facc15 270deg,
+        #fde047 360deg
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: url(#outline-filter);
+      animation: rotate-gradient 6s linear infinite;
+    }
+
+    .fill {
+      position: relative;
+      color: #fff;
+      -webkit-text-fill-color: #fff;
+    }
+
+    @property --gradient-angle {
+      syntax: "<angle>";
+      initial-value: -45deg;
+      inherits: false;
+    }
+
+    @keyframes rotate-gradient {
+      to {
+        --gradient-angle: 315deg;
+      }
     }
   </style>
 </head>
 <body>
-  <svg id="preview" viewBox="0 0 700 394" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Subscriber count 3,145">
-    <defs>
-      <linearGradient id="subscriber-gradient" gradientUnits="userSpaceOnUse" x1="210" y1="90" x2="490" y2="304">
-        <stop offset="0" stop-color="#fde047" />
-        <stop offset="0.25" stop-color="#facc15" />
-        <stop offset="0.5" stop-color="#ca8a04" />
-        <stop offset="0.75" stop-color="#facc15" />
-        <stop offset="1" stop-color="#fde047" />
-        <animateTransform
-          attributeName="gradientTransform"
-          type="rotate"
-          from="0 350 197"
-          to="360 350 197"
-          dur="6s"
-          repeatCount="indefinite" />
-      </linearGradient>
-
-      <filter id="soft-glow" x="-30%" y="-40%" width="160%" height="180%">
-        <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#facc15" flood-opacity="0.22" />
-      </filter>
-    </defs>
-
-    <text class="subscriber-count" x="350" y="197">3,145</text>
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <filter id="outline-filter" x="-30%" y="-40%" width="160%" height="180%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceGraphic" operator="dilate" radius="4.5" result="dilated" />
+      <feComposite in="dilated" in2="SourceGraphic" operator="out" result="outline" />
+      <feGaussianBlur in="outline" stdDeviation="0.25" result="softOutline" />
+      <feMerge>
+        <feMergeNode in="softOutline" />
+      </feMerge>
+    </filter>
   </svg>
 
+  <div class="counter" id="counter" role="img" aria-label="Subscriber count 3,145">
+    <span class="stroke" aria-hidden="true">3,145</span>
+    <span class="fill">3,145</span>
+  </div>
+
   <script>
-    const preview = document.getElementById("preview");
+    const counter = document.getElementById("counter");
 
     document.fonts.load('700 132px "OpenAI Sans"', '3,145').then(() => {
-      preview.classList.add("is-ready");
+      counter.classList.add("is-ready");
     });
   </script>
 </body>

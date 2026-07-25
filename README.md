@@ -9,6 +9,7 @@ Downloading the repository ZIP does not install anything. It only copies the fil
 | Feature | Files needed from this repository | Install or access separately |
 | --- | --- | --- |
 | **Countdown** | Light style: [`summer-update-countdown.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown.html). Dark style: [`summer-update-countdown-dark.html`](Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown-dark.html). | [OBS Studio](https://obsproject.com/download). The three OpenAI Sans font files in `Overlays & Plugins/overlays/countdown/` are optional and only provide the intended clean typography. |
+| **Stream countdown** | [`stream-countdown.html`](Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html) | [OBS Studio](https://obsproject.com/download). `OpenAI-Sans-Bold.otf` in the same folder is optional and provides the intended typography. |
 | **Confetti** | [`confetti.html`](Overlays%20%26%20Plugins/overlays/confetti/confetti.html) | [OBS Studio](https://obsproject.com/download) only. |
 | **Animated YouTube Studio subscriber count** | [`gradient.html`](Overlays%20%26%20Plugins/overlays/gradient-stroke/gradient.html) | [OBS Studio](https://obsproject.com/download), access to your channel in YouTube Studio, and the compiled [Stroke Glow Shadow installer](https://github.com/FiniteSingularity/obs-stroke-glow-shadow/releases). |
 | **Discord typing alert** | The entire `Overlays & Plugins/overlays/typing-notifications/` folder, plus [`Overlays & Plugins/integrations/vencord/TypingNotifications/index.tsx`](Overlays%20%26%20Plugins/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
@@ -42,6 +43,26 @@ The countdown still works without them and falls back to a normal system sans-se
 Choose either `summer-update-countdown.html` for the original light style or `summer-update-countdown-dark.html` for the permanently visible dark style with a red-to-blue perimeter sweep. Edit the target date in Notepad, then add the selected file to OBS as a local Browser Source at `700 × 180`.
 
 [Open the complete countdown instructions](Documentation/FULL_GUIDE.md#1-countdown)
+
+### Stream countdown
+
+`stream-countdown.html` is a simple duration timer with rolling digits, a white card, black text, a yellow perimeter sweep, and an editable title. By default it starts at `1:59` and displays `Stream Countdown` above the timer.
+
+Edit the title by changing:
+
+```html
+<div class="stream-countdown-title">Stream Countdown</div>
+```
+
+Edit the starting duration by changing:
+
+```js
+const START_SECONDS = 1 * 60 + 59;
+```
+
+For example, `const START_SECONDS = 5 * 60 + 0;` starts at `5:00`. Add the file to OBS as a local Browser Source at `700 × 180` and refresh the source after editing it.
+
+[Open the complete stream-countdown instructions](Documentation/FULL_GUIDE.md#stream-countdown)
 
 ### Confetti
 

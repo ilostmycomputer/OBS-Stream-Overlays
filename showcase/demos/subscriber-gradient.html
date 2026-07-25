@@ -27,43 +27,114 @@
       place-items: center;
     }
 
-    canvas {
-      display: block;
+    #stroke-canvas {
+      position: fixed;
+      inset: 0;
       width: 100%;
       height: 100%;
+      pointer-events: none;
+    }
+
+    .subscriber-count {
+      --digit-height: 1.14em;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      color: #f5f5f5;
+      font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .digit-window {
+      position: relative;
+      top: 3px;
+      display: inline-block;
+      flex: 0 0 0.64em;
+      width: 0.64em;
+      height: var(--digit-height);
+      overflow: hidden;
+      vertical-align: top;
+    }
+
+    .digit-strip {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      transform: translateY(0);
+      transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: transform;
+    }
+
+    .digit-strip.is-rolling-up {
+      transform: translateY(calc(-1 * var(--digit-height)));
+    }
+
+    .digit-strip.is-rolling-down {
+      transform: translateY(0);
+    }
+
+    .digit-strip.is-down-start {
+      transform: translateY(calc(-1 * var(--digit-height)));
+    }
+
+    .digit-face {
+      display: block;
+      flex: 0 0 var(--digit-height);
+      box-sizing: border-box;
+      width: 100%;
+      height: var(--digit-height);
+      padding-top: 0.02em;
+      line-height: 1.08em;
+      text-align: center;
+    }
+
+    .separator {
+      position: relative;
+      top: 3px;
+      display: inline-block;
+      flex: 0 0 0.42em;
+      width: 0.42em;
+      text-align: center;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .digit-strip {
+        transition: none;
+      }
     }
   </style>
 </head>
 <body>
-  <canvas id="demo" aria-label="Animated subscriber count around 3,145 with a rotating yellow gradient stroke"></canvas>
+  <canvas id="stroke-canvas" aria-hidden="true"></canvas>
+  <div class="subscriber-count" id="subscriber-count" aria-label="3,145 subscribers">
+    <span class="digit-window" data-digit="3"><span class="digit-face">3</span></span>
+    <span class="separator" aria-hidden="true">,</span>
+    <span class="digit-window" data-digit="1"><span class="digit-face">1</span></span>
+    <span class="digit-window" data-digit="4"><span class="digit-face">4</span></span>
+    <span class="digit-window" data-digit="5"><span class="digit-face">5</span></span>
+  </div>
 
   <script>
-    const canvas = document.getElementById("demo");
+    const counter = document.getElementById("subscriber-count");
+    const canvas = document.getElementById("stroke-canvas");
     const ctx = canvas.getContext("2d");
 
     const ROTATION_MS = 6000;
-    const ROLL_MS = 420;
     const MIN_COUNT = 3000;
     const MAX_COUNT = 3299;
 
-    // Match the approved stream countdown geometry exactly.
-    const DIGIT_HEIGHT_EM = 1.14;
-    const DIGIT_WIDTH_EM = 0.64;
-    const SEPARATOR_WIDTH_EM = 0.42;
-    const FACE_LINE_HEIGHT_EM = 1.08;
-    const FACE_PADDING_TOP_EM = 0.02;
-    const WINDOW_TOP_PX = 3;
-
+    let count = 3145;
+    let nextChangeAt = performance.now() + 900;
     let width = 0;
     let height = 0;
-    let count = 3145;
-    let previousCount = count;
-    let targetCount = count;
-    let rollStartedAt = -Infinity;
-    let rollDirection = 1;
-    let nextChangeAt = performance.now() + 900;
 
-    function resize() {
+    function resizeCanvas() {
       const scale = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
@@ -74,154 +145,150 @@
       ctx.setTransform(scale, 0, 0, scale, 0, 0);
     }
 
-    function formatCount(value) {
-      return value.toLocaleString("en-GB");
+    function createDigitFace(digit) {
+      const face = document.createElement("span");
+      face.className = "digit-face";
+      face.textContent = digit;
+      return face;
     }
 
-    function scheduleCountChange(now) {
+    function settleWindow(windowElement, digit) {
+      if (!windowElement.isConnected) return;
+      windowElement.dataset.digit = digit;
+      windowElement.replaceChildren(createDigitFace(digit));
+    }
+
+    function rollDigit(windowElement, nextDigit, direction) {
+      const currentDigit = windowElement.dataset.digit;
+      if (currentDigit === nextDigit) return;
+
+      const strip = document.createElement("span");
+      strip.className = "digit-strip";
+
+      if (direction > 0) {
+        strip.append(createDigitFace(currentDigit), createDigitFace(nextDigit));
+        windowElement.replaceChildren(strip);
+        strip.getBoundingClientRect();
+        requestAnimationFrame(() => strip.classList.add("is-rolling-up"));
+      } else {
+        strip.classList.add("is-down-start");
+        strip.append(createDigitFace(nextDigit), createDigitFace(currentDigit));
+        windowElement.replaceChildren(strip);
+        strip.getBoundingClientRect();
+        requestAnimationFrame(() => {
+          strip.classList.remove("is-down-start");
+          strip.classList.add("is-rolling-down");
+        });
+      }
+
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        settleWindow(windowElement, nextDigit);
+      };
+
+      strip.addEventListener("transitionend", settle, { once: true });
+      setTimeout(settle, 520);
+    }
+
+    function renderCount(nextCount) {
+      const current = String(count).padStart(4, "0");
+      const next = String(nextCount).padStart(4, "0");
+      const direction = nextCount >= count ? 1 : -1;
+      const windows = [...counter.querySelectorAll(".digit-window")];
+
+      next.split("").forEach((digit, index) => {
+        if (current[index] !== digit) rollDigit(windows[index], digit, direction);
+      });
+
+      count = nextCount;
+      counter.setAttribute("aria-label", `${count.toLocaleString("en-GB")} subscribers`);
+    }
+
+    function scheduleRandomChange(now) {
       const magnitude = 1 + Math.floor(Math.random() * 8);
       const direction = Math.random() < 0.5 ? -1 : 1;
       const next = Math.max(MIN_COUNT, Math.min(MAX_COUNT, count + direction * magnitude));
-
-      if (next === count) {
-        nextChangeAt = now + 700;
-        return;
-      }
-
-      previousCount = count;
-      targetCount = next;
-      count = next;
-      rollDirection = targetCount > previousCount ? 1 : -1;
-      rollStartedAt = now;
-      nextChangeAt = now + ROLL_MS + 850 + Math.random() * 1250;
+      if (next !== count) renderCount(next);
+      nextChangeAt = now + 1270 + Math.random() * 1250;
     }
 
-    function easeCountdown(t) {
-      // Matches cubic-bezier(0.22, 0.61, 0.36, 1) closely without changing timing.
-      return 1 - Math.pow(1 - t, 3);
-    }
-
-    function createStrokeGradient(now, centreX, centreY) {
-      const angle = ((now % ROTATION_MS) / ROTATION_MS) * Math.PI * 2 - Math.PI / 4;
-      const gradient = ctx.createConicGradient(angle, centreX, centreY);
-      gradient.addColorStop(0, "#fde047");
-      gradient.addColorStop(0.25, "#facc15");
-      gradient.addColorStop(0.5, "#ca8a04");
-      gradient.addColorStop(0.75, "#facc15");
-      gradient.addColorStop(1, "#fde047");
-      return gradient;
-    }
-
-    function drawGlyph(glyph, x, y, gradient, fontSize) {
-      ctx.shadowColor = "rgba(250, 204, 21, 0.22)";
-      ctx.shadowBlur = 14;
-      ctx.lineWidth = Math.max(4, fontSize * 0.085);
-      ctx.strokeStyle = gradient;
-      ctx.strokeText(glyph, x, y);
-
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#f5f5f5";
-      ctx.fillText(glyph, x, y);
-    }
-
-    function drawDigitWindow(oldGlyph, newGlyph, slotX, centreY, geometry, gradient, progress, rolling) {
-      const { digitWidth, digitHeight, faceHeight, facePaddingTop, strokePad } = geometry;
-      const eased = easeCountdown(progress);
-      const travel = digitHeight;
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(
-        slotX - digitWidth / 2 - strokePad,
-        centreY - digitHeight / 2 + WINDOW_TOP_PX,
-        digitWidth + strokePad * 2,
-        digitHeight
-      );
-      ctx.clip();
-
-      const baselineOffset = facePaddingTop + (faceHeight - fontSize) * 0.5;
-      const restingY = centreY + WINDOW_TOP_PX + baselineOffset;
-
-      if (rolling && oldGlyph !== newGlyph) {
-        const oldY = restingY - rollDirection * eased * travel;
-        const newY = restingY + rollDirection * (1 - eased) * travel;
-        drawGlyph(oldGlyph, slotX, oldY, gradient, geometry.fontSize);
-        drawGlyph(newGlyph, slotX, newY, gradient, geometry.fontSize);
-      } else {
-        drawGlyph(newGlyph, slotX, restingY, gradient, geometry.fontSize);
-      }
-
-      ctx.restore();
-    }
-
-    function draw(now) {
-      if (now >= nextChangeAt) scheduleCountChange(now);
-
-      ctx.clearRect(0, 0, width, height);
-
-      // Same font sizing rule as the stream countdown: clamp(2rem, 5vw, 3.25rem).
-      const fontSize = Math.min(52, Math.max(32, width * 0.05));
-      const digitWidth = fontSize * DIGIT_WIDTH_EM;
-      const digitHeight = fontSize * DIGIT_HEIGHT_EM;
-      const faceHeight = fontSize * DIGIT_HEIGHT_EM;
-      const facePaddingTop = fontSize * FACE_PADDING_TOP_EM;
-      const separatorWidth = fontSize * SEPARATOR_WIDTH_EM;
-      const slotWidths = [digitWidth, separatorWidth, digitWidth, digitWidth, digitWidth];
-      const totalWidth = slotWidths.reduce((sum, slotWidth) => sum + slotWidth, 0);
-      const centreX = width / 2;
-      const centreY = height / 2;
-      const gradient = createStrokeGradient(now, centreX, centreY);
-
-      const previous = formatCount(previousCount);
-      const target = formatCount(targetCount);
-      const progress = Math.min(1, Math.max(0, (now - rollStartedAt) / ROLL_MS));
-      const rolling = progress < 1;
-
-      const geometry = {
-        fontSize,
-        digitWidth,
-        digitHeight,
-        faceHeight: fontSize * FACE_LINE_HEIGHT_EM,
-        facePaddingTop,
-        strokePad: Math.max(4, fontSize * 0.09),
-      };
-
-      ctx.save();
+    function drawStrokeGlyph(text, x, y, fontSize, gradient) {
       ctx.font = `700 ${fontSize}px "OpenAI Sans", ui-sans-serif, system-ui, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
-
-      let cursor = centreX - totalWidth / 2;
-
-      for (let index = 0; index < slotWidths.length; index++) {
-        const slotWidth = slotWidths[index];
-        const slotX = cursor + slotWidth / 2;
-        const oldGlyph = previous[index];
-        const newGlyph = target[index];
-
-        if (newGlyph === ",") {
-          drawGlyph(",", slotX, centreY + WINDOW_TOP_PX, gradient, fontSize);
-        } else {
-          drawDigitWindow(oldGlyph, newGlyph, slotX, centreY, geometry, gradient, progress, rolling);
-        }
-
-        cursor += slotWidth;
-      }
-
-      ctx.restore();
-
-      if (!rolling && previousCount !== targetCount) {
-        previousCount = targetCount;
-      }
-
-      requestAnimationFrame(draw);
+      ctx.lineWidth = Math.max(4, fontSize * 0.085);
+      ctx.strokeStyle = gradient;
+      ctx.shadowColor = "rgba(250, 204, 21, 0.22)";
+      ctx.shadowBlur = 14;
+      ctx.strokeText(text, x, y);
+      ctx.shadowBlur = 0;
     }
 
-    window.addEventListener("resize", resize);
-    resize();
-    document.fonts.ready.finally(() => requestAnimationFrame(draw));
+    function drawGradientStroke(now) {
+      ctx.clearRect(0, 0, width, height);
+
+      const counterRect = counter.getBoundingClientRect();
+      const angle = ((now % ROTATION_MS) / ROTATION_MS) * Math.PI * 2 - Math.PI / 4;
+      const gradient = ctx.createConicGradient(
+        angle,
+        counterRect.left + counterRect.width / 2,
+        counterRect.top + counterRect.height / 2,
+      );
+      gradient.addColorStop(0, "#fde047");
+      gradient.addColorStop(0.25, "#facc15");
+      gradient.addColorStop(0.5, "#ca8a04");
+      gradient.addColorStop(0.75, "#facc15");
+      gradient.addColorStop(1, "#fde047");
+
+      const fontSize = parseFloat(getComputedStyle(counter).fontSize);
+
+      for (const windowElement of counter.querySelectorAll(".digit-window")) {
+        const windowRect = windowElement.getBoundingClientRect();
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(windowRect.left - 8, windowRect.top, windowRect.width + 16, windowRect.height);
+        ctx.clip();
+
+        for (const face of windowElement.querySelectorAll(".digit-face")) {
+          const faceRect = face.getBoundingClientRect();
+          drawStrokeGlyph(
+            face.textContent,
+            faceRect.left + faceRect.width / 2,
+            faceRect.top + faceRect.height / 2,
+            fontSize,
+            gradient,
+          );
+        }
+
+        ctx.restore();
+      }
+
+      const separator = counter.querySelector(".separator");
+      const separatorRect = separator.getBoundingClientRect();
+      drawStrokeGlyph(
+        ",",
+        separatorRect.left + separatorRect.width / 2,
+        separatorRect.top + separatorRect.height / 2,
+        fontSize,
+        gradient,
+      );
+    }
+
+    function animate(now) {
+      if (now >= nextChangeAt) scheduleRandomChange(now);
+      drawGradientStroke(now);
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    requestAnimationFrame(animate);
+    document.fonts.ready.then(() => resizeCanvas());
   </script>
 </body>
 </html>

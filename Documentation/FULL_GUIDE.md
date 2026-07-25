@@ -12,6 +12,7 @@ in order and complete each test before moving on.
 | Overlay | File | Purpose | Recommended Browser Source size |
 | --- | --- | --- | --- |
 | Countdown | [`Overlays & Plugins/overlays/countdown/summer-update-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/summer-update-countdown.html) | Counts down to an event with rolling digits. | `700 × 180` |
+| Stream countdown | [`Overlays & Plugins/overlays/countdown/stream-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html) | Counts down from an editable duration with rolling digits and an editable title. | `700 × 180` |
 | Animated subscriber stroke | [`Overlays & Plugins/overlays/gradient-stroke/gradient.html`](../Overlays%20%26%20Plugins/overlays/gradient-stroke/gradient.html) | Supplies animated colours to a Stroke filter around the YouTube Studio live subscriber count. | Match the YouTube Studio Browser Source. |
 | Confetti | [`Overlays & Plugins/overlays/confetti/confetti.html`](../Overlays%20%26%20Plugins/overlays/confetti/confetti.html) | Plays transparent falling confetti whenever the page loads or refreshes. | Match your OBS canvas. |
 | Discord typing alert | [`Overlays & Plugins/overlays/typing-notifications/overlay.html`](../Overlays%20%26%20Plugins/overlays/typing-notifications/overlay.html) | Shows a person's avatar and username when they start typing in a watched Discord channel. | `720 × 200` |
@@ -241,6 +242,55 @@ its intended clean appearance. They are not required for the countdown to work.
 
 Without these files, the countdown still functions and uses a fallback system
 sans-serif font. Only the intended typography and clean appearance change.
+
+## Stream countdown
+
+File: [`Overlays & Plugins/overlays/countdown/stream-countdown.html`](../Overlays%20%26%20Plugins/overlays/countdown/stream-countdown.html)
+
+This variant is a simple duration timer rather than a target-date countdown. It
+uses the same rolling-digit motion, with a white card, black text, a yellow
+perimeter sweep, and an editable title above the time. By default it starts at
+`1:59` and displays `Stream Countdown`.
+
+### Change the title
+
+1. Right-click `stream-countdown.html` in File Explorer.
+2. Select **Open with → Notepad**.
+3. Find:
+
+   ```html
+   <div class="stream-countdown-title">Stream Countdown</div>
+   ```
+
+4. Replace only `Stream Countdown` with the text you want to display.
+
+### Change the starting time
+
+Near the bottom of the same file, find:
+
+```js
+const START_SECONDS = 1 * 60 + 59;
+```
+
+The first number is the minutes and the final number is the extra seconds. For
+example:
+
+```js
+const START_SECONDS = 5 * 60 + 0;
+```
+
+starts the timer at `5:00`.
+
+After editing:
+
+1. Save the file.
+2. Add it to OBS as a local Browser Source at `700 × 180`.
+3. If it is already in OBS, select **Refresh cache of current page**.
+
+The timer begins when the Browser Source loads and stops at `0:00`. Refresh the
+Browser Source whenever you want to restart it from the configured duration.
+`OpenAI-Sans-Bold.otf` in the same folder is optional and provides the intended
+typography; the timer still works without it.
 
 ---
 

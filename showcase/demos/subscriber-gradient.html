@@ -75,8 +75,31 @@
       position: relative;
       top: 3px;
       display: inline-block;
+      font: inherit;
+      line-height: inherit;
       margin-left: -0.075em;
       margin-right: -0.085em;
+    }
+
+    .stroke .comma {
+      color: transparent;
+      background: conic-gradient(
+        from var(--gradient-angle),
+        #e8c94c 0deg,
+        #facc15 90deg,
+        #ca8a04 180deg,
+        #facc15 270deg,
+        #e8c94c 360deg
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rotate-gradient 6s linear infinite;
+    }
+
+    .fill .comma {
+      color: #fff;
+      -webkit-text-fill-color: #fff;
     }
 
     .digit-window {
@@ -156,7 +179,8 @@
 
     @media (prefers-reduced-motion: reduce) {
       .stroke,
-      .stroke .digit-face {
+      .stroke .digit-face,
+      .stroke .comma {
         animation: none;
       }
 
@@ -188,7 +212,9 @@
     const counter = document.getElementById("counter");
     const layers = [...counter.children];
     const START_COUNT = 3145;
-    const END_COUNT = 3160;
+    const MIN_COUNT = 3140;
+    const MAX_COUNT = 3165;
+    const UPWARD_CHANCE = 0.82;
     let currentCount = START_COUNT;
 
     function formatCount(value) {
@@ -279,7 +305,16 @@
     }
 
     function advanceCount() {
-      currentCount = currentCount >= END_COUNT ? START_COUNT : currentCount + 1;
+      const direction = Math.random() < UPWARD_CHANCE ? 1 : -1;
+
+      if (currentCount >= MAX_COUNT) {
+        currentCount -= 1;
+      } else if (currentCount <= MIN_COUNT) {
+        currentCount += 1;
+      } else {
+        currentCount += direction;
+      }
+
       renderCount(currentCount);
     }
 

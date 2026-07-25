@@ -71,6 +71,54 @@ body { margin: 0; min-width: 320px; background: #0b0b0d; }
 .preview-switch button { border: 0; border-radius: 7px; padding: 6px 9px; background: transparent; color: #aaaab2; font: inherit; cursor: pointer; }
 .preview-switch button.is-active { background: #f2f2f2; color: #111; }
 
+.showcase-card:is(
+  [data-showcase="countdown"],
+  [data-showcase="subscriber-gradient"],
+  [data-showcase="discord-typing"]
+) .preview-frame {
+  isolation: isolate;
+}
+
+.showcase-card:is(
+  [data-showcase="countdown"],
+  [data-showcase="subscriber-gradient"],
+  [data-showcase="discord-typing"]
+) .preview-frame::before {
+  position: absolute;
+  inset: -12px;
+  z-index: 0;
+  background-image: radial-gradient(
+    circle,
+    rgb(255 255 255 / 28%) 0 1px,
+    transparent 1.2px
+  );
+  background-size: 10px 10px;
+  content: "";
+  opacity: .16;
+  pointer-events: none;
+  animation: preview-halftone-breathe 6s ease-in-out infinite;
+}
+
+.showcase-card:is(
+  [data-showcase="countdown"],
+  [data-showcase="subscriber-gradient"],
+  [data-showcase="discord-typing"]
+) .preview-frame iframe {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes preview-halftone-breathe {
+  0%,
+  100% {
+    opacity: .16;
+  }
+
+  50% {
+    opacity: .34;
+  }
+}
+
 .cursor-zoom-demo {
   cursor: crosshair;
   touch-action: manipulation;
@@ -152,6 +200,15 @@ body { margin: 0; min-width: 320px; background: #0b0b0d; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .showcase-card:is(
+    [data-showcase="countdown"],
+    [data-showcase="subscriber-gradient"],
+    [data-showcase="discord-typing"]
+  ) .preview-frame::before {
+    opacity: .22;
+    animation: none;
+  }
+
   .cursor-zoom-click {
     display: none;
   }

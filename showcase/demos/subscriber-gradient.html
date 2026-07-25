@@ -146,6 +146,13 @@
       z-index: 0;
     }
 
+    .stroke-digit-strip {
+      transform-box: view-box;
+      transform-origin: 0 0;
+      transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: transform;
+    }
+
     .fill {
       position: relative;
       z-index: 1;
@@ -170,6 +177,7 @@
         display: none;
       }
 
+      .stroke-digit-strip,
       .digit-strip {
         transition: none;
       }
@@ -438,30 +446,23 @@
       if (isDecreasing) {
         createStrokeText(nextDigit, geometry, geometry.faceTop, group);
         createStrokeText(currentDigit, geometry, geometry.faceTop + geometry.height, group);
-        group.setAttribute("transform", "translate(0 " + (-geometry.height) + ")");
       } else {
         createStrokeText(currentDigit, geometry, geometry.faceTop, group);
         createStrokeText(nextDigit, geometry, geometry.faceTop + geometry.height, group);
       }
 
-      const finishTransform = isDecreasing ? "translate(0 0)" : "translate(0 " + (-geometry.height) + ")";
-      const motion = svgElement("animateTransform");
-      motion.setAttribute("attributeName", "transform");
-      motion.setAttribute("attributeType", "XML");
-      motion.setAttribute("type", "translate");
-      motion.setAttribute("from", isDecreasing ? "0 " + (-geometry.height) : "0 0");
-      motion.setAttribute("to", isDecreasing ? "0 0" : "0 " + (-geometry.height));
-      motion.setAttribute("dur", "420ms");
-      motion.setAttribute("begin", "indefinite");
-      motion.setAttribute("calcMode", "spline");
-      motion.setAttribute("keyTimes", "0;1");
-      motion.setAttribute("keySplines", "0.22 0.61 0.36 1");
-      motion.setAttribute("fill", "freeze");
-      group.append(motion);
+      const startTransform = isDecreasing
+        ? "translateY(" + (-geometry.height) + "px)"
+        : "translateY(0)";
+      const finishTransform = isDecreasing
+        ? "translateY(0)"
+        : "translateY(" + (-geometry.height) + "px)";
+      group.style.transform = startTransform;
+      group.getBoundingClientRect();
 
       const settle = () => {
         if (!group.isConnected) return;
-        group.removeAttribute("transform");
+        group.style.removeProperty("transform");
         group.replaceChildren();
         createStrokeText(nextDigit, geometry, geometry.faceTop, group);
       };
@@ -470,11 +471,7 @@
         settle();
       } else {
         requestAnimationFrame(() => {
-          if (typeof motion.beginElement === "function") {
-            motion.beginElement();
-          } else {
-            group.setAttribute("transform", finishTransform);
-          }
+          group.style.transform = finishTransform;
         });
         setTimeout(settle, 520);
       }

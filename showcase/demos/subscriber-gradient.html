@@ -457,8 +457,11 @@
         isDecreasing ? "is-rolling-down" : "is-rolling-up"
       );
       group.style.setProperty("--stroke-roll-distance", (-geometry.height) + "px");
-      group.setAttribute("clip-path", "url(#" + clipId + ")");
-      strokeContent.append(group);
+
+      const clipGroup = svgElement("g");
+      clipGroup.setAttribute("clip-path", "url(#" + clipId + ")");
+      clipGroup.append(group);
+      strokeContent.append(clipGroup);
 
       if (isDecreasing) {
         createStrokeText(nextDigit, geometry, geometry.faceTop, group);
@@ -471,11 +474,12 @@
       group.getBoundingClientRect();
 
       const settle = () => {
-        if (!group.isConnected) return;
+        if (!clipGroup.isConnected) return;
         group.classList.remove("is-rolling-up", "is-rolling-down", "is-rolling-active");
         group.style.removeProperty("--stroke-roll-distance");
         group.replaceChildren();
         createStrokeText(nextDigit, geometry, geometry.faceTop, group);
+        clipGroup.removeAttribute("clip-path");
       };
 
       if (prefersReducedMotion()) {

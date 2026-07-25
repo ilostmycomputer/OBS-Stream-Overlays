@@ -111,46 +111,32 @@
     }
 
     .toast::before {
-      --size: calc(100% - var(--shiny-shadow-size) * 2);
+      --size: calc(100% - var(--shiny-shadow-size) * 3);
       --position: 2px;
       --space: calc(var(--position) * 2);
 
-      z-index: 0;
       width: var(--size);
       height: var(--size);
       border-radius: inherit;
-      background: radial-gradient(
-        circle at center,
-        var(--shiny-gradient-shine) 0 1px,
-        transparent 1.15px
-      );
-      background-repeat: repeat;
+      background:
+        radial-gradient(
+          circle at var(--position) var(--position),
+          var(--shiny-gradient-shine) calc(var(--position) / 4),
+          transparent 0
+        ) padding-box;
+      background-repeat: space;
       background-size: var(--space) var(--space);
-      opacity: .9;
-      -webkit-mask-image:
-        radial-gradient(
-          ellipse at center,
-          transparent 0 74%,
-          #000 84% 100%
-        ),
-        conic-gradient(
-          from var(--shiny-gradient-angle),
-          #000 0 calc(var(--shiny-gradient-percent) * 4),
-          transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
-        );
-      -webkit-mask-composite: source-in;
-      mask-image:
-        radial-gradient(
-          ellipse at center,
-          transparent 0 74%,
-          #000 84% 100%
-        ),
-        conic-gradient(
-          from var(--shiny-gradient-angle),
-          #000 0 calc(var(--shiny-gradient-percent) * 4),
-          transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
-        );
-      mask-composite: intersect;
+      opacity: 0.4;
+      -webkit-mask-image: conic-gradient(
+        from var(--shiny-gradient-angle),
+        black 0 calc(var(--shiny-gradient-percent) * 4),
+        transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
+      );
+      mask-image: conic-gradient(
+        from var(--shiny-gradient-angle),
+        black 0 calc(var(--shiny-gradient-percent) * 4),
+        transparent calc(var(--shiny-gradient-percent) * 4.5) 100%
+      );
     }
 
     .toast::after {

@@ -35,6 +35,7 @@
     }
 
     .counter {
+      --digit-height: 1.14em;
       display: inline-grid;
       place-items: center;
       text-align: center;
@@ -71,12 +72,55 @@
     }
 
     .comma {
+      position: relative;
+      top: 3px;
       display: inline-block;
       margin-left: -0.075em;
       margin-right: -0.085em;
     }
 
+    .digit-window {
+      position: relative;
+      top: 3px;
+      display: inline-block;
+      flex: 0 0 0.64em;
+      width: 0.64em;
+      height: var(--digit-height);
+      overflow: hidden;
+      vertical-align: top;
+    }
+
+    .digit-strip {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      transform: translateY(0);
+      transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: transform;
+    }
+
+    .digit-strip.is-rolling {
+      transform: translateY(calc(-1 * var(--digit-height)));
+    }
+
+    .digit-face {
+      display: block;
+      flex: 0 0 var(--digit-height);
+      box-sizing: border-box;
+      width: 100%;
+      height: var(--digit-height);
+      padding-top: 0.02em;
+      line-height: 1.08em;
+      text-align: center;
+    }
+
     .stroke {
+      color: transparent;
+      filter: url(#outline-filter);
+      animation: rotate-gradient 6s linear infinite;
+    }
+
+    .stroke .digit-face {
       color: transparent;
       background: conic-gradient(
         from var(--gradient-angle),
@@ -89,7 +133,6 @@
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: url(#outline-filter);
       animation: rotate-gradient 6s linear infinite;
     }
 
@@ -110,6 +153,17 @@
         --gradient-angle: 315deg;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .stroke,
+      .stroke .digit-face {
+        animation: none;
+      }
+
+      .digit-strip {
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -125,16 +179,114 @@
 
   <div class="stage">
     <div class="counter" id="counter" role="img" aria-label="Subscriber count 3,145">
-      <span class="stroke" aria-hidden="true">3<span class="comma">,</span>145</span>
-      <span class="fill">3<span class="comma">,</span>145</span>
+      <span class="stroke" aria-hidden="true"></span>
+      <span class="fill" aria-hidden="true"></span>
     </div>
   </div>
 
   <script>
     const counter = document.getElementById("counter");
+    const layers = [...counter.children];
+    const START_COUNT = 3145;
+    const END_COUNT = 3160;
+    let currentCount = START_COUNT;
+
+    function formatCount(value) {
+      return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function createDigitFace(digit) {
+      const face = document.createElement("span");
+      face.className = "digit-face";
+      face.textContent = digit;
+      return face;
+    }
+
+    function createStaticDigit(digit) {
+      const digitWindow = document.createElement("span");
+      digitWindow.className = "digit-window";
+      digitWindow.dataset.digit = digit;
+      digitWindow.append(createDigitFace(digit));
+      return digitWindow;
+    }
+
+    function createComma() {
+      const comma = document.createElement("span");
+      comma.className = "comma";
+      comma.textContent = ",";
+      return comma;
+    }
+
+    function createStaticTokens(formatted) {
+      return [...formatted].map(character =>
+        character === "," ? createComma() : createStaticDigit(character)
+      );
+    }
+
+    function rollDigit(currentWindow, nextDigit) {
+      const currentDigit = currentWindow.dataset.digit;
+      if (currentDigit === nextDigit) return currentWindow;
+
+      const rollingWindow = document.createElement("span");
+      rollingWindow.className = "digit-window";
+      rollingWindow.dataset.digit = nextDigit;
+
+      const strip = document.createElement("span");
+      strip.className = "digit-strip";
+      strip.append(createDigitFace(currentDigit), createDigitFace(nextDigit));
+      rollingWindow.append(strip);
+      currentWindow.replaceWith(rollingWindow);
+
+      let settled = false;
+      const settleDigit = () => {
+        if (settled) return;
+        settled = true;
+
+        if (rollingWindow.isConnected) {
+          rollingWindow.replaceChildren(createDigitFace(nextDigit));
+        }
+      };
+
+      strip.addEventListener("transitionend", settleDigit, { once: true });
+      strip.getBoundingClientRect();
+      requestAnimationFrame(() => strip.classList.add("is-rolling"));
+      setTimeout(settleDigit, 520);
+
+      return rollingWindow;
+    }
+
+    function renderLayer(layer, value, animate = true) {
+      const formatted = formatCount(value);
+      const digits = formatted.replace(",", "");
+      const currentWindows = [...layer.children].filter(child =>
+        child.classList.contains("digit-window")
+      );
+
+      if (!animate || currentWindows.length !== digits.length) {
+        layer.replaceChildren(...createStaticTokens(formatted));
+        return;
+      }
+
+      [...digits].forEach((digit, index) => {
+        rollDigit(currentWindows[index], digit);
+      });
+    }
+
+    function renderCount(value, animate = true) {
+      const formatted = formatCount(value);
+      layers.forEach(layer => renderLayer(layer, value, animate));
+      counter.setAttribute("aria-label", `Subscriber count ${formatted}`);
+    }
+
+    function advanceCount() {
+      currentCount = currentCount >= END_COUNT ? START_COUNT : currentCount + 1;
+      renderCount(currentCount);
+    }
 
     document.fonts.load('700 132px "OpenAI Sans"', '3,145').then(() => {
+      renderCount(currentCount, false);
       counter.classList.add("is-ready");
+      window.setInterval(advanceCount, 1800);
     });
   </script>
 </body>

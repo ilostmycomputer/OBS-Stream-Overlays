@@ -396,7 +396,14 @@
     <script>
         const stack = document.querySelector("#stack");
         const BRIDGE_URL = "ws://127.0.0.1:8765";
-        const OVERLAY_TITLE = "PRC Announcements";
+        const FALLBACK_OVERLAY_TITLE = "PRC Announcements";
+
+        function formatChannelTitle(channelName) {
+            if (typeof channelName !== "string") return FALLBACK_OVERLAY_TITLE;
+
+            const normalized = channelName.trim().replace(/^#+/, "");
+            return normalized ? `#${normalized}` : FALLBACK_OVERLAY_TITLE;
+        }
 
         function connect() {
             const socket = new WebSocket(`${BRIDGE_URL}?role=overlay`);
@@ -427,7 +434,7 @@
 
             const title = document.createElement("div");
             title.className = "title";
-            title.textContent = OVERLAY_TITLE;
+            title.textContent = formatChannelTitle(data.channelName);
             header.append(title);
 
             const row = document.createElement("div");

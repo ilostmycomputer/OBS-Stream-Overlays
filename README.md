@@ -4,8 +4,6 @@ Free, local overlays and helper tools for OBS Studio. **You do not need to insta
 
 Downloading the repository ZIP does not install anything. It only copies the files to your computer, so using the ZIP and deleting the folders you do not need is also fine.
 
-> The repository is grouped into two folders. This README remains at the root because GitHub only displays a repository README automatically from the root.
-
 ## What to download for each feature
 
 | Feature | Files needed from this repository | Install or access separately |

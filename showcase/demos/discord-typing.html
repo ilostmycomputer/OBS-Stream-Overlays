@@ -59,13 +59,15 @@
       z-index: 0;
       background-image: radial-gradient(
         circle,
-        rgb(17 17 17 / 18%) 0 1px,
+        rgb(17 17 17 / 22%) 0 1px,
         transparent 1.2px
       );
       background-size: 10px 10px;
       content: "";
-      opacity: .14;
+      opacity: .18;
       pointer-events: none;
+      transform: translate3d(0, 0, 0);
+      will-change: opacity, transform;
       animation: showcase-halftone-breathe 6s ease-in-out infinite;
     }
 
@@ -290,11 +292,13 @@
     @keyframes showcase-halftone-breathe {
       0%,
       100% {
-        opacity: .14;
+        opacity: .18;
+        transform: translate3d(0, 0, 0);
       }
 
       50% {
-        opacity: .30;
+        opacity: .38;
+        transform: translate3d(4px, 3px, 0);
       }
     }
 
@@ -363,7 +367,8 @@
     }
     @media (prefers-reduced-motion: reduce) {
       body::before {
-        opacity: .20;
+        opacity: .26;
+        transform: translate3d(0, 0, 0);
         animation: none;
       }
     }

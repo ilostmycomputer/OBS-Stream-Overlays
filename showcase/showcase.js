@@ -180,6 +180,8 @@ for (const button of buttons) {
     let clicks = [];
     let countResetTimer = null;
     let trackTimer = null;
+    let trackCountdownInterval = null;
+    let trackDeadline = 0;
     let animationFrame = null;
     let lastFrameAt = performance.now();
     let zoom = 1;
@@ -211,10 +213,23 @@ for (const button of buttons) {
         : 1 - Math.pow(-2 * progress + 2, 3) / 2;
     }
 
+    function updateTrackingCountdown() {
+      if (!zoomActive || trackDeadline === 0) return;
+
+      const remainingSeconds = Math.max(
+        0,
+        Math.ceil((trackDeadline - performance.now()) / 1000),
+      );
+      const nextText = `${remainingSeconds}s`;
+      if (count.textContent !== nextText) {
+        count.textContent = nextText;
+      }
+    }
+
     function updateHud() {
       if (zoomActive) {
         status.textContent = "2.5x cursor tracking";
-        count.textContent = "Live";
+        updateTrackingCountdown();
         demo.classList.add("is-zoomed");
         return;
       }
@@ -309,6 +324,9 @@ for (const button of buttons) {
       clearClickProgress();
       window.clearTimeout(trackTimer);
       trackTimer = null;
+      window.clearInterval(trackCountdownInterval);
+      trackCountdownInterval = null;
+      trackDeadline = 0;
       zoomActive = false;
       updateHud();
       transitionZoom(1, animate ? ZOOM_OUT_MS : 0, easeInOutCubic);
@@ -321,10 +339,16 @@ for (const button of buttons) {
       smoothedX = x;
       smoothedY = y;
       zoomActive = true;
+      trackDeadline = performance.now() + TRACK_MS;
       updateHud();
       transitionZoom(TARGET_ZOOM, ZOOM_IN_MS, easeOutCubic);
 
       window.clearTimeout(trackTimer);
+      window.clearInterval(trackCountdownInterval);
+      trackCountdownInterval = window.setInterval(
+        updateTrackingCountdown,
+        250,
+      );
       trackTimer = window.setTimeout(() => resetDemo(), TRACK_MS);
     }
 

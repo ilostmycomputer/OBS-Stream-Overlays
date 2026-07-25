@@ -14,6 +14,12 @@ Downloading the repository ZIP does not install anything. It only copies the fil
 | **Discord typing alert** | The entire `Overlays & Plugins/overlays/typing-notifications/` folder, plus [`Overlays & Plugins/integrations/vencord/TypingNotifications/index.tsx`](Overlays%20%26%20Plugins/integrations/vencord/TypingNotifications/index.tsx) | OBS Studio, Discord Desktop, [Node.js 22 or newer](https://nodejs.org/en/download), pnpm `11.9.0`, and [Vencord source](https://github.com/Vendicated/Vencord). Git is optional. Vencord-only users can skip OBS and the local bridge. |
 | **Five-click cursor zoom** | The entire [`Overlays & Plugins/tools/obs-five-click-cursor-zoom/`](Overlays%20%26%20Plugins/tools/obs-five-click-cursor-zoom/) folder | OBS Studio 28 or newer, OBS WebSocket, [Node.js 22 or newer](https://nodejs.org/en/download), and Windows 10 or 11. |
 
+## In development
+
+### ER:LC server tracker
+
+I am working on an OBS overlay that automatically displays the join code for the ER:LC private server you are currently in, allowing viewers to join you directly. It will only work with private servers you own because each server requires its own API key. If you leave one of your configured servers, the overlay automatically disappears so an outdated join code is never left on stream.
+
 ## Downloading one file
 
 1. Open the linked file above.

@@ -447,6 +447,7 @@
       // Change this value before using the countdown for a new event.
       const TARGET_DATE_TIME = "2026-07-25T12:00:00Z";
       const searchParams = new URLSearchParams(window.location.search);
+      const isShowcaseCard = searchParams.get("showcaseCard") === "1";
       const showcaseRemainingSeconds = Number.parseInt(
         searchParams.get("showcaseRemaining") ?? "",
         10,
@@ -555,7 +556,7 @@
       function updateVisibility(totalSeconds) {
         countdownShell.classList.toggle(
           "is-visible",
-          shouldShowCountdown(totalSeconds),
+          isShowcaseCard || shouldShowCountdown(totalSeconds),
         );
       }
 

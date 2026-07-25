@@ -457,7 +457,10 @@
       const finishTransform = isDecreasing
         ? "translateY(0)"
         : "translateY(" + (-geometry.height) + "px)";
+      group.style.transition = "none";
       group.style.transform = startTransform;
+      group.getBoundingClientRect();
+      group.style.removeProperty("transition");
       group.getBoundingClientRect();
 
       const settle = () => {

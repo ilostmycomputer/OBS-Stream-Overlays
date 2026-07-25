@@ -46,6 +46,14 @@
     const MIN_COUNT = 3000;
     const MAX_COUNT = 3299;
 
+    // Match the approved stream countdown geometry exactly.
+    const DIGIT_HEIGHT_EM = 1.14;
+    const DIGIT_WIDTH_EM = 0.64;
+    const SEPARATOR_WIDTH_EM = 0.42;
+    const FACE_LINE_HEIGHT_EM = 1.08;
+    const FACE_PADDING_TOP_EM = 0.02;
+    const WINDOW_TOP_PX = 3;
+
     let width = 0;
     let height = 0;
     let count = 3145;
@@ -88,7 +96,8 @@
       nextChangeAt = now + ROLL_MS + 850 + Math.random() * 1250;
     }
 
-    function easeOutCubic(t) {
+    function easeCountdown(t) {
+      // Matches cubic-bezier(0.22, 0.61, 0.36, 1) closely without changing timing.
       return 1 - Math.pow(1 - t, 3);
     }
 
@@ -106,7 +115,7 @@
     function drawGlyph(glyph, x, y, gradient, fontSize) {
       ctx.shadowColor = "rgba(250, 204, 21, 0.22)";
       ctx.shadowBlur = 14;
-      ctx.lineWidth = Math.max(5, fontSize * 0.085);
+      ctx.lineWidth = Math.max(4, fontSize * 0.085);
       ctx.strokeStyle = gradient;
       ctx.strokeText(glyph, x, y);
 
@@ -115,29 +124,70 @@
       ctx.fillText(glyph, x, y);
     }
 
+    function drawDigitWindow(oldGlyph, newGlyph, slotX, centreY, geometry, gradient, progress, rolling) {
+      const { digitWidth, digitHeight, faceHeight, facePaddingTop, strokePad } = geometry;
+      const eased = easeCountdown(progress);
+      const travel = digitHeight;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(
+        slotX - digitWidth / 2 - strokePad,
+        centreY - digitHeight / 2 + WINDOW_TOP_PX,
+        digitWidth + strokePad * 2,
+        digitHeight
+      );
+      ctx.clip();
+
+      const baselineOffset = facePaddingTop + (faceHeight - fontSize) * 0.5;
+      const restingY = centreY + WINDOW_TOP_PX + baselineOffset;
+
+      if (rolling && oldGlyph !== newGlyph) {
+        const oldY = restingY - rollDirection * eased * travel;
+        const newY = restingY + rollDirection * (1 - eased) * travel;
+        drawGlyph(oldGlyph, slotX, oldY, gradient, geometry.fontSize);
+        drawGlyph(newGlyph, slotX, newY, gradient, geometry.fontSize);
+      } else {
+        drawGlyph(newGlyph, slotX, restingY, gradient, geometry.fontSize);
+      }
+
+      ctx.restore();
+    }
+
     function draw(now) {
       if (now >= nextChangeAt) scheduleCountChange(now);
 
       ctx.clearRect(0, 0, width, height);
 
-      const fontSize = Math.min(94, Math.max(52, width * 0.15));
-      const digitWidth = fontSize * 0.66;
-      const commaWidth = fontSize * 0.34;
-      const slotWidths = [digitWidth, commaWidth, digitWidth, digitWidth, digitWidth];
+      // Same font sizing rule as the stream countdown: clamp(2rem, 5vw, 3.25rem).
+      const fontSize = Math.min(52, Math.max(32, width * 0.05));
+      const digitWidth = fontSize * DIGIT_WIDTH_EM;
+      const digitHeight = fontSize * DIGIT_HEIGHT_EM;
+      const faceHeight = fontSize * DIGIT_HEIGHT_EM;
+      const facePaddingTop = fontSize * FACE_PADDING_TOP_EM;
+      const separatorWidth = fontSize * SEPARATOR_WIDTH_EM;
+      const slotWidths = [digitWidth, separatorWidth, digitWidth, digitWidth, digitWidth];
       const totalWidth = slotWidths.reduce((sum, slotWidth) => sum + slotWidth, 0);
       const centreX = width / 2;
-      const centreY = height / 2 + fontSize * 0.08;
-      const glyphTravel = fontSize * 1.16;
+      const centreY = height / 2;
       const gradient = createStrokeGradient(now, centreX, centreY);
 
       const previous = formatCount(previousCount);
       const target = formatCount(targetCount);
       const progress = Math.min(1, Math.max(0, (now - rollStartedAt) / ROLL_MS));
-      const eased = easeOutCubic(progress);
       const rolling = progress < 1;
 
+      const geometry = {
+        fontSize,
+        digitWidth,
+        digitHeight,
+        faceHeight: fontSize * FACE_LINE_HEIGHT_EM,
+        facePaddingTop,
+        strokePad: Math.max(4, fontSize * 0.09),
+      };
+
       ctx.save();
-      ctx.font = `700 ${fontSize}px "OpenAI Sans", Arial, sans-serif`;
+      ctx.font = `700 ${fontSize}px "OpenAI Sans", ui-sans-serif, system-ui, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.lineJoin = "round";
@@ -152,14 +202,9 @@
         const newGlyph = target[index];
 
         if (newGlyph === ",") {
-          drawGlyph(",", slotX, centreY, gradient, fontSize);
-        } else if (rolling && oldGlyph !== newGlyph) {
-          const oldY = centreY - rollDirection * eased * glyphTravel;
-          const newY = centreY + rollDirection * (1 - eased) * glyphTravel;
-          drawGlyph(oldGlyph, slotX, oldY, gradient, fontSize);
-          drawGlyph(newGlyph, slotX, newY, gradient, fontSize);
+          drawGlyph(",", slotX, centreY + WINDOW_TOP_PX, gradient, fontSize);
         } else {
-          drawGlyph(newGlyph, slotX, centreY, gradient, fontSize);
+          drawDigitWindow(oldGlyph, newGlyph, slotX, centreY, geometry, gradient, progress, rolling);
         }
 
         cursor += slotWidth;

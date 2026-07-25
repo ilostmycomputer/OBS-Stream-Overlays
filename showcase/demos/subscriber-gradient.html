@@ -439,10 +439,11 @@
       clipPath.setAttribute("clipPathUnits", "userSpaceOnUse");
 
       const clipRect = svgElement("rect");
-      clipRect.setAttribute("x", String(geometry.x));
-      clipRect.setAttribute("y", String(geometry.y));
-      clipRect.setAttribute("width", String(geometry.width));
-      clipRect.setAttribute("height", String(geometry.height));
+      const strokeInset = 4.5;
+      clipRect.setAttribute("x", String(geometry.x - strokeInset * 2));
+      clipRect.setAttribute("y", String(geometry.y + strokeInset));
+      clipRect.setAttribute("width", String(geometry.width + strokeInset * 4));
+      clipRect.setAttribute("height", String(geometry.height - strokeInset * 2));
       clipPath.append(clipRect);
       strokeDefs.append(clipPath);
 

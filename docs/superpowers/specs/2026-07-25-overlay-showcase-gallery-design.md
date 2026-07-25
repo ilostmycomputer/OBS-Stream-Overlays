@@ -13,7 +13,8 @@ The showcase is intentionally minimal:
 - live preview or safe demo inside each card where practical;
 - project name;
 - one short description;
-- one `View on GitHub` link below the preview;
+- one `View on GitHub` link placed directly below each preview;
+- one short introductory paragraph explaining what the showcase is and how to use it;
 - no setup instructions, install steps, changelog, pricing, blog, stats, marketing copy, or unrelated repository information.
 
 The existing overlay and tool files remain the source of truth. The showcase must not alter their production behaviour just to make the gallery work.
@@ -30,6 +31,13 @@ The existing overlay and tool files remain the source of truth. The showcase mus
 
 ## Cards
 
+Every card follows the same content order:
+
+1. project name;
+2. live preview or safe visual demo;
+3. `View on GitHub` link immediately below the preview;
+4. one short description.
+
 ### Start Stream Countdown
 
 Show the real start-stream countdown inside the card. The preview exposes both approved variants without duplicating the production files. A compact Light/Dark control switches between the existing light and dark HTML files.
@@ -38,7 +46,7 @@ GitHub link target: `Overlays & Plugins/overlays/countdown/`
 
 ### Confetti
 
-Show the real confetti overlay in a contained preview. A replay interaction is allowed only as part of the preview itself so visitors can see the effect again after it finishes.
+Show the real confetti overlay in a contained preview. The preview may replay the effect internally so visitors can see the animation again, but there is no extra external action link beyond `View on GitHub`.
 
 GitHub link target: `Overlays & Plugins/overlays/confetti/confetti.html`
 
@@ -67,7 +75,7 @@ GitHub link target: `Overlays & Plugins/tools/obs-five-click-cursor-zoom/`
 The root page is a single showcase view:
 
 1. Small page heading: `OBS Stream Overlays`.
-2. Short neutral subtitle describing the page as a collection of OBS overlays and tools.
+2. Short neutral introduction explaining that this is a showcase of finished OBS overlays and tools, that previews can be watched directly on the page, and that `View on GitHub` opens the relevant source file or folder.
 3. Responsive card grid containing only the finished projects above.
 
 There is no site navigation, documentation section, marketing section, or footer content beyond the showcase itself.
@@ -94,7 +102,7 @@ No API keys, tokens, OBS WebSocket credentials, Discord credentials, or private 
 
 ## Failure behaviour
 
-- If an embedded preview fails to load, the card still shows its title, description, and GitHub link.
+- If an embedded preview fails to load, the card still shows its title, GitHub link, and description.
 - Demo-only controls fail silently rather than blocking the rest of the page.
 - The layout remains readable without JavaScript where possible.
 
@@ -103,9 +111,10 @@ No API keys, tokens, OBS WebSocket credentials, Discord credentials, or private 
 Before release:
 
 - confirm GitHub Pages loads from the repository root;
+- confirm the intro clearly explains what the showcase is and that `View on GitHub` opens the relevant source;
 - confirm the grid is two columns on desktop and one column on narrow screens;
 - confirm every card shows the intended finished project and no unfinished work;
-- confirm each `View on GitHub` link points to the correct file or folder;
+- confirm each `View on GitHub` link is directly below its preview and points to the correct file or folder;
 - confirm the countdown preview uses the approved production light/dark files without modifying them;
 - confirm the confetti and subscriber-gradient previews animate correctly;
 - confirm the Discord card uses fake showcase data and does not attempt a real bridge connection;

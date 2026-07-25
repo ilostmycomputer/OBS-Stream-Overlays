@@ -93,6 +93,22 @@
         ) border-box;
       box-shadow: inset 0 0 0 1px var(--shiny-cta-bg-subtle);
       animation: shiny-gradient-angle var(--shiny-duration) linear infinite;
+      opacity: 0;
+      transform: translateY(calc(-100% - 100px));
+      transition:
+        transform 650ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform, opacity;
+    }
+
+    .timer-shell.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .timer-shell.is-exiting {
+      opacity: 0;
+      transform: translateY(calc(-100% - 100px));
     }
 
     .timer-shell::before,
@@ -295,6 +311,17 @@
         animation: none;
       }
 
+      .timer-shell {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+
+      .timer-shell.is-exiting {
+        opacity: 0;
+        visibility: hidden;
+      }
+
       .digit-strip {
         transition: none;
       }
@@ -316,8 +343,10 @@
   <script>
     const START_SECONDS = 1 * 60 + 59;
     const timerElement = document.getElementById("timer");
+    const timerShell = document.querySelector(".timer-shell");
     const startTime = performance.now();
     let interval = null;
+    let exitScheduled = false;
 
     function createDigitFace(digit) {
       const face = document.createElement("span");
@@ -389,17 +418,34 @@
       timerElement.setAttribute("aria-label", `${minutes}:${seconds}`);
     }
 
+    function scheduleExit() {
+      if (exitScheduled) return;
+      exitScheduled = true;
+
+      setTimeout(() => {
+        timerShell.classList.remove("is-visible");
+        timerShell.classList.add("is-exiting");
+      }, 5000);
+    }
+
     function updateTimer() {
       const elapsedSeconds = Math.floor((performance.now() - startTime) / 1000);
       const remainingSeconds = Math.max(0, START_SECONDS - elapsedSeconds);
 
       renderTime(remainingSeconds);
 
-      if (remainingSeconds === 0 && interval !== null) {
-        clearInterval(interval);
-        interval = null;
+      if (remainingSeconds === 0) {
+        if (interval !== null) {
+          clearInterval(interval);
+          interval = null;
+        }
+        scheduleExit();
       }
     }
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => timerShell.classList.add("is-visible"));
+    });
 
     updateTimer();
     interval = setInterval(updateTimer, 100);

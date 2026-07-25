@@ -142,12 +142,6 @@
 
     .stroke {
       color: transparent;
-      filter: url(#outline-filter);
-      animation: rotate-gradient 6s linear infinite;
-    }
-
-    .stroke .digit-face {
-      color: transparent;
       background: conic-gradient(
         from var(--gradient-angle),
         #e8c94c 0deg,
@@ -159,6 +153,7 @@
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      filter: url(#outline-filter);
       animation: rotate-gradient 6s linear infinite;
     }
 
@@ -181,9 +176,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .stroke,
-      .stroke .digit-face,
-      .stroke .comma {
+      .stroke {
         animation: none;
       }
 
@@ -213,7 +206,8 @@
 
   <script>
     const counter = document.getElementById("counter");
-    const layers = [...counter.children];
+    const strokeLayer = counter.querySelector(".stroke");
+    const fillLayer = counter.querySelector(".fill");
     const START_COUNT = 3145;
     const MIN_COUNT = 3140;
     const MAX_COUNT = 3165;
@@ -303,7 +297,8 @@
 
     function renderCount(value, animate = true) {
       const formatted = formatCount(value);
-      layers.forEach(layer => renderLayer(layer, value, animate));
+      strokeLayer.textContent = formatted;
+      renderLayer(fillLayer, value, animate);
       counter.setAttribute("aria-label", `Subscriber count ${formatted}`);
     }
 

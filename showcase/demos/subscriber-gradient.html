@@ -129,6 +129,14 @@
       transform: translateY(calc(-1 * var(--digit-height)));
     }
 
+    .digit-strip.is-rolling-down {
+      transform: translateY(calc(-1 * var(--digit-height)));
+    }
+
+    .digit-strip.is-rolling-down.is-rolling-down-active {
+      transform: translateY(0);
+    }
+
     .digit-face {
       display: block;
       flex: 0 0 var(--digit-height);
@@ -246,17 +254,25 @@
       );
     }
 
-    function rollDigit(currentWindow, nextDigit) {
+    function rollDigit(currentWindow, nextDigit, countDirection) {
       const currentDigit = currentWindow.dataset.digit;
       if (currentDigit === nextDigit) return currentWindow;
 
+      const isDecreasing = countDirection < 0;
       const rollingWindow = document.createElement("span");
       rollingWindow.className = "digit-window";
       rollingWindow.dataset.digit = nextDigit;
 
       const strip = document.createElement("span");
       strip.className = "digit-strip";
-      strip.append(createDigitFace(currentDigit), createDigitFace(nextDigit));
+
+      if (isDecreasing) {
+        strip.classList.add("is-rolling-down");
+        strip.append(createDigitFace(nextDigit), createDigitFace(currentDigit));
+      } else {
+        strip.append(createDigitFace(currentDigit), createDigitFace(nextDigit));
+      }
+
       rollingWindow.append(strip);
       currentWindow.replaceWith(rollingWindow);
 
@@ -272,13 +288,15 @@
 
       strip.addEventListener("transitionend", settleDigit, { once: true });
       strip.getBoundingClientRect();
-      requestAnimationFrame(() => strip.classList.add("is-rolling"));
+      requestAnimationFrame(() => {
+        strip.classList.add(isDecreasing ? "is-rolling-down-active" : "is-rolling");
+      });
       setTimeout(settleDigit, 520);
 
       return rollingWindow;
     }
 
-    function renderLayer(layer, value, animate = true) {
+    function renderLayer(layer, value, animate = true, countDirection = 1) {
       const formatted = formatCount(value);
       const digits = formatted.replace(",", "");
       const currentWindows = [...layer.children].filter(child =>
@@ -291,18 +309,19 @@
       }
 
       [...digits].forEach((digit, index) => {
-        rollDigit(currentWindows[index], digit);
+        rollDigit(currentWindows[index], digit, countDirection);
       });
     }
 
-    function renderCount(value, animate = true) {
+    function renderCount(value, animate = true, countDirection = 1) {
       const formatted = formatCount(value);
       strokeLayer.textContent = formatted;
-      renderLayer(fillLayer, value, animate);
+      renderLayer(fillLayer, value, animate, countDirection);
       counter.setAttribute("aria-label", `Subscriber count ${formatted}`);
     }
 
     function advanceCount() {
+      const previousCount = currentCount;
       const direction = Math.random() < UPWARD_CHANCE ? 1 : -1;
 
       if (currentCount >= MAX_COUNT) {
@@ -313,7 +332,7 @@
         currentCount += direction;
       }
 
-      renderCount(currentCount);
+      renderCount(currentCount, true, Math.sign(currentCount - previousCount));
     }
 
     document.fonts.load('700 132px "OpenAI Sans"', '3,145').then(() => {

@@ -341,12 +341,25 @@
   </main>
 
   <script>
-    const START_SECONDS = 1 * 60 + 59;
+    const DEFAULT_START_SECONDS = 1 * 60 + 59;
+    const searchParams = new URLSearchParams(window.location.search);
+    const requestedStartSeconds = Number.parseInt(
+      searchParams.get("showcaseRemaining") ?? "",
+      10,
+    );
+    const showcaseDeadline = Number.parseInt(
+      searchParams.get("showcaseDeadline") ?? "",
+      10,
+    );
+    const START_SECONDS = Number.isFinite(requestedStartSeconds)
+      ? Math.min(DEFAULT_START_SECONDS, Math.max(0, requestedStartSeconds))
+      : DEFAULT_START_SECONDS;
     const timerElement = document.getElementById("timer");
     const timerShell = document.querySelector(".timer-shell");
     const startTime = performance.now();
     let interval = null;
     let exitScheduled = false;
+    let hasRendered = false;
 
     function createDigitFace(digit) {
       const face = document.createElement("span");
@@ -395,13 +408,18 @@
       return rollingWindow;
     }
 
-    function renderTime(totalSeconds) {
+    function renderTime(totalSeconds, animate = true) {
       const minutes = String(Math.floor(totalSeconds / 60));
       const seconds = String(totalSeconds % 60).padStart(2, "0");
       const nextDigits = [minutes, seconds[0], seconds[1]];
       const currentWindows = [...timerElement.querySelectorAll(".digit-window")];
+      timerElement.setAttribute("aria-label", `${minutes}:${seconds}`);
+      timerShell.setAttribute(
+        "aria-label",
+        `${minutes} minute ${Number(seconds)} second timer`,
+      );
 
-      if (currentWindows.length !== 3) {
+      if (currentWindows.length !== 3 || !animate) {
         timerElement.replaceChildren(
           createStaticDigit(nextDigits[0]),
           Object.assign(document.createElement("span"), {
@@ -415,7 +433,6 @@
       }
 
       nextDigits.forEach((digit, index) => rollDigit(currentWindows[index], digit));
-      timerElement.setAttribute("aria-label", `${minutes}:${seconds}`);
     }
 
     function scheduleExit() {
@@ -430,9 +447,12 @@
 
     function updateTimer() {
       const elapsedSeconds = Math.floor((performance.now() - startTime) / 1000);
-      const remainingSeconds = Math.max(0, START_SECONDS - elapsedSeconds);
+      const remainingSeconds = Number.isFinite(showcaseDeadline)
+        ? Math.max(0, Math.ceil((showcaseDeadline - Date.now()) / 1000))
+        : Math.max(0, START_SECONDS - elapsedSeconds);
 
-      renderTime(remainingSeconds);
+      renderTime(remainingSeconds, hasRendered);
+      hasRendered = true;
 
       if (remainingSeconds === 0) {
         if (interval !== null) {

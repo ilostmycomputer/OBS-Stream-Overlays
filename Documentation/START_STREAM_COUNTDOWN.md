@@ -94,7 +94,7 @@ Your operating system may have reduced-motion preferences enabled. The overlay r
 
 ### The font looks different
 
-Install or keep `OpenAI-Sans-Bold.otf` beside the HTML file. Without it, the overlay uses a fallback system sans-serif font.
+Install `OpenAI-Sans-Bold.otf` from `Overlays & Plugins/overlays/countdown/fonts/`. Without it, the overlay uses a fallback system sans-serif font.
 
 ### The overlay looks blurry
 

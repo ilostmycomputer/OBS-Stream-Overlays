@@ -23,21 +23,19 @@
     }
 
     body {
-      position: relative;
+      display: grid;
+      place-items: center;
     }
 
     .counter {
-      position: absolute;
-      left: calc(50% - 10px);
-      top: calc(50% + 6px);
-      transform: translate(-50%, -50%);
       display: inline-grid;
       place-items: center;
+      transform: translate(-14px, -8px);
       text-align: center;
       font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
       font-size: clamp(88px, 22vw, 132px);
       font-weight: 700;
-      line-height: 1.12;
+      line-height: 1.35;
       letter-spacing: -0.05em;
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum" 1;
@@ -105,13 +103,12 @@
   </style>
 </head>
 <body>
-  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
-    <filter id="outline-filter" x="-300%" y="-300%" width="700%" height="700%" color-interpolation-filters="sRGB">
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute; overflow:visible">
+    <filter id="outline-filter" x="-400%" y="-400%" width="900%" height="900%" color-interpolation-filters="sRGB">
       <feMorphology in="SourceGraphic" operator="dilate" radius="4.5" result="dilated" />
       <feComposite in="dilated" in2="SourceGraphic" operator="out" result="outline" />
-      <feGaussianBlur in="outline" stdDeviation="0.25" result="softOutline" />
       <feMerge>
-        <feMergeNode in="softOutline" />
+        <feMergeNode in="outline" />
       </feMerge>
     </filter>
   </svg>

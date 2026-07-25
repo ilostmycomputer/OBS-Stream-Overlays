@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subscriber Gradient Demo</title>
+  <style>
+    @font-face {
+      font-family: "OpenAI Sans";
+      src: url("../../Overlays%20%26%20Plugins/overlays/countdown/OpenAI-Sans-Bold.otf") format("opentype");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="demo" aria-label="Animated subscriber count around 3,145 with a rotating yellow gradient stroke"></canvas>
+
+  <script>
+    const canvas = document.getElementById("demo");
+    const ctx = canvas.getContext("2d");
+    const formatter = new Intl.NumberFormat("en-GB");
+    const ROTATION_MS = 6000;
+
+    let width = 0;
+    let height = 0;
+    let count = 3145;
+    let nextChangeAt = performance.now() + 900;
+
+    function resize() {
+      const scale = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    }
+
+    function scheduleCountChange(now) {
+      const magnitude = 1 + Math.floor(Math.random() * 8);
+      const direction = Math.random() < 0.5 ? -1 : 1;
+      count = Math.max(3000, Math.min(3299, count + direction * magnitude));
+      nextChangeAt = now + 850 + Math.random() * 1250;
+    }
+
+    function draw(now) {
+      if (now >= nextChangeAt) scheduleCountChange(now);
+
+      ctx.clearRect(0, 0, width, height);
+
+      const text = formatter.format(count);
+      const fontSize = Math.min(94, Math.max(52, width * 0.15));
+      const centreX = width / 2;
+      const centreY = height / 2 + fontSize * 0.08;
+      const angle = ((now % ROTATION_MS) / ROTATION_MS) * Math.PI * 2 - Math.PI / 4;
+
+      ctx.save();
+      ctx.font = `700 ${fontSize}px "OpenAI Sans", Arial, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+
+      const gradient = ctx.createConicGradient(angle, centreX, centreY);
+      gradient.addColorStop(0, "#fde047");
+      gradient.addColorStop(0.25, "#facc15");
+      gradient.addColorStop(0.5, "#ca8a04");
+      gradient.addColorStop(0.75, "#facc15");
+      gradient.addColorStop(1, "#fde047");
+
+      ctx.shadowColor = "rgba(250, 204, 21, 0.22)";
+      ctx.shadowBlur = 14;
+      ctx.lineWidth = Math.max(5, fontSize * 0.085);
+      ctx.strokeStyle = gradient;
+      ctx.strokeText(text, centreX, centreY);
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#f5f5f5";
+      ctx.fillText(text, centreX, centreY);
+      ctx.restore();
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    document.fonts.ready.finally(() => requestAnimationFrame(draw));
+  </script>
+</body>
+</html>

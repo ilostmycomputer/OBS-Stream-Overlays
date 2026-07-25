@@ -147,10 +147,23 @@
     }
 
     .stroke-digit-strip {
+      transform: translateY(0);
       transform-box: view-box;
       transform-origin: 0 0;
       transition: transform 420ms cubic-bezier(0.22, 0.61, 0.36, 1);
       will-change: transform;
+    }
+
+    .stroke-digit-strip.is-rolling-down {
+      transform: translateY(var(--stroke-roll-distance));
+    }
+
+    .stroke-digit-strip.is-rolling-up.is-rolling-active {
+      transform: translateY(var(--stroke-roll-distance));
+    }
+
+    .stroke-digit-strip.is-rolling-down.is-rolling-active {
+      transform: translateY(0);
     }
 
     .fill {
@@ -439,7 +452,11 @@
     function createRollingStroke(currentDigit, nextDigit, geometry, countDirection, clipId) {
       const isDecreasing = countDirection < 0;
       const group = svgElement("g");
-      group.classList.add("stroke-digit-strip");
+      group.classList.add(
+        "stroke-digit-strip",
+        isDecreasing ? "is-rolling-down" : "is-rolling-up"
+      );
+      group.style.setProperty("--stroke-roll-distance", (-geometry.height) + "px");
       group.setAttribute("clip-path", "url(#" + clipId + ")");
       strokeContent.append(group);
 
@@ -451,21 +468,12 @@
         createStrokeText(nextDigit, geometry, geometry.faceTop + geometry.height, group);
       }
 
-      const startTransform = isDecreasing
-        ? "translateY(" + (-geometry.height) + "px)"
-        : "translateY(0)";
-      const finishTransform = isDecreasing
-        ? "translateY(0)"
-        : "translateY(" + (-geometry.height) + "px)";
-      group.style.transition = "none";
-      group.style.transform = startTransform;
-      group.getBoundingClientRect();
-      group.style.removeProperty("transition");
       group.getBoundingClientRect();
 
       const settle = () => {
         if (!group.isConnected) return;
-        group.style.removeProperty("transform");
+        group.classList.remove("is-rolling-up", "is-rolling-down", "is-rolling-active");
+        group.style.removeProperty("--stroke-roll-distance");
         group.replaceChildren();
         createStrokeText(nextDigit, geometry, geometry.faceTop, group);
       };
@@ -474,7 +482,7 @@
         settle();
       } else {
         requestAnimationFrame(() => {
-          group.style.transform = finishTransform;
+          group.classList.add("is-rolling-active");
         });
         setTimeout(settle, 520);
       }

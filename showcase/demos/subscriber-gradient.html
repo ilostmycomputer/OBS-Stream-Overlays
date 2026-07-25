@@ -23,20 +23,26 @@
     }
 
     body {
-      box-sizing: border-box;
+      position: relative;
+    }
+
+    .stage {
+      position: absolute;
+      inset: 0;
       display: grid;
       place-items: center;
-      padding: 28px 42px;
+      overflow: visible;
     }
 
     .counter {
       display: inline-grid;
       place-items: center;
       text-align: center;
+      transform: translateY(0.055em);
       font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
       font-size: clamp(88px, 22vw, 132px);
       font-weight: 700;
-      line-height: 1.12;
+      line-height: 1;
       letter-spacing: -0.05em;
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum" 1;
@@ -53,7 +59,8 @@
       grid-area: 1 / 1;
       display: inline-block;
       box-sizing: border-box;
-      padding: 14px 20px;
+      padding: 0.30em 0.36em;
+      margin: -0.30em -0.36em;
       overflow: visible;
       font: inherit;
       letter-spacing: inherit;
@@ -107,7 +114,7 @@
 </head>
 <body>
   <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute; overflow:visible">
-    <filter id="outline-filter" x="-600%" y="-600%" width="1300%" height="1300%" color-interpolation-filters="sRGB">
+    <filter id="outline-filter" x="-1200%" y="-1200%" width="2500%" height="2500%" color-interpolation-filters="sRGB">
       <feMorphology in="SourceGraphic" operator="dilate" radius="4.5" result="dilated" />
       <feComposite in="dilated" in2="SourceGraphic" operator="out" result="outline" />
       <feMerge>
@@ -116,9 +123,11 @@
     </filter>
   </svg>
 
-  <div class="counter" id="counter" role="img" aria-label="Subscriber count 3,145">
-    <span class="stroke" aria-hidden="true">3<span class="comma">,</span>145</span>
-    <span class="fill">3<span class="comma">,</span>145</span>
+  <div class="stage">
+    <div class="counter" id="counter" role="img" aria-label="Subscriber count 3,145">
+      <span class="stroke" aria-hidden="true">3<span class="comma">,</span>145</span>
+      <span class="fill">3<span class="comma">,</span>145</span>
+    </div>
   </div>
 
   <script>

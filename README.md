@@ -66,7 +66,7 @@ const START_SECONDS = 1 * 60 + 59;
 
 For example, `const START_SECONDS = 5 * 60 + 0;` starts at `5:00`. Add the selected file to OBS as a local Browser Source at `700 × 180` and refresh the source after editing it.
 
-[Open the complete start-stream countdown instructions](Documentation/FULL_GUIDE.md#stream-countdown)
+[Open the complete start-stream countdown instructions](Documentation/START_STREAM_COUNTDOWN.md)
 
 ### Confetti
 

@@ -1,7 +1,7 @@
 (() => {
   const STYLE_ID = "showcase-light-halftone-contrast";
   const LIGHT_BACKGROUND = "rgb(255, 255, 255)";
-  const DOT_ALPHA = "62%";
+  const DOT_ALPHA = "54%";
 
   function boostLightHalftone(frame) {
     try {
@@ -37,15 +37,15 @@
           }
 
           14% {
-            opacity: .42;
+            opacity: .36;
           }
 
           55% {
-            opacity: .78;
+            opacity: .68;
           }
 
           82% {
-            opacity: .38;
+            opacity: .32;
           }
 
           100% {

@@ -1,7 +1,7 @@
 (() => {
   const STYLE_ID = "showcase-light-halftone-contrast";
   const LIGHT_BACKGROUND = "rgb(255, 255, 255)";
-  const DOT_ALPHA = "34%";
+  const DOT_ALPHA = "62%";
 
   function boostLightHalftone(frame) {
     try {
@@ -27,6 +27,31 @@
             rgb(17 17 17 / ${DOT_ALPHA}) 0 1px,
             transparent 1.2px
           ) !important;
+          animation-name: showcase-halftone-radio-contrast !important;
+        }
+
+        @keyframes showcase-halftone-radio-contrast {
+          0% {
+            opacity: 0;
+            transform: scale(.42);
+          }
+
+          14% {
+            opacity: .42;
+          }
+
+          55% {
+            opacity: .78;
+          }
+
+          82% {
+            opacity: .38;
+          }
+
+          100% {
+            opacity: 0;
+            transform: scale(1.12);
+          }
         }
       `;
     } catch {

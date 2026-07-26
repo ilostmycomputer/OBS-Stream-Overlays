@@ -1,0 +1,49 @@
+.preview-switch {
+  --toggle-pill-width: 50px;
+  position: absolute;
+  isolation: isolate;
+}
+
+.preview-switch::before {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 0;
+  width: var(--toggle-pill-width);
+  height: calc(100% - 8px);
+  border-radius: 7px;
+  background: #f2f2f2;
+  content: "";
+  pointer-events: none;
+  transform: translateX(0);
+  transition: transform 280ms cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+}
+
+.preview-switch:has(button[data-countdown-variant="dark"].is-active)::before {
+  transform: translateX(calc(var(--toggle-pill-width) + 4px));
+}
+
+.preview-switch button {
+  position: relative;
+  z-index: 1;
+  width: var(--toggle-pill-width);
+  padding-inline: 0;
+  background: transparent !important;
+  transition: color 180ms ease;
+}
+
+.preview-switch button.is-active {
+  background: transparent !important;
+  color: #111;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preview-switch::before {
+    transition: none;
+  }
+
+  .preview-switch button {
+    transition: none;
+  }
+}

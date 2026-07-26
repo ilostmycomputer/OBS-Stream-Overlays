@@ -58,12 +58,13 @@
         font-family: "OpenAI Sans", ui-sans-serif, system-ui, sans-serif;
       }
 
-      body::before {
+      body::before,
+      body::after {
         position: fixed;
-        top: -12px;
-        bottom: -12px;
-        left: -32%;
-        width: 32%;
+        top: -18px;
+        bottom: -18px;
+        left: -42%;
+        width: 42%;
         z-index: 0;
         background-color: #fff;
         background-image: radial-gradient(
@@ -71,14 +72,41 @@
             rgb(17 17 17 / 22%) 0 1px,
             transparent 1.2px
         );
-        background-size: 6px 10px;
+        background-size: 7.25px 10px;
         content: "";
         pointer-events: none;
         transform: translate3d(0, 0, 0);
-        -webkit-mask-image: linear-gradient(90deg, transparent, #000 28% 72%, transparent);
-        mask-image: linear-gradient(90deg, transparent, #000 28% 72%, transparent);
+        -webkit-mask-image:
+          radial-gradient(ellipse 54% 32% at 43% 0%, #000 0 38%, rgb(0 0 0 / 78%) 58%, transparent 100%),
+          radial-gradient(ellipse 50% 32% at 57% 25%, #000 0 36%, rgb(0 0 0 / 78%) 58%, transparent 100%),
+          radial-gradient(ellipse 55% 33% at 45% 50%, #000 0 38%, rgb(0 0 0 / 78%) 58%, transparent 100%),
+          radial-gradient(ellipse 50% 32% at 58% 75%, #000 0 36%, rgb(0 0 0 / 78%) 58%, transparent 100%),
+          radial-gradient(ellipse 54% 32% at 44% 100%, #000 0 38%, rgb(0 0 0 / 78%) 58%, transparent 100%);
+        mask-image:
+          radial-gradient(ellipse 54% 32% at 43% 0%, #000 0 38%, rgb(0 0 0 / 78%) 58%, transparent 100%),
+          radial-gradient(ellipse 50% 32% at 57% 25%, #000 0 36%, rgb(0 0 0 / 78%) 58%, transparent 100%),
+          radial-gradient(ellipse 55% 33% at 45% 50%, #000 0 38%, rgb(0 0 0 / 78%) 58%, transparent 100%),
+          radial-gradient(ellipse 50% 32% at 58% 75%, #000 0 36%, rgb(0 0 0 / 78%) 58%, transparent 100%),
+          radial-gradient(ellipse 54% 32% at 44% 100%, #000 0 38%, rgb(0 0 0 / 78%) 58%, transparent 100%);
         will-change: transform;
-        animation: showcase-halftone-sound-wave 6s linear infinite;
+        animation: showcase-halftone-sound-wave 7.2s linear infinite;
+      }
+
+      body::after {
+        background-size: 5.6px 10px;
+        -webkit-mask-image:
+          radial-gradient(ellipse 38% 25% at 48% 0%, #000 0 34%, rgb(0 0 0 / 72%) 56%, transparent 100%),
+          radial-gradient(ellipse 36% 25% at 62% 25%, #000 0 32%, rgb(0 0 0 / 72%) 56%, transparent 100%),
+          radial-gradient(ellipse 39% 26% at 50% 50%, #000 0 34%, rgb(0 0 0 / 72%) 56%, transparent 100%),
+          radial-gradient(ellipse 36% 25% at 61% 75%, #000 0 32%, rgb(0 0 0 / 72%) 56%, transparent 100%),
+          radial-gradient(ellipse 38% 25% at 47% 100%, #000 0 34%, rgb(0 0 0 / 72%) 56%, transparent 100%);
+        mask-image:
+          radial-gradient(ellipse 38% 25% at 48% 0%, #000 0 34%, rgb(0 0 0 / 72%) 56%, transparent 100%),
+          radial-gradient(ellipse 36% 25% at 62% 25%, #000 0 32%, rgb(0 0 0 / 72%) 56%, transparent 100%),
+          radial-gradient(ellipse 39% 26% at 50% 50%, #000 0 34%, rgb(0 0 0 / 72%) 56%, transparent 100%),
+          radial-gradient(ellipse 36% 25% at 61% 75%, #000 0 32%, rgb(0 0 0 / 72%) 56%, transparent 100%),
+          radial-gradient(ellipse 38% 25% at 47% 100%, #000 0 34%, rgb(0 0 0 / 72%) 56%, transparent 100%);
+        animation-delay: -180ms;
       }
 
       .countdown-shell {
@@ -255,7 +283,7 @@
 
       @keyframes showcase-halftone-sound-wave {
         to {
-            transform: translate3d(413%, 0, 0);
+            transform: translate3d(338%, 0, 0);
         }
       }
 
@@ -405,7 +433,8 @@
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        body::before {
+        body::before,
+        body::after {
             opacity: 0;
             transform: translate3d(0, 0, 0);
             animation: none;

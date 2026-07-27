@@ -1,0 +1,78 @@
+name: Install UI agent skills
+
+on:
+  push:
+    branches:
+      - chore/install-ui-agent-skills
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    if: ${{ !contains(github.event.head_commit.message, '[skills-installed]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install selected Codex skills
+        env:
+          DISABLE_TELEMETRY: '1'
+        run: |
+          set -euxo pipefail
+
+          # Motion/design craft from Emil Kowalski. Keep the relevant motion-focused skills.
+          npx -y skills@latest add emilkowalski/skills \
+            --skill emil-design-eng \
+            --skill review-animations \
+            --skill improve-animations \
+            --skill find-animation-opportunities \
+            --skill animation-vocabulary \
+            --agent codex --copy --yes
+
+          # Anti-generic UI guardrail.
+          npx -y skills@latest add cyxzdev/Uncodixfy \
+            --agent codex --copy --yes
+
+          # Focused micro-polish skill already referenced by the implementation plan.
+          npx -y skills@latest add jakubkrehel/make-interfaces-feel-better \
+            --agent codex --copy --yes
+
+          # Broader interface review set: accessibility, layout, writing, typography,
+          # colours, and UI polish, with better-interface as the orchestrator.
+          npx -y skills@latest add jakubkrehel/skills \
+            --skill '*' --agent codex --copy --yes
+
+      - name: Verify installed skills
+        run: |
+          set -euxo pipefail
+          test -d .agents/skills
+          find .agents/skills -mindepth 2 -maxdepth 2 -name SKILL.md -print | sort
+          test -f .agents/skills/uncodixfy/SKILL.md
+          test -f .agents/skills/make-interfaces-feel-better/SKILL.md
+          test -f .agents/skills/emil-design-eng/SKILL.md
+          test -f .agents/skills/better-interface/SKILL.md
+          test -f .agents/skills/better-accessibility/SKILL.md
+
+      - name: Commit installed skills and remove temporary workflow
+        run: |
+          set -euxo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git rm .github/workflows/install-ui-agent-skills.yml
+          git add .agents/skills
+          if [ -f skills-lock.json ]; then git add skills-lock.json; fi
+
+          git commit -m "chore: install UI agent skills [skills-installed]"
+          git push origin HEAD:chore/install-ui-agent-skills
